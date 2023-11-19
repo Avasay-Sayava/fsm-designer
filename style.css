@@ -1,0 +1,476 @@
+body {
+  color: #353535;
+  text-align: center;
+  background: #cccccc;
+  margin: 0 30px 100px 30px;
+  font: 14px/18px "Lucida Grande", "Segoe UI", sans-serif;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -moz-box-orient: vertical;
+  -moz-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  padding-top: 30px;
+}
+
+h1 {
+  font: bold italic 50px Georgia, serif;
+}
+
+canvas {
+  display: block;
+  max-width: 800px;
+  background: rgb(240, 240, 240);
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  margin: 10px auto;
+  -webkit-box-shadow: 0 0 10px 2.5px #00000020;
+  -moz-box-shadow: 0 0 10px 2.5px #00000020;
+  box-shadow: 0 0 10px 2.5px #00000020;
+  -webkit-transition: scale 100ms ease-in, -webkit-box-shadow 500ms ease,
+    -webkit-transform 500ms ease;
+  transition: scale 100ms ease-in, -webkit-box-shadow 500ms ease,
+    -webkit-transform 500ms ease;
+  -o-transition: box-shadow 500ms ease, scale 100ms ease-in,
+    -o-transform 500ms ease;
+  -moz-transition: box-shadow 500ms ease, transform 500ms ease,
+    scale 100ms ease-in, -moz-box-shadow 500ms ease, -moz-transform 500ms ease;
+  -webkit-transition: scale 100ms ease-in, -webkit-box-shadow 500ms ease,
+    -webkit-transform 500ms ease;
+  transition: scale 100ms ease-in, -webkit-box-shadow 500ms ease,
+    -webkit-transform 500ms ease;
+  -o-transition: box-shadow 500ms ease, scale 100ms ease-in,
+    -o-transform 500ms ease;
+  -moz-transition: box-shadow 500ms ease, transform 500ms ease,
+    scale 100ms ease-in, -moz-box-shadow 500ms ease, -moz-transform 500ms ease;
+  -webkit-transition: scale 100ms ease-in, -webkit-box-shadow 500ms ease,
+    -webkit-transform 500ms ease;
+  transition: scale 100ms ease-in, -webkit-box-shadow 500ms ease,
+    -webkit-transform 500ms ease;
+  -o-transition: box-shadow 500ms ease, scale 100ms ease-in,
+    -o-transform 500ms ease;
+  -moz-transition: box-shadow 500ms ease, transform 500ms ease,
+    scale 100ms ease-in, -moz-box-shadow 500ms ease, -moz-transform 500ms ease;
+  transition: box-shadow 500ms ease, transform 500ms ease, scale 100ms ease-in;
+  transition: box-shadow 500ms ease, transform 500ms ease, scale 100ms ease-in,
+    -webkit-box-shadow 500ms ease, -moz-box-shadow 500ms ease,
+    -webkit-transform 500ms ease, -moz-transform 500ms ease,
+    -o-transform 500ms ease;
+  transition: box-shadow 500ms ease, transform 500ms ease, scale 100ms ease-in,
+    -webkit-box-shadow 500ms ease, -moz-box-shadow 500ms ease,
+    -webkit-transform 500ms ease, -moz-transform 500ms ease,
+    -o-transform 500ms ease;
+  transition: box-shadow 500ms ease, transform 500ms ease, scale 100ms ease-in,
+    -webkit-box-shadow 500ms ease, -moz-box-shadow 500ms ease,
+    -webkit-transform 500ms ease, -moz-transform 500ms ease,
+    -o-transform 500ms ease;
+  outline: 0 solid rgb(240, 240, 240);
+}
+
+a {
+  color: black;
+}
+
+div {
+  text-align: left;
+}
+
+.error {
+  display: block;
+  color: red;
+  font-size: 28px;
+  line-height: 30px;
+  padding: 30px;
+}
+
+p {
+  margin: 30px 0;
+  line-height: 20px;
+}
+
+.center {
+  text-align: center;
+}
+
+textarea {
+  display: none;
+  width: 75%;
+  height: 400px;
+  margin: 0 auto;
+}
+
+button {
+  color: #101010;
+  background-color: #ababab;
+  border: none;
+  outline: none;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 0.5vh;
+  margin: 0.1%;
+  cursor: pointer;
+  -webkit-transition: background-color 200ms, outline 50ms;
+  -o-transition: background-color 200ms, outline 50ms;
+  -moz-transition: background-color 200ms, outline 50ms;
+  transition: background-color 200ms, outline 50ms;
+  -webkit-box-shadow: 0 0 1px 0.5px #00000020;
+  -moz-box-shadow: 0 0 1px 0.5px #00000020;
+  box-shadow: 0 0 1px 0.5px #00000020;
+  outline: 0px solid #ababab;
+}
+
+button:hover {
+  background-color: #979797;
+  outline: 2px solid #979797;
+  -webkit-transition: background-color 200ms, outline 100ms;
+  -o-transition: background-color 200ms, outline 100ms;
+  -moz-transition: background-color 200ms, outline 100ms;
+  transition: background-color 200ms, outline 100ms;
+}
+
+.toolbar {
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -moz-box-orient: horizontal;
+  -moz-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  width: 75%;
+}
+
+.toolbar * {
+  margin: 0.5em;
+}
+
+#selectedObj {
+  -webkit-transition: 100ms;
+  -o-transition: 100ms;
+  -moz-transition: 100ms;
+  transition: 100ms;
+}
+
+@-webkit-keyframes reveal {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 30px;
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes reveal {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 30px;
+    opacity: 1;
+  }
+}
+
+@-o-keyframes reveal {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes reveal {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 30px;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes disappear {
+  from {
+    display: block;
+    height: 30px;
+    opacity: 1;
+  }
+  to {
+    display: block;
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@-moz-keyframes disappear {
+  from {
+    display: block;
+    height: 30px;
+    opacity: 1;
+  }
+  to {
+    display: block;
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@-o-keyframes disappear {
+  from {
+    display: block;
+    height: 30px;
+    opacity: 1;
+  }
+  to {
+    display: block;
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes disappear {
+  from {
+    display: block;
+    height: 30px;
+    opacity: 1;
+  }
+  to {
+    display: block;
+    height: 0;
+    opacity: 0;
+  }
+}
+
+#history {
+  width: 600px;
+  margin-top: 1em;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+#history:hover {
+  height: 30px;
+  background-color: rgb(211, 211, 211);
+  -webkit-transform: translateY(-7.5px);
+  -moz-transform: translateY(-7.5px);
+  -ms-transform: translateY(-7.5px);
+  -o-transform: translateY(-7.5px);
+  transform: translateY(-7.5px);
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+input[type="range"] {
+  -moz-appearance: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-color: #101010;
+  height: 15px;
+  background-color: #bbbbbb;
+  border: 1px solid #bdbdbd;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+input[type="range"]:hover {
+  background-color: #bbbbbba2;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+#history:hover ~ canvas {
+  -webkit-transform: scale(0.95) translateY(-15px);
+  -moz-transform: scale(0.95) translateY(-15px);
+  -ms-transform: scale(0.95) translateY(-15px);
+  -o-transform: scale(0.95) translateY(-15px);
+  transform: scale(0.95) translateY(-15px);
+  -webkit-box-shadow: 0 0 15px 10px #00000020;
+  -moz-box-shadow: 0 0 15px 10px #00000020;
+  box-shadow: 0 0 15px 10px #00000020;
+}
+
+#rangeSlider {
+  -webkit-transition: all 200ms ease;
+  -o-transition: all 200ms ease;
+  -moz-transition: all 200ms ease;
+  transition: all 200ms ease;
+}
+
+#context-menu {
+  position: fixed;
+  z-index: 10000;
+  width: 140px;
+  background: #dadada;
+  -webkit-border-radius: 0 10px 10px 10px;
+  -moz-border-radius: 0 10px 10px 10px;
+  border-radius: 0 10px 10px 10px;
+  display: none;
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  -ms-transform-origin: top left;
+  -o-transform-origin: top left;
+  transform-origin: top left;
+}
+
+#context-menu.visible {
+  display: block;
+  -webkit-animation: pop 100ms linear;
+  -moz-animation: pop 100ms linear;
+  -o-animation: pop 100ms linear;
+  animation: pop 100ms linear;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  transform: scale(1);
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  -ms-transform-origin: top left;
+  -o-transform-origin: top left;
+  transform-origin: top left;
+}
+
+@-webkit-keyframes pop {
+  from {
+    scale: 0.7;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@-moz-keyframes pop {
+  from {
+    scale: 0.7;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@-o-keyframes pop {
+  from {
+    scale: 0.7;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@keyframes pop {
+  from {
+    scale: 0.7;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+#context-menu .item {
+  padding: 8px 10px;
+  font-size: 15px;
+  color: #1b1a1a;
+  cursor: pointer;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  outline: 0px solid #dadada;
+  -webkit-transition: 50ms;
+  -o-transition: 50ms;
+  -moz-transition: 50ms;
+  transition: 50ms;
+}
+
+#context-menu:not(.selected) .item:nth-child(3),
+#context-menu:not(.selected) .item:nth-child(5),
+#context-menu:not(.selected) .item:nth-child(7) {
+  display: none;
+}
+
+#context-menu .item:hover {
+  background: rgb(192, 192, 192);
+  outline: 3px solid rgb(192, 192, 192);
+  -webkit-transition: 100ms;
+  -o-transition: 100ms;
+  -moz-transition: 100ms;
+  transition: 100ms;
+}
+
+li {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: start;
+  -webkit-justify-content: start;
+  -moz-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: start;
+}
+
+li:last-child {
+  -webkit-box-align: start;
+  -webkit-align-items: start;
+  -moz-box-align: start;
+  -ms-flex-align: start;
+  align-items: start;
+}
+
+li b {
+  margin-right: 5px;
+}
