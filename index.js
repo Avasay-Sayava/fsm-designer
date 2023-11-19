@@ -1032,7 +1032,7 @@ function canvasHasFocus() {
 
 function drawText(c, originalText, x, y, angleOrNull, isSelected) {
   var text;
-  if (isSelected)
+  if (isSelected && selectedObjects.length == 1)
     text =
       convertLatexShortcuts(originalText.substring(0, selectedText[0])) +
       originalText.substring(selectedText[0], selectedText[1]) +
