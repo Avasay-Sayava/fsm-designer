@@ -1174,7 +1174,7 @@ function resetCaret() {
 var canvas;
 var nodeRadius = 30;
 var displayFont =
-  '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
+  '20px "Cambria Math", "Times New Roman", serif, Consolas, "Courier New", monospace';
 var nodes = [];
 var links = [];
 
@@ -1618,7 +1618,7 @@ document.onkeydown = function (e) {
       if (selectedObjects.length == 1 && selectedObjects[0].text) {
         var text = selectedObjects[0].text;
         selectedObjects[0].text =
-          text.substring(0, selectedText[0]).replace(/\s?(?!\s)\w*$/, "") +
+          text.substring(0, selectedText[0]).replace(/\s?(?!\s)\S*$/, "") +
           text.substring(selectedText[1]);
         selectedText[0] =
           selectedText[1] =
