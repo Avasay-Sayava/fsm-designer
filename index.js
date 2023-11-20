@@ -642,8 +642,7 @@ function ExportAsLaTeX(bounds) {
   };
   this.measureText = function (text) {
     var c = canvas.getContext("2d");
-    c.font =
-      '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
+    c.font = displayFont;
     return c.measureText(text);
   };
   this.advancedFillText = function (text, originalText, x, y, angleOrNull) {
@@ -692,8 +691,7 @@ function ExportAsSVG(bounds) {
   this.fillStyle = "black";
   this.strokeStyle = "black";
   this.lineWidth = 1;
-  this.font =
-    '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
+  this.font = displayFont;
   this._points = [];
   this._svgData = "";
   this._transX = 0;
@@ -813,8 +811,7 @@ function ExportAsSVG(bounds) {
   };
   this.measureText = function (text) {
     var c = canvas.getContext("2d");
-    c.font =
-      '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
+    c.font = displayFont;
     return c.measureText(text);
   };
   this.fillText = function (text, x, y) {
@@ -1064,7 +1061,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
       originalText.substring(selectedText[0] - start, selectedText[1] - start) +
       convertLatexShortcuts(originalText.substring(selectedText[1] - start));
   else text = convertLatexShortcuts(originalText);
-  c.font = '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
+  c.font = displayFont;
   var width = c.measureText(text).width;
   var notSelectedWidth1 = c.measureText(
     text.substring(0, selectedText[0] - start)
@@ -1139,7 +1136,11 @@ function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected) {
     var sin = Math.sin(angleOrNull);
     var cornerPointY = (10 + 5) * (sin > 0 ? 1 : -1);
     y +=
-      cornerPointY * (originalText.split("\r").length - 1) * Math.abs(sin) * 2 / Math.PI;
+      (cornerPointY *
+        (originalText.split("\r").length - 1) *
+        Math.abs(sin) *
+        2) /
+      Math.PI;
   }
 
   originalText.split("\r").forEach((line, i) => {
@@ -1172,6 +1173,8 @@ function resetCaret() {
 
 var canvas;
 var nodeRadius = 30;
+var displayFont =
+  '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
 var nodes = [];
 var links = [];
 

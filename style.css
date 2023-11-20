@@ -35,7 +35,6 @@ h1 {
 
 canvas {
   display: block;
-  max-width: 800px;
   background: rgb(240, 240, 240);
   -webkit-border-radius: 20px;
   border-radius: 20px;
