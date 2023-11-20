@@ -1,2 +1,2 @@
 # fsm-designer
-the best fsm designer in the world
+The best fsm designer in the world
