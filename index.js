@@ -888,6 +888,8 @@ var greekLetterNames = [
   "forall",
   "cup",
   "cap",
+  "cdot",
+  "times",
 ];
 
 function convertLatexShortcuts(text) {
@@ -989,6 +991,14 @@ function convertLatexShortcuts(text) {
     }
     if (name == "cap") {
       text = text.replace(new RegExp("\\\\" + name, "g"), "∩");
+      continue;
+    }
+    if (name == "cdot") {
+      text = text.replace(new RegExp("\\\\" + name, "g"), "·");
+      continue;
+    }
+    if (name == "times") {
+      text = text.replace(new RegExp("\\\\" + name, "g"), "×");
       continue;
     }
     text = text.replace(

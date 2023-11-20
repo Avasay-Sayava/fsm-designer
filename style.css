@@ -474,3 +474,7 @@ li:last-child {
 li b {
   margin-right: 5px;
 }
+
+td#symbol {
+  text-align: center;
+}
