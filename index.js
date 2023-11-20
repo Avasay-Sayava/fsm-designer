@@ -2818,3 +2818,11 @@ const superscripts = {
   V: "ⱽ",
   W: "ᵂ",
 };
+
+setInterval(() => {
+  if (canvas.width != document.getElementById("width").value || canvas.height != document.getElementById("height").value) {
+    canvas.width = document.getElementById("width").value;
+    canvas.height = document.getElementById("height").value;
+    draw();
+  }
+}, 1);

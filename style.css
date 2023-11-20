@@ -477,3 +477,17 @@ li b {
 td#symbol {
   text-align: center;
 }
+
+input#height,
+input#width {
+  width: 50px;
+  background: none;
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input:focus {
+  outline: none;
+}
