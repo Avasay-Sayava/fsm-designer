@@ -1129,8 +1129,7 @@ function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected) {
     var sin = Math.sin(angleOrNull);
     var cornerPointY = (10 + 5) * (sin > 0 ? 1 : -1);
     y +=
-      cornerPointY * originalText.split("\r").length * Math.abs(sin) /
-      2;
+      cornerPointY * (originalText.split("\r").length - 1) * Math.abs(sin) * 2 / Math.PI;
   }
 
   originalText.split("\r").forEach((line, i) => {
