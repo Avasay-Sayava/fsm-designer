@@ -1318,6 +1318,19 @@ window.onload = function () {
   restoreBackup();
   draw();
 
+  canvas.width = localStorage['width'] ?? "800";
+  canvas.height = localStorage['height'] ?? "600";
+
+  setInterval(() => {
+    if (canvas.width != document.getElementById("width").value || canvas.height != document.getElementById("height").value) {
+      canvas.width = document.getElementById("width").value;
+      canvas.height = document.getElementById("height").value;
+      localStorage['width'] = canvas.width;
+      localStorage['height'] = canvas.height;
+      draw();
+    }
+  }, 1);
+
   document.getElementById("history").onmousedown = function () {
     undoredoMouseDown = true;
   };
@@ -2818,11 +2831,3 @@ const superscripts = {
   V: "ⱽ",
   W: "ᵂ",
 };
-
-setInterval(() => {
-  if (canvas.width != document.getElementById("width").value || canvas.height != document.getElementById("height").value) {
-    canvas.width = document.getElementById("width").value;
-    canvas.height = document.getElementById("height").value;
-    draw();
-  }
-}, 1);
