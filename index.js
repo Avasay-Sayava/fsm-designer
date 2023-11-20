@@ -199,7 +199,7 @@ Link.prototype.draw = function (c) {
     var textAngle = (startAngle + endAngle) / 2 + stuff.isReversed * Math.PI;
     var textX = stuff.circleX + stuff.circleRadius * Math.cos(textAngle);
     var textY = stuff.circleY + stuff.circleRadius * Math.sin(textAngle);
-    drawText(
+    drawMultilineText(
       c,
       this.text,
       textX,
@@ -214,7 +214,7 @@ Link.prototype.draw = function (c) {
       stuff.endX - stuff.startX,
       stuff.startY - stuff.endY
     );
-    drawText(
+    drawMultilineText(
       c,
       this.text,
       textX,
@@ -285,7 +285,14 @@ Node.prototype.setAnchorPoint = function (x, y) {
 
 Node.prototype.draw = function (c) {
   if (this.textOnly) {
-    drawText(c, this.text, this.x, this.y, null, inArr(this, selectedObjects));
+    drawMultilineText(
+      c,
+      this.text,
+      this.x,
+      this.y,
+      null,
+      inArr(this, selectedObjects)
+    );
     if (this != selectObject(mouseX, mouseY) && !inArr(this, selectedObjects))
       return;
     c.strokeStyle = inArr(this, selectedObjects)
@@ -300,7 +307,14 @@ Node.prototype.draw = function (c) {
 
   if (!this.textOnly)
     // draw the text
-    drawText(c, this.text, this.x, this.y, null, inArr(this, selectedObjects));
+    drawMultilineText(
+      c,
+      this.text,
+      this.x,
+      this.y,
+      null,
+      inArr(this, selectedObjects)
+    );
 
   // draw a double circle for an accept state
   if (this.isAcceptState) {
@@ -394,7 +408,7 @@ SelfLink.prototype.draw = function (c) {
   // draw the text on the loop farthest from the node
   var textX = stuff.circleX + stuff.circleRadius * Math.cos(this.anchorAngle);
   var textY = stuff.circleY + stuff.circleRadius * Math.sin(this.anchorAngle);
-  drawText(
+  drawMultilineText(
     c,
     this.text,
     textX,
@@ -464,7 +478,7 @@ StartLink.prototype.draw = function (c) {
     stuff.startY - stuff.endY,
     stuff.startX - stuff.endX
   );
-  drawText(
+  drawMultilineText(
     c,
     this.text,
     stuff.startX,
@@ -1030,25 +1044,29 @@ function canvasHasFocus() {
   return (document.activeElement || document.body) == document.body;
 }
 
-function drawText(c, originalText, x, y, angleOrNull, isSelected) {
+function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
   var text;
   if (isSelected && selectedObjects.length == 1)
     text =
-      convertLatexShortcuts(originalText.substring(0, selectedText[0])) +
-      originalText.substring(selectedText[0], selectedText[1]) +
-      convertLatexShortcuts(originalText.substring(selectedText[1]));
+      convertLatexShortcuts(
+        originalText.substring(0, selectedText[0] - start)
+      ) +
+      originalText.substring(selectedText[0] - start, selectedText[1] - start) +
+      convertLatexShortcuts(originalText.substring(selectedText[1] - start));
   else text = convertLatexShortcuts(originalText);
   c.font = '20px "Times New Roman", serif, Consolas, "Courier New", monospace';
   var width = c.measureText(text).width;
   var notSelectedWidth1 = c.measureText(
-    text.substring(0, selectedText[0])
+    text.substring(0, selectedText[0] - start)
   ).width;
   var untilCaretWidth = c.measureText(
-    convertLatexShortcuts(originalText.substring(0, selectedText[2]))
+    convertLatexShortcuts(originalText.substring(0, selectedText[2] - start))
   ).width;
   var selectedWidth = c.measureText(
-    text.substring(selectedText[0], selectedText[1])
+    text.substring(selectedText[0] - start, selectedText[1] - start)
   ).width;
+
+  end = start + originalText.length;
 
   // center the text
   x -= width / 2;
@@ -1072,19 +1090,30 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected) {
   } else {
     x = Math.round(x);
     y = Math.round(y);
-    c.fillText(text.substring(0, selectedText[0]), x, y + 6);
+    c.fillText(text.substring(0, selectedText[0] - start), x, y + 6);
     x += notSelectedWidth1;
     if (isSelected) {
       c.fillStyle = "blue";
       c.fillRect(x, y - 10, selectedWidth, 20);
       c.fillStyle = "white";
     }
-    c.fillText(text.substring(selectedText[0], selectedText[1]), x, y + 6);
+    c.fillText(
+      text.substring(selectedText[0] - start, selectedText[1] - start),
+      x,
+      y + 6
+    );
     x += selectedWidth;
     c.fillStyle = isSelected ? "blue" : "black";
     c.strokeStyle = isSelected ? "blue" : "black";
-    c.fillText(text.substring(selectedText[1]), x, y + 6);
-    if (isSelected && caretVisible && canvasHasFocus() && document.hasFocus()) {
+    c.fillText(text.substring(selectedText[1] - start), x, y + 6);
+    if (
+      isSelected &&
+      caretVisible &&
+      canvasHasFocus() &&
+      document.hasFocus() &&
+      selectedText[2] >= start &&
+      selectedText[2] <= end
+    ) {
       x += untilCaretWidth - notSelectedWidth1 - selectedWidth;
       c.beginPath();
       c.moveTo(x, y - 10);
@@ -1092,6 +1121,30 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected) {
       c.stroke();
     }
   }
+}
+
+function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected) {
+  var start = 0;
+  if (angleOrNull != null) {
+    var sin = Math.sin(angleOrNull);
+    var cornerPointY = (10 + 5) * (sin > 0 ? 1 : -1);
+    y +=
+      (cornerPointY * originalText.split("\r").length * Math.abs(sin) * 2) /
+      Math.PI;
+  }
+
+  originalText.split("\r").forEach((line, i) => {
+    drawText(
+      c,
+      line,
+      x,
+      y + 20 * i - (originalText.split("\r").length - 1) * 10,
+      angleOrNull,
+      isSelected,
+      start++
+    );
+    start += line.length;
+  });
 }
 
 let caretTimer;
@@ -1540,9 +1593,15 @@ document.onkeydown = function (e) {
       if (selectedObjects.length == 1 && selectedObjects[0].text) {
         var text = selectedObjects[0].text;
         selectedObjects[0].text =
-          text.substring(0, selectedText[0]).replace(/\s?(?!\s)\S*$/gs, "") +
+          text.substring(0, selectedText[0]).replace(/\s?(?!\s)\w*$/, "") +
           text.substring(selectedText[1]);
-        selectedText[0] = selectedText[1] = selectedText[2] -= 2;
+        selectedText[0] =
+          selectedText[1] =
+          selectedText[2] -=
+            text.length -
+            selectedObjects[0].text.length -
+            selectedText[1] +
+            selectedText[0];
         selectedText[2] = Math.max(selectedText[2], 0);
         selectedText[1] = Math.max(selectedText[1], 0);
         selectedText[0] = Math.max(selectedText[0], 0);
@@ -1629,8 +1688,7 @@ document.onkeypress = function (e) {
     // don't read keystrokes when other things have focus
     return true;
   } else if (
-    key >= 0x20 &&
-    key <= 0x7e &&
+    ((key >= 0x20 && key <= 0x7e) || key == 13) &&
     !e.metaKey &&
     !e.altKey &&
     !e.ctrlKey &&
