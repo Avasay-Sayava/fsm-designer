@@ -890,6 +890,7 @@ var greekLetterNames = [
 ];
 
 function convertLatexShortcuts(text) {
+  text = text.replace("*", "⁎").replace(">=", "≥").replace("<=", "≤");
   // html greek characters
   for (var i = 0; i < greekLetterNames.length; i++) {
     var name = greekLetterNames[i];
@@ -1014,8 +1015,6 @@ function convertLatexShortcuts(text) {
     if (superscripts[text.charAt(i)])
       text = text.replace("^" + text.charAt(i), superscripts[text.charAt(i)]);
   }
-
-  text = text.replace(">=", "≥").replace("<=", "≤");
 
   return text;
 }
@@ -1174,7 +1173,7 @@ function resetCaret() {
 var canvas;
 var nodeRadius = 30;
 var displayFont =
-  '20px "Cambria Math", "Times New Roman", serif, Consolas, "Courier New", monospace';
+  '20px Calibri, "Times New Roman", serif, Consolas, "Courier New", monospace';
 var nodes = [];
 var links = [];
 
@@ -1188,7 +1187,7 @@ var copiedText = "";
 var copied = [];
 var selectedText = [0, 0, 0];
 var mouseDown = false;
-var undoredoMouseDown = false;
+var sliderMouseDown = false;
 var cursorVisible = true;
 var snapToPadding = 6; // pixels
 var hitTargetPadding = 6; // pixels
@@ -1332,11 +1331,11 @@ window.onload = function () {
   }, 1);
 
   document.getElementById("history").onmousedown = function () {
-    undoredoMouseDown = true;
+    sliderMouseDown = true;
   };
 
   document.getElementById("history").onmouseup = function () {
-    undoredoMouseDown = false;
+    sliderMouseDown = false;
   };
 
   window.onmousedown = function () {
@@ -2302,7 +2301,7 @@ function saveBackup() {
   var range = document.getElementById("history");
   range.max = undoStack.length + redoStack.length - 1;
 
-  if (!undoredoMouseDown) {
+  if (!sliderMouseDown) {
     updateRangeValue();
   }
 
@@ -2310,7 +2309,7 @@ function saveBackup() {
 
   if (
     localStorage["fsm"] !== undoStack[undoStack.length - 1] &&
-    (!mouseDown || undoredoMouseDown || zKey || yKey)
+    (!mouseDown || sliderMouseDown || zKey || yKey)
   ) {
     undoStack.push(localStorage["fsm"]);
   }
@@ -2777,7 +2776,7 @@ const superscripts = {
   8: "⁸",
   9: "⁹",
   "+": "⁺",
-  "*": "*",
+  "⁎": "*",
   "-": "⁻",
   "=": "⁼",
   "(": "⁽",
