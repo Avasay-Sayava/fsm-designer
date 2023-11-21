@@ -491,3 +491,20 @@ input#width {
 input:focus {
   outline: none;
 }
+
+#tutorial {
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 80px;
+  padding: 5px;
+  height: 30px;
+  flex-direction: row;
+}
+
+#tutorial * {
+  margin: 2px;
+}
