@@ -1328,6 +1328,18 @@ window.onload = function () {
       localStorage['height'] = canvas.height;
       draw();
     }
+
+    saveBackup();
+    if (selectedObjects.length > 0) {
+      document.getElementById("selectedObj").style.pointerEvents = "";
+      document.getElementById("selectedObj").style.opacity = "1";
+    } else {
+      document.getElementById("selectedObj").style.pointerEvents = "none";
+      document.getElementById("selectedObj").style.opacity = "0.6";
+    }
+
+    if (!nodeRadius || nodeRadius <= 0 || nodeRadius > 80)
+      nodeRadius = 30;
   }, 1);
 
   document.getElementById("history").onmousedown = function () {
@@ -2505,17 +2517,6 @@ function deleteSelected() {
     draw();
   }
 }
-
-setInterval(function () {
-  saveBackup();
-  if (selectedObjects.length > 0) {
-    document.getElementById("selectedObj").style.pointerEvents = "";
-    document.getElementById("selectedObj").style.opacity = "1";
-  } else {
-    document.getElementById("selectedObj").style.pointerEvents = "none";
-    document.getElementById("selectedObj").style.opacity = "0.6";
-  }
-}, 1);
 
 function handleKeyEvent(selectedObject, e) {
   var key = crossBrowserKey(e);
