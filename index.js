@@ -1102,7 +1102,9 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
     y = Math.round(y);
     if (isSelected) {
       c.fillText(
-        convertLatexShortcuts(originalText.substring(0, selectedText[0] - start)),
+        convertLatexShortcuts(
+          originalText.substring(0, selectedText[0] - start)
+        ),
         x,
         y + 6
       );
@@ -1141,11 +1143,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
         c.stroke();
       }
     } else {
-      c.fillText(
-        text,
-        x,
-        y + 6
-      );
+      c.fillText(text, x, y + 6);
     }
   }
 }
@@ -2494,9 +2492,8 @@ function selectAutomaton(object) {
   if (object instanceof Node) {
     links.forEach((link) => {
       if (
-        link.node == object ||
-        link.nodeA == object ||
-        (link.nodeB == object && !inArr(link, selectedObjects))
+        (link.node == object || link.nodeA == object || link.nodeB == object) &&
+        !inArr(link, selectedObjects)
       ) {
         selectAutomaton(link);
       }
@@ -2854,3 +2851,78 @@ const superscripts = {
   V: "ⱽ",
   W: "ᵂ",
 };
+
+function run(start, word) {
+  if (word.length == 0) {
+    if (start.isAcceptState) console.log("accepted.");
+    else console.log("declined.");
+    return;
+  }
+
+  var stay = true;
+
+  for (var i = 0; i < links.length; i++) {
+    const link = links[i];
+    if (
+      link.nodeA == start &&
+      (inArr(word.charAt(word.length - 1), link.text.split(/\s*,\s*/)) ||
+        inArr("\\Sigma", link.text.split(/\s*,\s*/)))
+    ) {
+      run(link.nodeB, word.substring(0, word.length - 1));
+      stay = false;
+    } else if (
+      link.node == start &&
+      link instanceof SelfLink &&
+      (inArr(word.charAt(word.length - 1), link.text.split(/\s*,\s*/)) ||
+        inArr("\\Sigma", link.text.split(/\s*,\s*/)))
+    ) {
+      run(link.node, word.substring(0, word.length - 1));
+      stay = false;
+    }
+  }
+
+  if (stay) {
+    run(start, word.substring(0, word.length - 1));
+  }
+}
+
+function getAlphabet(object, selected = []) {
+  var alphabet = [];
+
+  if (!inArr(object, selected)) selected.push(object);
+
+  if (object instanceof Node) {
+    links.forEach((link) => {
+      if (
+        (link.node == object || link.nodeA == object || link.nodeB == object) &&
+        !inArr(link, selected)
+      ) {
+        getAlphabet(link, selected).forEach((letter) => {
+          alphabet.push(letter);
+        });
+      }
+    });
+  } else if (!(object instanceof StartLink)) {
+    object.text.split(/\s*,\s*/).forEach((letter) => {
+      alphabet.push(letter);
+    });
+
+    if (object instanceof Link) {
+      if (!inArr(object.nodeA, selected))
+        getAlphabet(object.nodeA, selected).forEach((letter) => {
+          alphabet.push(letter);
+        });
+      if (!inArr(object.nodeB, selected))
+        getAlphabet(object.nodeB, selected).forEach((letter) => {
+          alphabet.push(letter);
+        });
+    } else if (object instanceof SelfLink) {
+      if (!inArr(object.node, selected))
+        getAlphabet(object.node, selected).forEach((letter) => {
+          alphabet.push(letter);
+        });
+    }
+  }
+
+  return Array.from(new Set(alphabet));
+}
