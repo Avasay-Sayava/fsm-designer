@@ -1057,19 +1057,23 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
       convertLatexShortcuts(
         originalText.substring(0, selectedText[0] - start)
       ) +
-      originalText.substring(selectedText[0] - start, selectedText[1] - start) +
+      convertLatexShortcuts(
+        originalText.substring(selectedText[0] - start, selectedText[1] - start)
+      ) +
       convertLatexShortcuts(originalText.substring(selectedText[1] - start));
   else text = convertLatexShortcuts(originalText);
   c.font = displayFont;
   var width = c.measureText(text).width;
   var notSelectedWidth1 = c.measureText(
-    text.substring(0, selectedText[0] - start)
+    convertLatexShortcuts(originalText.substring(0, selectedText[0] - start))
   ).width;
   var untilCaretWidth = c.measureText(
     convertLatexShortcuts(originalText.substring(0, selectedText[2] - start))
   ).width;
   var selectedWidth = c.measureText(
-    text.substring(selectedText[0] - start, selectedText[1] - start)
+    convertLatexShortcuts(
+      originalText.substring(selectedText[0] - start, selectedText[1] - start)
+    )
   ).width;
 
   end = start + originalText.length;
@@ -1096,35 +1100,52 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
   } else {
     x = Math.round(x);
     y = Math.round(y);
-    c.fillText(text.substring(0, selectedText[0] - start), x, y + 6);
-    x += notSelectedWidth1;
     if (isSelected) {
+      c.fillText(
+        convertLatexShortcuts(originalText.substring(0, selectedText[0] - start)),
+        x,
+        y + 6
+      );
+      x += notSelectedWidth1;
       c.fillStyle = "blue";
       c.fillRect(x, y - 10, selectedWidth, 20);
       c.fillStyle = "white";
-    }
-    c.fillText(
-      text.substring(selectedText[0] - start, selectedText[1] - start),
-      x,
-      y + 6
-    );
-    x += selectedWidth;
-    c.fillStyle = isSelected ? "blue" : "black";
-    c.strokeStyle = isSelected ? "blue" : "black";
-    c.fillText(text.substring(selectedText[1] - start), x, y + 6);
-    if (
-      isSelected &&
-      caretVisible &&
-      canvasHasFocus() &&
-      document.hasFocus() &&
-      selectedText[2] >= start &&
-      selectedText[2] <= end
-    ) {
-      x += untilCaretWidth - notSelectedWidth1 - selectedWidth;
-      c.beginPath();
-      c.moveTo(x, y - 10);
-      c.lineTo(x, y + 10);
-      c.stroke();
+      c.fillText(
+        convertLatexShortcuts(
+          originalText.substring(
+            selectedText[0] - start,
+            selectedText[1] - start
+          )
+        ),
+        x,
+        y + 6
+      );
+      x += selectedWidth;
+      c.fillStyle = "blue";
+      c.fillText(
+        convertLatexShortcuts(originalText.substring(selectedText[1] - start)),
+        x,
+        y + 6
+      );
+      if (
+        caretVisible &&
+        canvasHasFocus() &&
+        document.hasFocus() &&
+        selectedText[2] >= start &&
+        selectedText[2] <= end
+      ) {
+        x += untilCaretWidth - notSelectedWidth1 - selectedWidth;
+        c.beginPath();
+        c.moveTo(x, y - 10);
+        c.lineTo(x, y + 10);
+        c.stroke();
+      }
+    } else {
+      c.fillText(
+        text,
+        x,
+        y + 6
+      );
     }
   }
 }
@@ -1317,15 +1338,18 @@ window.onload = function () {
   restoreBackup();
   draw();
 
-  canvas.width = localStorage['width'] ?? "800";
-  canvas.height = localStorage['height'] ?? "600";
+  canvas.width = localStorage["width"] ?? "800";
+  canvas.height = localStorage["height"] ?? "600";
 
   setInterval(() => {
-    if (canvas.width != document.getElementById("width").value || canvas.height != document.getElementById("height").value) {
+    if (
+      canvas.width != document.getElementById("width").value ||
+      canvas.height != document.getElementById("height").value
+    ) {
       canvas.width = document.getElementById("width").value;
       canvas.height = document.getElementById("height").value;
-      localStorage['width'] = canvas.width;
-      localStorage['height'] = canvas.height;
+      localStorage["width"] = canvas.width;
+      localStorage["height"] = canvas.height;
       draw();
     }
 
@@ -1338,8 +1362,7 @@ window.onload = function () {
       document.getElementById("selectedObj").style.opacity = "0.6";
     }
 
-    if (!nodeRadius || nodeRadius <= 0 || nodeRadius > 80)
-      nodeRadius = 30;
+    if (!nodeRadius || nodeRadius <= 0 || nodeRadius > 80) nodeRadius = 30;
   }, 1);
 
   document.getElementById("history").onmousedown = function () {
