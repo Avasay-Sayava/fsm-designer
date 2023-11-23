@@ -878,8 +878,8 @@ var greekLetterNames = [
   "nsuperseteq",
   "superset",
   "nsuperset",
-  "dblleft",
-  "dblright",
+  "Left",
+  "Right",
   "perp",
   "vdash",
   "forall",
@@ -890,7 +890,7 @@ var greekLetterNames = [
 ];
 
 function convertLatexShortcuts(text) {
-  text = text.replace("*", "⁎").replace(">=", "≥").replace("<=", "≤");
+  text = text.replaceAll("*", "⁎").replaceAll(">=", "≥").replaceAll("<=", "≤");
   // html greek characters
   for (var i = 0; i < greekLetterNames.length; i++) {
     var name = greekLetterNames[i];
@@ -963,11 +963,11 @@ function convertLatexShortcuts(text) {
       text = text.replace(new RegExp("\\\\" + name, "g"), "⊅");
       continue;
     }
-    if (name == "dblleft") {
+    if (name == "Left") {
       text = text.replace(new RegExp("\\\\" + name, "g"), "⇐");
       continue;
     }
-    if (name == "dblright") {
+    if (name == "Right") {
       text = text.replace(new RegExp("\\\\" + name, "g"), "⇒");
       continue;
     }

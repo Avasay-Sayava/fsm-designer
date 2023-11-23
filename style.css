@@ -474,6 +474,10 @@ li b {
   margin-right: 5px;
 }
 
+table {
+  width: 120px
+}
+
 td#symbol {
   text-align: center;
 }
