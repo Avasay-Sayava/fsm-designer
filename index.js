@@ -1290,7 +1290,7 @@ function resetCaret() {
 }
 
 var canvas;
-var canvasFocus = false;
+var mouseOnCanvas = false;
 var nodeRadius = 30;
 var displayFont =
   '20px Calibri, "Times New Roman", serif, Consolas, "Courier New", monospace';
@@ -1672,12 +1672,12 @@ window.onload = function () {
   };
 
   canvas.addEventListener('mouseenter', () => {
-    canvasFocus = true;
+    mouseOnCanvas = true;
     console.log("focus");
   });
   
   canvas.addEventListener('mouseleave', () => {
-    canvasFocus = false;
+    mouseOnCanvas = false;
     console.log("blur");
   });
 };
@@ -1685,7 +1685,7 @@ window.onload = function () {
 document.onkeydown = function (e) {
   var key = crossBrowserKey(e);
 
-  if (!canvasFocus)
+  if (!mouseOnCanvas)
     return;
 
   e.preventDefault();
