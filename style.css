@@ -279,7 +279,7 @@ button:hover {
 }
 
 #history {
-  width: 600px;
+  width: 700px;
   margin-top: 1em;
   -webkit-transition: all 0.3s;
   -o-transition: all 0.3s;
@@ -475,7 +475,7 @@ li b {
 }
 
 table {
-  width: 120px
+  width: 120px;
 }
 
 td#symbol {
@@ -483,7 +483,8 @@ td#symbol {
 }
 
 input#height,
-input#width {
+input#width,
+input[type="text"] {
   width: 50px;
   background: none;
   border: none;

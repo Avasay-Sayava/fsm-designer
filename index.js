@@ -271,6 +271,7 @@ function Node(x, y) {
   this.isAcceptState = false;
   this.text = "";
   this.textOnly = false;
+  this.runtimeColor = null;
 }
 
 Node.prototype.setMouseStart = function (x, y) {
@@ -284,6 +285,7 @@ Node.prototype.setAnchorPoint = function (x, y) {
 };
 
 Node.prototype.draw = function (c) {
+  c.strokeStyle = c.fillStyle = this.runtimeColor ?? this.fillStyle;
   if (this.textOnly) {
     drawMultilineText(
       c,
@@ -295,7 +297,7 @@ Node.prototype.draw = function (c) {
     );
     if (this != selectObject(mouseX, mouseY) && !inArr(this, selectedObjects))
       return;
-    c.strokeStyle = inArr(this, selectedObjects)
+    c.strokeStyle = this.runtimeColor ?? inArr(this, selectedObjects)
       ? "rgba(0, 0, 255, 0.3)"
       : "rgba(0, 0, 0, 0.3)";
   }
@@ -1249,7 +1251,7 @@ function drawUsing(c) {
 
   for (var i = 0; i < nodes.length; i++) {
     c.lineWidth = 1;
-    c.fillStyle = c.strokeStyle = inArr(nodes[i], selectedObjects)
+    c.fillStyle = c.strokeStyle = nodes[i].runtimeColor ?? inArr(nodes[i], selectedObjects)
       ? "blue"
       : "black";
     nodes[i].draw(c);
@@ -1344,6 +1346,8 @@ window.onload = function () {
       canvas.width != document.getElementById("width").value ||
       canvas.height != document.getElementById("height").value
     ) {
+      if (selectedObjects.length != 1)
+        selectedText = [-1, -1, -1];
       canvas.width = document.getElementById("width").value;
       canvas.height = document.getElementById("height").value;
       localStorage["width"] = canvas.width;
@@ -1417,6 +1421,9 @@ window.onload = function () {
       selectedText = [text.length, text.length, text.length];
     } else {
       selectedObjects = [];
+      nodes.forEach(node => {
+        node.runtimeColor = null;
+      })
     }
 
     movingObject = false;
@@ -2487,6 +2494,8 @@ function getElementWithParent(parent, arr) {
 }
 
 function selectAutomaton(object) {
+  selectedText = [-1, -1, -1];
+  
   if (!inArr(object, selectedObjects)) selectedObjects.push(object);
 
   if (object instanceof Node) {
@@ -2853,11 +2862,22 @@ const superscripts = {
 };
 
 function run(start, word) {
+  word = convertLatexShortcuts(word);
+
   if (word.length == 0) {
-    if (start.isAcceptState) console.log("accepted.");
-    else console.log("declined.");
-    return;
+    if (start.isAcceptState) {
+      start.runtimeColor = "green";
+      console.log(`accepted ((${convertLatexShortcuts(start.text)}))`);
+    } else {
+      start.runtimeColor = "red";
+      console.log(`declined (${convertLatexShortcuts(start.text)})`);
+    } return;
   }
+
+  selectedObjects.push(start);
+
+  if (word.charAt(0) == "ε")
+    return run(start, word.substring(1));
 
   var stay = true;
 
@@ -2865,24 +2885,32 @@ function run(start, word) {
     const link = links[i];
     if (
       link.nodeA == start &&
-      (inArr(word.charAt(word.length - 1), link.text.split(/\s*,\s*/)) ||
-        inArr("\\Sigma", link.text.split(/\s*,\s*/)))
+      (inArr(
+        word.charAt(0),
+        link.text.split(/[\s\r]*,[\s\r]*/)
+      ) ||
+        inArr("\\Sigma", link.text.split(/[\s\r]*,[\s\r]*/)))
     ) {
-      run(link.nodeB, word.substring(0, word.length - 1));
+      selectedObjects.push(link);
+      run(link.nodeB, word.substring(1));
       stay = false;
     } else if (
       link.node == start &&
       link instanceof SelfLink &&
-      (inArr(word.charAt(word.length - 1), link.text.split(/\s*,\s*/)) ||
-        inArr("\\Sigma", link.text.split(/\s*,\s*/)))
+      (inArr(
+        word.charAt(0),
+        link.text.split(/[\s\r]*,[\s\r]*/)
+      ) ||
+        inArr("\\Sigma", link.text.split(/[\s\r]*,[\s\r]*/)))
     ) {
-      run(link.node, word.substring(0, word.length - 1));
+      selectedObjects.push(link);
+      run(link.node, word.substring(1));
       stay = false;
     }
   }
 
   if (stay) {
-    run(start, word.substring(0, word.length - 1));
+    run(start, word.substring(1));
   }
 }
 
