@@ -147,6 +147,9 @@
     <div>
       <textarea id="output"></textarea>
       <ul>
+        <li><b>NEW FEATURE!</b> check your automata with "Run from selected node"</li>
+      </ul>
+      <ul>
         <li><b>Add a state:</b> double-click on the canvas</li>
         <li><b>Add an arrow:</b> shift-drag on the canvas</li>
         <li><b>Make accept state:</b> double-click on an existing state</li>
@@ -154,12 +157,13 @@
           <b>Delete something:</b> click it and press the delete key (not the
           backspace key)
         </li>
-        <br />
+      </ul>
+      <ul>
         <li><b>Undo:</b> Ctrl+Z</li>
         <li><b>Redo:</b> Ctrl+Y</li>
         (or use the slider above the canvas)
-        <br />
-        <br />
+      </ul>
+      <ul>
         <li><b>Cut object:</b> Ctrl+X</li>
         <li><b>Copy object:</b> Ctrl+C</li>
         <li><b>Paste object:</b> Ctrl+V</li>
@@ -169,7 +173,8 @@
           <b>Select whole automata:</b> Ctrl+Alt+A, with object\s already
           selected from the automatas you want to select
         </li>
-        <br />
+      </ul>
+      <ul>
         <li><b>Cut text:</b> Ctrl+Shift+X</li>
         <li><b>Copy text:</b> Ctrl+Shift+C</li>
         <li><b>Paste text:</b> Ctrl+Shift+V</li>
@@ -188,14 +193,16 @@
             onchange="redoStack = []"
           />
         </li>
-        <br />
+      </ul>
+      <ul>
         <li>
           <b>If you just want to add more text:</b>
           <button onclick="javascript:makeNodeTextOnly();redoStack = []">
             Toggle drawing the selected node's circles
           </button>
         </li>
-        <br />
+      </ul>
+      <ul>
         <li>
           <b>Type numeric/alphabetic superscript:</b> put an caret before the
           number (like "a^3")
@@ -208,7 +215,8 @@
           <b>Type greek letter:</b> put a backslash before it (like "\beta" for
           "β", or "\Sigma" for "Σ")
         </li>
-        <br />
+      </ul>
+      <ul>
         <li>
           <b>Additional symbols:</b>
         </li>
