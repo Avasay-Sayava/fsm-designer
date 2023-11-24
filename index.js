@@ -1439,7 +1439,7 @@ window.onload = function () {
     originalClick = mouse;
 
     if (selectedObject != null) {
-      if (shift && selectedObject instanceof Node) {
+      if (e.shiftKey && selectedObject instanceof Node) {
         selectedObjects = [selectedObject];
         currentLink = new SelfLink(selectedObject, mouse);
       } else if (selectedObjects.length > 0) {
@@ -1453,7 +1453,7 @@ window.onload = function () {
 
         resetCaret();
       }
-    } else if (shift) {
+    } else if (e.shiftKey) {
       currentLink = new TemporaryLink(mouse, mouse);
     }
 
@@ -1572,8 +1572,6 @@ window.onload = function () {
     }
   };
 };
-
-var shift = false;
 
 document.onkeydown = function (e) {
   var key = crossBrowserKey(e);
@@ -1705,7 +1703,6 @@ document.onkeydown = function (e) {
   }
 
   if (key == 16) {
-    shift = true;
   } else if (!canvasHasFocus()) {
     // don't read keystrokes when other things have focus
     return true;
@@ -1748,10 +1745,6 @@ document.onkeyup = function (e) {
   else if (key == 89) yKey = false;
   else if (key === 67) cKey = false;
   else if (key === 86) vKey = false;
-
-  if (key == 16) {
-    shift = false;
-  }
 };
 
 document.onkeypress = function (e) {
