@@ -1349,6 +1349,7 @@ window.onload = function () {
       canvas.height != document.getElementById("height").value
     ) {
       if (selectedObjects.length != 1) selectedText = [-1, -1, -1];
+
       canvas.width = document.getElementById("width").value;
       canvas.height = document.getElementById("height").value;
       localStorage["width"] = canvas.width;
@@ -1387,6 +1388,13 @@ window.onload = function () {
   canvas.onmousedown = function (e) {
     var mouse = crossBrowserRelativeMousePos(e);
     var selectedObject = selectObject(mouse.x, mouse.y);
+
+    if (selectedObject != null)
+      document.getElementById("info").innerHTML = `
+        <p>Automata info:</p>
+        <p>Full: ${isFull(selectedObject)}</p>
+        <p>Deterministic: ${isDeterministic(selectedObject)}</p>
+      `;
 
     if (e.which === 3) {
       e.preventDefault();
@@ -2958,6 +2966,9 @@ function getAlphabet(object, selected = []) {
 function isFull(object, selected = []) {
   if (!object || inArr(object, selected) || object instanceof StartLink)
     return true;
+
+  if (!(object instanceof Node))
+    return isFull(object.node, selected) && isFull(object.nodeA, selected);
 
   var alphabet = getAlphabet(object);
 
