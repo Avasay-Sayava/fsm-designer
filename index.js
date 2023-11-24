@@ -26,6 +26,103 @@
   OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const subscripts = {
+  0: "₀",
+  1: "₁",
+  2: "₂",
+  3: "₃",
+  4: "₄",
+  5: "₅",
+  6: "₆",
+  7: "₇",
+  8: "₈",
+  9: "₉",
+  "+": "₊",
+  "-": "₋",
+  "=": "₌",
+  "(": "₍",
+  ")": "₎",
+  a: "ₐ",
+  e: "ₑ",
+  o: "ₒ",
+  x: "ₓ",
+  h: "ₕ",
+  k: "ₖ",
+  l: "ₗ",
+  m: "ₘ",
+  n: "ₙ",
+  p: "ₚ",
+  s: "ₛ",
+  t: "ₜ",
+};
+
+const superscripts = {
+  0: "⁰",
+  1: "¹",
+  2: "²",
+  3: "³",
+  4: "⁴",
+  5: "⁵",
+  6: "⁶",
+  7: "⁷",
+  8: "⁸",
+  9: "⁹",
+  "+": "⁺",
+  "⁎": "*",
+  "-": "⁻",
+  "=": "⁼",
+  "(": "⁽",
+  ")": "⁾",
+  a: "ᵃ",
+  b: "ᵇ",
+  c: "ᶜ",
+  d: "ᵈ",
+  e: "ᵉ",
+  f: "ᶠ",
+  g: "ᵍ",
+  h: "ʰ",
+  i: "ⁱ",
+  j: "ʲ",
+  k: "ᵏ",
+  l: "ˡ",
+  m: "ᵐ",
+  n: "ⁿ",
+  o: "ᵒ",
+  p: "ᵖ",
+  q: "𐞥",
+  r: "ʳ",
+  s: "ˢ",
+  t: "ᵗ",
+  u: "ᵘ",
+  v: "ᵛ",
+  w: "ʷ",
+  x: "ˣ",
+  y: "ʸ",
+  z: "ᶻ",
+  A: "ᴬ",
+  B: "ᴮ",
+  C: "ꟲ",
+  D: "ᴰ",
+  E: "ᴱ",
+  F: "ꟳ",
+  G: "ᴳ",
+  H: "ᴴ",
+  I: "ᴵ",
+  J: "ᴶ",
+  K: "ᴷ",
+  L: "ᴸ",
+  M: "ᴹ",
+  N: "ᴺ",
+  O: "ᴼ",
+  P: "ᴾ",
+  Q: "ꟴ",
+  R: "ᴿ",
+  T: "ᵀ",
+  U: "ᵁ",
+  V: "ⱽ",
+  W: "ᵂ",
+};
+
 // Opera 8.0+
 var isOpera =
   (!!window.opr && !!opr.addons) ||
@@ -1193,6 +1290,7 @@ function resetCaret() {
 }
 
 var canvas;
+var canvasFocus = false;
 var nodeRadius = 30;
 var displayFont =
   '20px Calibri, "Times New Roman", serif, Consolas, "Courier New", monospace';
@@ -1379,6 +1477,10 @@ window.onload = function () {
 
   window.onmousedown = function () {
     mouseDown = true;
+    nodes.forEach((node) => {
+      node.runtimeColor = null;
+    });
+    draw();
   };
 
   window.onmouseup = function () {
@@ -1430,9 +1532,6 @@ window.onload = function () {
       selectedText = [text.length, text.length, text.length];
     } else {
       selectedObjects = [];
-      nodes.forEach((node) => {
-        node.runtimeColor = null;
-      });
     }
 
     movingObject = false;
@@ -1571,10 +1670,25 @@ window.onload = function () {
       draw();
     }
   };
+
+  canvas.addEventListener('mouseenter', () => {
+    canvasFocus = true;
+    console.log("focus");
+  });
+  
+  canvas.addEventListener('mouseleave', () => {
+    canvasFocus = false;
+    console.log("blur");
+  });
 };
 
 document.onkeydown = function (e) {
   var key = crossBrowserKey(e);
+
+  if (!canvasFocus)
+    return;
+
+  e.preventDefault();
 
   if (e.ctrlKey) {
     if (key === 90) {
@@ -2765,103 +2879,6 @@ function selectToNextSpace(text, moveRight) {
   selectedText[1] = Math.max(txt0, txt1);
   selectedText[2] = newIndex;
 }
-
-const subscripts = {
-  0: "₀",
-  1: "₁",
-  2: "₂",
-  3: "₃",
-  4: "₄",
-  5: "₅",
-  6: "₆",
-  7: "₇",
-  8: "₈",
-  9: "₉",
-  "+": "₊",
-  "-": "₋",
-  "=": "₌",
-  "(": "₍",
-  ")": "₎",
-  a: "ₐ",
-  e: "ₑ",
-  o: "ₒ",
-  x: "ₓ",
-  h: "ₕ",
-  k: "ₖ",
-  l: "ₗ",
-  m: "ₘ",
-  n: "ₙ",
-  p: "ₚ",
-  s: "ₛ",
-  t: "ₜ",
-};
-
-const superscripts = {
-  0: "⁰",
-  1: "¹",
-  2: "²",
-  3: "³",
-  4: "⁴",
-  5: "⁵",
-  6: "⁶",
-  7: "⁷",
-  8: "⁸",
-  9: "⁹",
-  "+": "⁺",
-  "⁎": "*",
-  "-": "⁻",
-  "=": "⁼",
-  "(": "⁽",
-  ")": "⁾",
-  a: "ᵃ",
-  b: "ᵇ",
-  c: "ᶜ",
-  d: "ᵈ",
-  e: "ᵉ",
-  f: "ᶠ",
-  g: "ᵍ",
-  h: "ʰ",
-  i: "ⁱ",
-  j: "ʲ",
-  k: "ᵏ",
-  l: "ˡ",
-  m: "ᵐ",
-  n: "ⁿ",
-  o: "ᵒ",
-  p: "ᵖ",
-  q: "𐞥",
-  r: "ʳ",
-  s: "ˢ",
-  t: "ᵗ",
-  u: "ᵘ",
-  v: "ᵛ",
-  w: "ʷ",
-  x: "ˣ",
-  y: "ʸ",
-  z: "ᶻ",
-  A: "ᴬ",
-  B: "ᴮ",
-  C: "ꟲ",
-  D: "ᴰ",
-  E: "ᴱ",
-  F: "ꟳ",
-  G: "ᴳ",
-  H: "ᴴ",
-  I: "ᴵ",
-  J: "ᴶ",
-  K: "ᴷ",
-  L: "ᴸ",
-  M: "ᴹ",
-  N: "ᴺ",
-  O: "ᴼ",
-  P: "ᴾ",
-  Q: "ꟴ",
-  R: "ᴿ",
-  T: "ᵀ",
-  U: "ᵁ",
-  V: "ⱽ",
-  W: "ᵂ",
-};
 
 function run(start, word) {
   word = convertLatexShortcuts(word);
