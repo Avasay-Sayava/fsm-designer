@@ -2940,7 +2940,8 @@ function getAlphabet(object, selected = []) {
         });
       if (!inArr(object.nodeB, selected))
         getAlphabet(object.nodeB, selected).forEach((letter) => {
-          alphabet.push(letter);
+          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
+            alphabet.push(letter);
         });
     } else if (object instanceof SelfLink) {
       if (!inArr(object.node, selected))
@@ -2955,21 +2956,50 @@ function getAlphabet(object, selected = []) {
 }
 
 function isFull(object, selected = []) {
-  if (!object || inArr(object, selected) || object instanceof StartLink) return true;
+  if (!object || inArr(object, selected) || object instanceof StartLink)
+    return true;
 
   var alphabet = getAlphabet(object);
 
   selected.push(object);
 
-  if (!equals(getLetters(object), alphabet) && !inArr("\\Sigma", getLetters(object))) {
+  if (
+    Array.from(new Set(getLetters(object))).length != alphabet.length &&
+    !inArr("\\Sigma", getLetters(object))
+  ) {
     return false;
   }
 
   var out = true;
 
-  links.forEach(link => {
+  links.forEach((link) => {
     if (object == link.nodeA || object == link.node)
       out = out && isFull(link.node, selected) && isFull(link.nodeB, selected);
+  });
+
+  return out;
+}
+
+function isDeterministic(object, selected = []) {
+  if (!object || inArr(object, selected) || object instanceof StartLink)
+    return true;
+
+  selected.push(object);
+
+  if (
+    Array.from(new Set(getLetters(object))).length != getLetters(object).length
+  ) {
+    return false;
+  }
+
+  var out = true;
+
+  links.forEach((link) => {
+    if (object == link.nodeA || object == link.node)
+      out =
+        out &&
+        isDeterministic(link.node, selected) &&
+        isDeterministic(link.nodeB, selected);
   });
 
   return out;
@@ -2978,11 +3008,10 @@ function isFull(object, selected = []) {
 function getLetters(object) {
   var letters = [];
 
-  links.forEach(link => {
+  links.forEach((link) => {
     if (object == link.nodeA || object == link.node)
-      link.text.split(/\s*,\s*/).forEach(letter => {
-        if (letter != "\\epsilon" && letter != "")
-          letters.push(letter);
+      link.text.split(/\s*,\s*/).forEach((letter) => {
+        if (letter != "\\epsilon" && letter != "") letters.push(letter);
       });
   });
 
@@ -2992,11 +3021,11 @@ function getLetters(object) {
 function equals(a, b) {
   var out = true;
 
-  a.forEach(e => {
+  a.forEach((e) => {
     out = out && inArr(e, b);
   });
 
-  b.forEach(e => {
+  b.forEach((e) => {
     out = out && inArr(e, a);
   });
 
