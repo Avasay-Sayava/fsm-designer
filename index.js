@@ -297,9 +297,10 @@ Node.prototype.draw = function (c) {
     );
     if (this != selectObject(mouseX, mouseY) && !inArr(this, selectedObjects))
       return;
-    c.strokeStyle = this.runtimeColor ?? inArr(this, selectedObjects)
-      ? "rgba(0, 0, 255, 0.3)"
-      : "rgba(0, 0, 0, 0.3)";
+    c.strokeStyle =
+      this.runtimeColor ?? inArr(this, selectedObjects)
+        ? "rgba(0, 0, 255, 0.3)"
+        : "rgba(0, 0, 0, 0.3)";
   }
 
   // draw the circle
@@ -1251,9 +1252,10 @@ function drawUsing(c) {
 
   for (var i = 0; i < nodes.length; i++) {
     c.lineWidth = 1;
-    c.fillStyle = c.strokeStyle = nodes[i].runtimeColor ?? inArr(nodes[i], selectedObjects)
-      ? "blue"
-      : "black";
+    c.fillStyle = c.strokeStyle =
+      nodes[i].runtimeColor ?? inArr(nodes[i], selectedObjects)
+        ? "blue"
+        : "black";
     nodes[i].draw(c);
   }
   for (var i = 0; i < links.length; i++) {
@@ -1346,8 +1348,7 @@ window.onload = function () {
       canvas.width != document.getElementById("width").value ||
       canvas.height != document.getElementById("height").value
     ) {
-      if (selectedObjects.length != 1)
-        selectedText = [-1, -1, -1];
+      if (selectedObjects.length != 1) selectedText = [-1, -1, -1];
       canvas.width = document.getElementById("width").value;
       canvas.height = document.getElementById("height").value;
       localStorage["width"] = canvas.width;
@@ -1421,9 +1422,9 @@ window.onload = function () {
       selectedText = [text.length, text.length, text.length];
     } else {
       selectedObjects = [];
-      nodes.forEach(node => {
+      nodes.forEach((node) => {
         node.runtimeColor = null;
-      })
+      });
     }
 
     movingObject = false;
@@ -2495,7 +2496,7 @@ function getElementWithParent(parent, arr) {
 
 function selectAutomaton(object) {
   selectedText = [-1, -1, -1];
-  
+
   if (!inArr(object, selectedObjects)) selectedObjects.push(object);
 
   if (object instanceof Node) {
@@ -2871,13 +2872,13 @@ function run(start, word) {
     } else {
       start.runtimeColor = "red";
       console.log(`declined (${convertLatexShortcuts(start.text)})`);
-    } return;
+    }
+    return;
   }
 
   selectedObjects.push(start);
 
-  if (word.charAt(0) == "ε")
-    return run(start, word.substring(1));
+  if (word.charAt(0) == "ε") return run(start, word.substring(1));
 
   var stay = true;
 
@@ -2885,10 +2886,7 @@ function run(start, word) {
     const link = links[i];
     if (
       link.nodeA == start &&
-      (inArr(
-        word.charAt(0),
-        link.text.split(/[\s\r]*,[\s\r]*/)
-      ) ||
+      (inArr(word.charAt(0), link.text.split(/[\s\r]*,[\s\r]*/)) ||
         inArr("\\Sigma", link.text.split(/[\s\r]*,[\s\r]*/)))
     ) {
       selectedObjects.push(link);
@@ -2897,10 +2895,7 @@ function run(start, word) {
     } else if (
       link.node == start &&
       link instanceof SelfLink &&
-      (inArr(
-        word.charAt(0),
-        link.text.split(/[\s\r]*,[\s\r]*/)
-      ) ||
+      (inArr(word.charAt(0), link.text.split(/[\s\r]*,[\s\r]*/)) ||
         inArr("\\Sigma", link.text.split(/[\s\r]*,[\s\r]*/)))
     ) {
       selectedObjects.push(link);
@@ -2926,19 +2921,22 @@ function getAlphabet(object, selected = []) {
         !inArr(link, selected)
       ) {
         getAlphabet(link, selected).forEach((letter) => {
-          alphabet.push(letter);
+          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
+            alphabet.push(letter);
         });
       }
     });
   } else if (!(object instanceof StartLink)) {
     object.text.split(/\s*,\s*/).forEach((letter) => {
-      alphabet.push(letter);
+      if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
+        alphabet.push(letter);
     });
 
     if (object instanceof Link) {
       if (!inArr(object.nodeA, selected))
         getAlphabet(object.nodeA, selected).forEach((letter) => {
-          alphabet.push(letter);
+          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
+            alphabet.push(letter);
         });
       if (!inArr(object.nodeB, selected))
         getAlphabet(object.nodeB, selected).forEach((letter) => {
@@ -2947,10 +2945,60 @@ function getAlphabet(object, selected = []) {
     } else if (object instanceof SelfLink) {
       if (!inArr(object.node, selected))
         getAlphabet(object.node, selected).forEach((letter) => {
-          alphabet.push(letter);
+          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
+            alphabet.push(letter);
         });
     }
   }
 
   return Array.from(new Set(alphabet));
+}
+
+function isFull(object, selected = []) {
+  if (!object || inArr(object, selected) || object instanceof StartLink) return true;
+
+  var alphabet = getAlphabet(object);
+
+  selected.push(object);
+
+  if (!equals(getLetters(object), alphabet) && !inArr("\\Sigma", getLetters(object))) {
+    return false;
+  }
+
+  var out = true;
+
+  links.forEach(link => {
+    if (object == link.nodeA || object == link.node)
+      out = out && isFull(link.node, selected) && isFull(link.nodeB, selected);
+  });
+
+  return out;
+}
+
+function getLetters(object) {
+  var letters = [];
+
+  links.forEach(link => {
+    if (object == link.nodeA || object == link.node)
+      link.text.split(/\s*,\s*/).forEach(letter => {
+        if (letter != "\\epsilon" && letter != "")
+          letters.push(letter);
+      });
+  });
+
+  return letters;
+}
+
+function equals(a, b) {
+  var out = true;
+
+  a.forEach(e => {
+    out = out && inArr(e, b);
+  });
+
+  b.forEach(e => {
+    out = out && inArr(e, a);
+  });
+
+  return out;
 }
