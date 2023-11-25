@@ -175,7 +175,7 @@ button:not([disabled]):hover {
   margin: 0.5em;
 }
 
-#selectedObj {
+#selectedObj, #run {
   -webkit-transition: 100ms;
   -o-transition: 100ms;
   -moz-transition: 100ms;

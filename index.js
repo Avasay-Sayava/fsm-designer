@@ -1352,14 +1352,22 @@ function drawUsing(c) {
     c.lineWidth = 1;
     c.fillStyle = c.strokeStyle =
       nodes[i].runtimeColor ?? inArr(nodes[i], selectedObjects)
-        ? "blue"
+        ? nodes[i] == selectObject(mouseX, mouseY)
+        ? "rgba(0,0,255,0.7)"
+        : "blue"
+        : nodes[i] == selectObject(mouseX, mouseY)
+        ? "rgba(0,0,0,0.7)"
         : "black";
     nodes[i].draw(c);
   }
   for (var i = 0; i < links.length; i++) {
     c.lineWidth = 1;
     c.fillStyle = c.strokeStyle = inArr(links[i], selectedObjects)
-      ? "blue"
+      ? links[i] == selectObject(mouseX, mouseY)
+      ? "rgba(0,0,255,0.7)"
+      : "blue"
+      : links[i] == selectObject(mouseX, mouseY)
+      ? "rgba(0,0,0,0.7)"
       : "black";
     links[i].draw(c);
   }
@@ -1459,9 +1467,19 @@ window.onload = function () {
     if (selectedObjects.length > 0) {
       document.getElementById("selectedObj").style.pointerEvents = "";
       document.getElementById("selectedObj").style.opacity = "1";
+
+      if (selectedObjects.length == 1 && selectedObjects[0] instanceof Node) {
+        document.getElementById("run").style.pointerEvents = "";
+        document.getElementById("run").style.opacity = "1";
+      } else {
+        document.getElementById("run").style.pointerEvents = "none";
+        document.getElementById("run").style.opacity = "0.6";
+      }
     } else {
       document.getElementById("selectedObj").style.pointerEvents = "none";
       document.getElementById("selectedObj").style.opacity = "0.6";
+      document.getElementById("run").style.pointerEvents = "";
+      document.getElementById("run").style.opacity = "1";
     }
 
     if (!nodeRadius || nodeRadius <= 0 || nodeRadius > 80) nodeRadius = 30;
@@ -1671,12 +1689,12 @@ window.onload = function () {
     }
   };
 
-  canvas.addEventListener('mouseenter', () => {
+  canvas.addEventListener("mouseenter", () => {
     mouseOnCanvas = true;
     console.log("focus");
   });
-  
-  canvas.addEventListener('mouseleave', () => {
+
+  canvas.addEventListener("mouseleave", () => {
     mouseOnCanvas = false;
     console.log("blur");
   });
@@ -1685,8 +1703,7 @@ window.onload = function () {
 document.onkeydown = function (e) {
   var key = crossBrowserKey(e);
 
-  if (!mouseOnCanvas)
-    return;
+  if (!mouseOnCanvas) return;
 
   e.preventDefault();
 
