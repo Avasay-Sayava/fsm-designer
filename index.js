@@ -1716,9 +1716,7 @@ window.onload = function () {
 document.onkeydown = function (e) {
   var key = crossBrowserKey(e);
 
-  if (!mouseOnCanvas) return;
-
-  if (!canvasHasFocus()) e.preventDefault();
+  if (!canvasHasFocus()) return e.preventDefault();
 
   if (e.ctrlKey) {
     if (key === 90) {
