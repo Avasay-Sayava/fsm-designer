@@ -1266,7 +1266,7 @@ function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected) {
       c,
       line,
       x,
-      y + 20 * i - (originalText.split("\r").length - 1) * 10,
+      y + 25 * i - (originalText.split("\r").length - 1) * 10,
       angleOrNull,
       isSelected,
       start++
