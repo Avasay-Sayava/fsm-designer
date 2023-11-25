@@ -1353,8 +1353,8 @@ function drawUsing(c) {
     c.fillStyle = c.strokeStyle =
       nodes[i].runtimeColor ?? inArr(nodes[i], selectedObjects)
         ? nodes[i] == selectObject(mouseX, mouseY)
-        ? "rgba(0,0,255,0.7)"
-        : "blue"
+          ? "rgba(0,0,255,0.7)"
+          : "blue"
         : nodes[i] == selectObject(mouseX, mouseY)
         ? "rgba(0,0,0,0.7)"
         : "black";
@@ -1364,8 +1364,8 @@ function drawUsing(c) {
     c.lineWidth = 1;
     c.fillStyle = c.strokeStyle = inArr(links[i], selectedObjects)
       ? links[i] == selectObject(mouseX, mouseY)
-      ? "rgba(0,0,255,0.7)"
-      : "blue"
+        ? "rgba(0,0,255,0.7)"
+        : "blue"
       : links[i] == selectObject(mouseX, mouseY)
       ? "rgba(0,0,0,0.7)"
       : "black";
@@ -1509,11 +1509,24 @@ window.onload = function () {
     var mouse = crossBrowserRelativeMousePos(e);
     var selectedObject = selectObject(mouse.x, mouse.y);
 
-    if (selectedObject != null)
+    if (selectedObject) {
+      if (selectedObject instanceof StartLink)
+        document.getElementById("info").innerHTML = `
+          <p>Automata info:</p>
+          <p>Full: ${isFull(selectedObject.node)}</p>
+          <p>Deterministic: ${isDeterministic(selectedObject.node)}</p>
+        `;
+      else
+        document.getElementById("info").innerHTML = `
+          <p>Automata info:</p>
+          <p>Full: ${isFull(selectedObject)}</p>
+          <p>Deterministic: ${isDeterministic(selectedObject)}</p>
+        `;
+    } else
       document.getElementById("info").innerHTML = `
         <p>Automata info:</p>
-        <p>Full: ${isFull(selectedObject)}</p>
-        <p>Deterministic: ${isDeterministic(selectedObject)}</p>
+        <p>Full: ...</p>
+        <p>Deterministic: ...</p>
       `;
 
     if (e.which === 3) {
@@ -1705,7 +1718,7 @@ document.onkeydown = function (e) {
 
   if (!mouseOnCanvas) return;
 
-  e.preventDefault();
+  if (!canvasHasFocus()) e.preventDefault();
 
   if (e.ctrlKey) {
     if (key === 90) {
