@@ -990,7 +990,6 @@ const superscripts = {
 };
 
 const doubleStrucks = {
-  // Uppercase letters
   A: "𝔸",
   B: "𝔹",
   C: "ℂ",
@@ -1057,7 +1056,12 @@ const doubleStrucks = {
 
 function convertLatexShortcuts(text) {
   text = text.replaceAll("*", "⁎").replaceAll(">=", "≥").replaceAll("<=", "≤");
-  // html greek characters
+  if (text.split("\\hr").length % 2 == 0) {
+    text =
+      text.substring(0, text.lastIndexOf("\\hr")).replaceAll("\\hr", "") +
+      text.substring(text.lastIndexOf("\\hr"));
+  } else text = text.replaceAll("\\hr", "");
+
   for (var i = 0; i < greekLetterNames.length; i++) {
     var name = greekLetterNames[i];
     if (name == "emptyset") {
@@ -1180,8 +1184,14 @@ function convertLatexShortcuts(text) {
       text = text.replace("_" + text.charAt(i), subscripts[text.charAt(i)]);
     if (superscripts[text.charAt(i)])
       text = text.replace("^" + text.charAt(i), superscripts[text.charAt(i)]);
+  }
+  
+  for (let i = 0; i < text.length; i++) {
     if (doubleStrucks[text.charAt(i)])
-      text = text.replace("\\" + text.charAt(i), doubleStrucks[text.charAt(i)]);
+      text = text.replace(
+        "\\\\" + text.charAt(i),
+        doubleStrucks[text.charAt(i)]
+      );
   }
 
   return text;
@@ -1297,6 +1307,9 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
         x,
         y + 6
       );
+
+      x -= notSelectedWidth1 + selectedWidth;
+
       if (
         caretVisible &&
         canvasHasFocus() &&
@@ -1304,14 +1317,42 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
         selectedText[2] >= start &&
         selectedText[2] <= end
       ) {
-        x += untilCaretWidth - notSelectedWidth1 - selectedWidth;
+        x += untilCaretWidth;
         c.beginPath();
         c.moveTo(x, y - 10);
         c.lineTo(x, y + 10);
         c.stroke();
+        x -= untilCaretWidth;
       }
     } else {
       c.fillText(text, x, y + 6);
+    }
+
+    var hrs = [];
+    while (originalText.indexOf("\\hr", hrs[hrs.length - 1] + 3 || 0) > -1) {
+      hrs.push(originalText.indexOf("\\hr", hrs[hrs.length - 1] + 3 || 0));
+    }
+
+    console.log(hrs);
+
+    var i = 0;
+
+    while (hrs.length > i + 1) {
+      if (
+        !(selectedText[2] > hrs[i] && selectedText[2] < hrs[i + 1] + 3) ||
+        !isSelected
+      ) {
+        var width1 = c.measureText(
+          convertLatexShortcuts(originalText.substring(0, hrs[i]))
+        ).width;
+        var width2 = c.measureText(
+          convertLatexShortcuts(originalText.substring(0, hrs[i + 1] + 3))
+        ).width;
+        console.log(width1, width2);
+        c.fillRect(x + width1, y - 11, width2 - width1, 1.5);
+      }
+
+      i += 2;
     }
   }
 }
