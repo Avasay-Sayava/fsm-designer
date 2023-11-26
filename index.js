@@ -1055,12 +1055,7 @@ const doubleStrucks = {
 };
 
 function convertLatexShortcuts(text) {
-  text = text.replaceAll("*", "⁎").replaceAll(">=", "≥").replaceAll("<=", "≤");
-  if (text.split("\\hr").length % 2 == 0) {
-    text =
-      text.substring(0, text.lastIndexOf("\\hr")).replaceAll("\\hr", "") +
-      text.substring(text.lastIndexOf("\\hr"));
-  } else text = text.replaceAll("\\hr", "");
+  text = text.replaceAll("*", "⁎").replaceAll(">=", "≥").replaceAll("<=", "≤").replaceAll("\\hr", "");
 
   for (var i = 0; i < greekLetterNames.length; i++) {
     var name = greekLetterNames[i];
@@ -1240,6 +1235,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
       ) +
       convertLatexShortcuts(originalText.substring(selectedText[1] - start));
   else text = convertLatexShortcuts(originalText);
+
   c.font = displayFont;
   var width = c.measureText(text).width;
   var notSelectedWidth1 = c.measureText(
@@ -1339,7 +1335,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
 
     while (hrs.length > i + 1) {
       if (
-        !(selectedText[2] > hrs[i] && selectedText[2] < hrs[i + 1] + 3) ||
+        !(selectedText[2] > hrs[i] && selectedText[2] < hrs[i] + 3 || selectedText[2] > hrs[i + 1] && selectedText[2] < hrs[i + 1] + 3) ||
         !isSelected
       ) {
         var width1 = c.measureText(
