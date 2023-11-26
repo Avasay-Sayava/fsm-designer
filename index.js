@@ -1707,12 +1707,10 @@ window.onload = function () {
 
   canvas.addEventListener("mouseenter", () => {
     mouseOnCanvas = true;
-    console.log("focus");
   });
 
   canvas.addEventListener("mouseleave", () => {
     mouseOnCanvas = false;
-    console.log("blur");
   });
 };
 
@@ -1906,7 +1904,6 @@ document.onkeydown = function (e) {
           selectedObjects[0].text.length
         );
       selectedText[2] = selectedText[0] = ++selectedText[1];
-      console.log(e.getModifierState('CapsLock') ^ e.shiftKey, e.getModifierState('CapsLock'), e.shiftKey);
     } else {
       selectedObjects[0].text =
         selectedObjects[0].text.substr(0, selectedText[0]) +
@@ -2921,7 +2918,7 @@ function run(start, word) {
       console.log(`accepted ((${convertLatexShortcuts(start.text)}))`);
     } else {
       start.runtimeColor = "red";
-      console.log(`declined (${convertLatexShortcuts(start.text)})`);
+      console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
     }
     return;
   }
