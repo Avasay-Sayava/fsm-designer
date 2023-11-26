@@ -1291,6 +1291,7 @@ function resetCaret() {
 
 var canvas;
 var mouseOnCanvas = false;
+var canvasFocus = false;
 var nodeRadius = 30;
 var displayFont =
   '20px Calibri, "Times New Roman", serif, Consolas, "Courier New", monospace';
@@ -1499,6 +1500,8 @@ window.onload = function () {
       node.runtimeColor = null;
     });
     draw();
+
+    canvasFocus = mouseOnCanvas;
   };
 
   window.onmouseup = function () {
@@ -1716,7 +1719,9 @@ window.onload = function () {
 document.onkeydown = function (e) {
   var key = crossBrowserKey(e);
 
-  if (!canvasHasFocus()) return e.preventDefault();
+  if (!canvasFocus) return true;
+
+  e.preventDefault();
 
   if (e.ctrlKey) {
     if (key === 90) {
@@ -1878,18 +1883,7 @@ document.onkeydown = function (e) {
     // delete key
     deleteSelected();
   }
-};
 
-document.onkeyup = function (e) {
-  var key = crossBrowserKey(e);
-
-  if (key == 90) zKey = false;
-  else if (key == 89) yKey = false;
-  else if (key === 67) cKey = false;
-  else if (key === 86) vKey = false;
-};
-
-document.onkeypress = function (e) {
   // don't read keystrokes when other things have focus
   var key = crossBrowserKey(e);
   if (!canvasHasFocus()) {
@@ -1928,6 +1922,15 @@ document.onkeypress = function (e) {
     // backspace is a shortcut for the back button, but do NOT want to change pages
     return false;
   }
+};
+
+document.onkeyup = function (e) {
+  var key = crossBrowserKey(e);
+
+  if (key == 90) zKey = false;
+  else if (key == 89) yKey = false;
+  else if (key === 67) cKey = false;
+  else if (key === 86) vKey = false;
 };
 
 function crossBrowserKey(e) {
