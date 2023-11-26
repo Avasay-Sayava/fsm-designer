@@ -1900,7 +1900,7 @@ document.onkeydown = function (e) {
     if (selectedText[0] == selectedText[1]) {
       selectedObjects[0].text =
         selectedObjects[0].text.substr(0, selectedText[2]) +
-        e.getModifierState('CapsLock') ^ e.shiftKey ? String.fromCharCode(key).toUpperCase() : String.fromCharCode(key).toLowerCase() +
+        (e.getModifierState('CapsLock') ^ e.shiftKey ? String.fromCharCode(key).toUpperCase() : String.fromCharCode(key).toLowerCase()) +
         selectedObjects[0].text.substr(
           selectedText[2],
           selectedObjects[0].text.length
