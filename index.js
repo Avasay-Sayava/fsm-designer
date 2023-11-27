@@ -1278,7 +1278,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
   } else {
     x = Math.round(x);
     y = Math.round(y);
-    if (isSelected) {
+    if (isSelected && selectedObjects.length == 1) {
       c.fillText(
         convertLatexShortcuts(
           originalText.substring(0, selectedText[0] - start)
