@@ -1611,8 +1611,7 @@ window.onload = function () {
 
     canvasFocus = mouseOnCanvas;
 
-    if (!canvasFocus)
-      selectedObjects = [];
+    if (!canvasFocus) selectedObjects = [];
 
     draw();
   };
@@ -2811,9 +2810,10 @@ function handleKeyEvent(selectedObject, e) {
   var key = crossBrowserKey(e);
   var text = selectedObject.text;
 
-  if (e.ctrlKey && (key === 37 || key === 39)) {
+  if (key >= 35 && key <= 39)
     e.preventDefault();
 
+  if (e.ctrlKey && (key === 37 || key === 39)) {
     if (key === 39) {
       if (e.shiftKey) selectToNextSpace(text, true);
       else moveCaretToNextSpace(text, true);
@@ -2821,12 +2821,10 @@ function handleKeyEvent(selectedObject, e) {
       if (e.shiftKey) selectToNextSpace(text, false);
       else moveCaretToNextSpace(text, false);
     }
+  } else if (!e.shiftKey) {
+    handleNonShiftKey(key, text);
   } else {
-    if (!e.shiftKey) {
-      handleNonShiftKey(key, text);
-    } else {
-      handleShiftKey(key, text);
-    }
+    handleShiftKey(key, text);
   }
 }
 
