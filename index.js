@@ -1607,6 +1607,9 @@ window.onload = function () {
     draw();
 
     canvasFocus = mouseOnCanvas;
+
+    if (!canvasFocus)
+      selectedObjects = [];
   };
 
   window.onmouseup = function () {
