@@ -1611,8 +1611,6 @@ window.onload = function () {
 
     canvasFocus = mouseOnCanvas;
 
-    if (!canvasFocus) selectedObjects = [];
-
     draw();
   };
 
