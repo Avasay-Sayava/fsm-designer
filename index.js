@@ -2827,8 +2827,7 @@ function handleKeyEvent(selectedObject, e) {
   var key = crossBrowserKey(e);
   var text = selectedObject.text;
 
-  if (key >= 35 && key <= 39)
-    e.preventDefault();
+  if (key >= 35 && key <= 39) e.preventDefault();
 
   if (e.ctrlKey && (key === 37 || key === 39)) {
     if (key === 39) {
