@@ -1539,14 +1539,23 @@ function selectObjects(left, top, right, bottom) {
   });
 
   links.forEach(function (link) {
-    var data = link.getEndPointsAndCircle();
-    if (
-      2 * top <= data.startY + data.endY &&
-      data.startY + data.endY <= 2 * bottom &&
-      2 * left <= data.startX + data.endX &&
-      data.startX + data.endX <= 2 * right
-    ) {
-      objects.push(link);
+    try {
+      var data = link.getEndPointsAndCircle();
+      if (
+        2 * top <= data.startY + data.endY &&
+        data.startY + data.endY <= 2 * bottom &&
+        2 * left <= data.startX + data.endX &&
+        data.startX + data.endX <= 2 * right
+      ) {
+        objects.push(link);
+      }
+    } catch (e) {
+      for (let i = left; i <= right; i++) {
+        for (let j = top; j < bottom; j++) {
+          if (link.containsPoint(i, j))
+            objects.push(link);
+        }
+      }
     }
   });
 
