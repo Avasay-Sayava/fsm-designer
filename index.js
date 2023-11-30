@@ -1689,6 +1689,7 @@ window.onload = function () {
     }
 
     fromX = fromY = toX = toY = null;
+    console.log("reset");
 
     draw();
   };
