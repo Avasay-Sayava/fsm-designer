@@ -1407,6 +1407,13 @@ var displayFont =
 var nodes = [];
 var links = [];
 
+var fromX = null,
+  fromY = null;
+var orgX = null,
+  orgY = null;
+var toX = null,
+  toY = null;
+
 var zKey = false;
 var yKey = false;
 var cKey = false;
@@ -1487,6 +1494,17 @@ function drawUsing(c) {
     currentLink.draw(c);
   }
 
+  if (toX != null) {
+    c.fillStyle = "rgba(0, 0, 0, 0.2)";
+    var top = Math.min(fromY, toY),
+      left = Math.min(fromX, toX),
+      bottom = Math.max(fromY, toY),
+      right = Math.max(fromX, toX);
+    c.fillRect(left, top, right - left, bottom - top);
+    c.setLineDash([5, 2]);
+    c.strokeRect(left, top, right - left, bottom - top);
+  }
+
   c.restore();
 }
 
@@ -1507,6 +1525,34 @@ function selectObject(x, y) {
     }
   }
   return null;
+}
+
+function selectObjects(left, top, right, bottom) {
+  var objects = [];
+  nodes.forEach(function (node) {
+    if (
+      top <= node.y &&
+      node.y <= bottom &&
+      left <= node.x &&
+      node.x <= right
+    ) {
+      objects.push(node);
+    }
+  });
+
+  links.forEach(function (link) {
+    var data = link.getEndPointsAndCircle();
+    if (
+      2 * top <= data.startY + data.endY &&
+      data.startY + data.endY <= 2 * bottom &&
+      2 * left <= data.startX + data.endX &&
+      data.startX + data.endX <= 2 * right
+    ) {
+      objects.push(link);
+    }
+  });
+
+  return Array.from(new Set(objects));
 }
 
 function snapNode(node) {
@@ -1616,6 +1662,17 @@ window.onload = function () {
 
   window.onmouseup = function () {
     mouseDown = false;
+    if (toX != null) {
+      var top = Math.min(fromY, toY),
+        left = Math.min(fromX, toX),
+        bottom = Math.max(fromY, toY),
+        right = Math.max(fromX, toX);
+      selectedObjects = selectObjects(left, top, right, bottom);
+    }
+
+    fromX = fromY = toX = toY = null;
+
+    draw();
   };
 
   canvas.onmousedown = function (e) {
@@ -1781,6 +1838,8 @@ window.onload = function () {
         if (object instanceof Node) snapNode(object);
         draw();
       });
+    } else if (!movingObject && mouseDown && currentLink == null) {
+      updateSelectionBox(mouse);
     }
   };
 
@@ -3209,4 +3268,14 @@ function equals(a, b) {
   });
 
   return out;
+}
+
+function updateSelectionBox(mouse) {
+  if (fromX == null && fromY == null) {
+    orgX = toX = fromX = mouse.x;
+    orgY = toY = fromY = mouse.y;
+  } else {
+    toX = mouse.x;
+    toY = mouse.y;
+  }
 }
