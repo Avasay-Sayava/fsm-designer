@@ -1333,8 +1333,6 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
       hrs.push(originalText.indexOf("\\hr", hrs[hrs.length - 1] + 3 || 0));
     }
 
-    console.log(hrs);
-
     var i = 0;
 
     while (hrs.length > i + 1) {
@@ -1348,7 +1346,6 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
         var width2 = c.measureText(
           convertLatexShortcuts(originalText.substring(0, hrs[i + 1] + 3))
         ).width;
-        console.log(width1, width2);
         c.fillRect(x + width1, y - 11, width2 - width1, 1.5);
       }
 
