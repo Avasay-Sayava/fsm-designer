@@ -1056,7 +1056,11 @@ const doubleStrucks = {
 };
 
 function convertLatexShortcuts(text) {
-  text = text.replaceAll("*", "∗").replaceAll(">=", "≥").replaceAll("<=", "≤").replaceAll("!=", "≠");
+  text = text
+    .replaceAll("*", "∗")
+    .replaceAll(">=", "≥")
+    .replaceAll("<=", "≤")
+    .replaceAll("!=", "≠");
   if (text.split("\\hr").length % 2 == 0) {
     text =
       text.substring(0, text.lastIndexOf("\\hr")).replaceAll("\\hr", "") +
@@ -1339,7 +1343,8 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
     while (hrs.length > i + 1) {
       if (
         !(selectedText[2] > hrs[i] && selectedText[2] < hrs[i + 1] + 3) ||
-        !isSelected || selectedObjects.length != 1
+        !isSelected ||
+        selectedObjects.length != 1
       ) {
         var width1 = c.measureText(
           convertLatexShortcuts(originalText.substring(0, hrs[i]))
@@ -1400,8 +1405,7 @@ var canvas;
 var mouseOnCanvas = false;
 var canvasFocus = false;
 var nodeRadius = 30;
-var displayFont =
-  '20px "XITS Math", Calibri';
+var displayFont = '20px "XITS Math", Calibri';
 var nodes = [];
 var links = [];
 
@@ -1875,6 +1879,7 @@ window.onload = function () {
   };
 
   canvas.onmouseup = function (e) {
+    var selectedObject = selectedObjects[selectedObjects.length - 1];
     if (movingObject) redoStack = [];
     movingObject = false;
 
@@ -1890,7 +1895,17 @@ window.onload = function () {
         resetCaret();
 
         redoStack = [];
+      } else {
+        nodes.push(new Node(currentLink.to.x, currentLink.to.y));
+        if (selectedObject) {
+          links.push(new Link(selectedObject, nodes[nodes.length - 1]));
+          selectedObjects = [nodes[nodes.length - 1]];
+        } else {
+          links.push(new StartLink(nodes[nodes.length - 1], currentLink.from));
+          selectedObjects = [nodes[nodes.length - 1]];
+        }
       }
+
       currentLink = null;
       draw();
     }
@@ -2629,6 +2644,10 @@ function restoreFromBackupData(backup, flag = true) {
   nodeRadius = backup.nodeRadius;
   document.getElementById("rangeSlider").value = `${nodeRadius}`;
 
+  document.getElementById("height").value = canvas.height =
+    backup.height || "600";
+  document.getElementById("width").value = canvas.width = backup.width || "800";
+
   if (flag) draw();
 }
 
@@ -2647,6 +2666,8 @@ function restoreBackup(data = localStorage["fsm"]) {
 
 function getBackupData() {
   var backup = {
+    height: canvas.height,
+    width: canvas.width,
     nodes: [],
     links: [],
     nodeRadius: nodeRadius,
