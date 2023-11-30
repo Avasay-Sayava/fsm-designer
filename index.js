@@ -904,6 +904,7 @@ const subscripts = {
   8: "₈",
   9: "₉",
   "+": "₊",
+  "∗": "⁎",
   "-": "₋",
   "=": "₌",
   "(": "₍",
@@ -934,7 +935,7 @@ const superscripts = {
   8: "⁸",
   9: "⁹",
   "+": "⁺",
-  "⁎": "*",
+  "∗": "*",
   "-": "⁻",
   "=": "⁼",
   "(": "⁽",
@@ -1055,7 +1056,7 @@ const doubleStrucks = {
 };
 
 function convertLatexShortcuts(text) {
-  text = text.replaceAll("*", "⁎").replaceAll(">=", "≥").replaceAll("<=", "≤");
+  text = text.replaceAll("*", "∗").replaceAll(">=", "≥").replaceAll("<=", "≤").replaceAll("!=", "≠");
   if (text.split("\\hr").length % 2 == 0) {
     text =
       text.substring(0, text.lastIndexOf("\\hr")).replaceAll("\\hr", "") +
@@ -1400,7 +1401,7 @@ var mouseOnCanvas = false;
 var canvasFocus = false;
 var nodeRadius = 30;
 var displayFont =
-  '20px Calibri, "Times New Roman", serif, Consolas, "Courier New", monospace';
+  '20px "XITS Math", Calibri';
 var nodes = [];
 var links = [];
 
