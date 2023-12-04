@@ -3192,7 +3192,8 @@ function run(start, word) {
   }
 
   if (stay) {
-    run(start, word.substring(1));
+    start.runtimeColor = "red";
+    console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
   }
 }
 
