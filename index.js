@@ -2034,6 +2034,26 @@ document.onkeydown = function (e) {
         selectedText[0] = Math.max(selectedText[0], 0);
         resetCaret();
         draw();
+        
+        if (selectedObjects.length == 1) {
+          if (selectedObjects[0] instanceof StartLink)
+            document.getElementById("info").innerHTML = `
+                <p>Automata info:</p>
+                <p>Full: ${isFull(selectedObjects[0].node)}</p>
+                <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
+              `;
+          else
+            document.getElementById("info").innerHTML = `
+                <p>Automata info:</p>
+                <p>Full: ${isFull(selectedObjects[0])}</p>
+                <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
+              `;
+        } else
+          document.getElementById("info").innerHTML = `
+              <p>Automata info:</p>
+              <p>Full: ...</p>
+              <p>Deterministic: ...</p>
+            `;
       }
 
       // backspace is a shortcut for the back button, but do NOT want to change pages
