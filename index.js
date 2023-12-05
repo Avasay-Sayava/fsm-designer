@@ -2135,17 +2135,16 @@ document.onkeydown = function (e) {
 };
 
 document.onkeypress = function (e) {
-  if (!canvasFocus) return true;
-
   e.preventDefault();
 
   // don't read keystrokes when other things have focus
   var key = crossBrowserKey(e);
   if (!canvasHasFocus()) {
     // don't read keystrokes when other things have focus
+    console.log(true);
     return true;
   } else if (
-    ((key >= 0x20 && key <= 0x7e) || key == 13) &&
+    // ((key >= 0x20 && key <= 0x7e) || key == 13) &&
     !e.metaKey &&
     !e.altKey &&
     !e.ctrlKey &&
