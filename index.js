@@ -890,6 +890,8 @@ const greekLetterNames = [
   "cap",
   "cdot",
   "times",
+  "lang",
+  "exists",
 ];
 
 const subscripts = {
@@ -1174,6 +1176,14 @@ function convertLatexShortcuts(text) {
       text = text.replace(new RegExp("\\\\" + name, "g"), "×");
       continue;
     }
+    if (name == "lang") {
+      text = text.replace(new RegExp("\\\\" + name, "g"), "ℒ");
+      continue;
+    }
+    if (name == "exists") {
+      text = text.replace(new RegExp("\\\\" + name, "g"), "Ǝ");
+      continue;
+    }
     text = text.replace(
       new RegExp("\\\\" + name, "g"),
       String.fromCharCode(913 + i + (i > 16))
@@ -1405,7 +1415,7 @@ var canvas;
 var mouseOnCanvas = false;
 var canvasFocus = false;
 var nodeRadius = 30;
-var displayFont = '20px "XITS Math", Calibri';
+var displayFont = '20px "Cambria Math", "XITS Math", Calibri';
 var nodes = [];
 var links = [];
 
@@ -2135,7 +2145,7 @@ document.onkeydown = function (e) {
 };
 
 document.onkeypress = function (e) {
-  e.preventDefault();
+  if (canvasFocus) e.preventDefault();
 
   // don't read keystrokes when other things have focus
   var key = crossBrowserKey(e);
