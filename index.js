@@ -1827,6 +1827,7 @@ window.onload = function () {
       if (e.ctrlKey) selectedObjects.push(selectedObject);
       else selectedObjects = [selectedObject];
       nodes.push(selectedObject);
+      selectedText = [0, 0, 0];
       resetCaret();
       draw();
     } else if (selectedObject instanceof Node) {
@@ -1914,6 +1915,10 @@ window.onload = function () {
           links.push(new StartLink(nodes[nodes.length - 1], currentLink.from));
           selectedObjects = [nodes[nodes.length - 1]];
         }
+
+        selectedText = [0, 0, 0];
+
+        resetCaret();
       }
 
       currentLink = null;
@@ -1966,9 +1971,9 @@ document.onkeydown = function (e) {
         if (selectedObjects.length == 1) {
           if (selectedText[0] == selectedText[1]) {
             selectedObjects[0].text =
-              selectedObjects[0].text.substr(0, selectedText[2]) +
+              selectedObjects[0].text.substring(0, selectedText[2]) +
               copiedText +
-              selectedObjects[0].text.substr(
+              selectedObjects[0].text.substring(
                 selectedText[2],
                 selectedObjects[0].text.length
               );
@@ -1978,9 +1983,9 @@ document.onkeydown = function (e) {
                 copiedText.length;
           } else {
             selectedObjects[0].text =
-              selectedObjects[0].text.substr(0, selectedText[0]) +
+              selectedObjects[0].text.substring(0, selectedText[0]) +
               copiedText +
-              selectedObjects[0].text.substr(selectedText[1]);
+              selectedObjects[0].text.substring(selectedText[1]);
             selectedText[2] =
               selectedText[1] =
               selectedText[0] +=
@@ -2097,16 +2102,16 @@ document.onkeydown = function (e) {
     if (selectedObjects.length == 1 && selectedObjects[0].text) {
       if (selectedText[0] == selectedText[1]) {
         selectedObjects[0].text =
-          selectedObjects[0].text.substr(0, selectedText[2] - 1) +
-          selectedObjects[0].text.substr(
+          selectedObjects[0].text.substring(0, selectedText[2] - 1) +
+          selectedObjects[0].text.substring(
             selectedText[2],
             selectedObjects[0].text.length
           );
         selectedText[2] = selectedText[0] = selectedText[1] -= 1;
       } else {
         selectedObjects[0].text =
-          selectedObjects[0].text.substr(0, selectedText[0]) +
-          selectedObjects[0].text.substr(
+          selectedObjects[0].text.substring(0, selectedText[0]) +
+          selectedObjects[0].text.substring(
             selectedText[1],
             selectedObjects[0].text.length
           );
@@ -2162,19 +2167,32 @@ document.onkeypress = function (e) {
     "text" in selectedObjects[0]
   ) {
     if (selectedText[0] == selectedText[1]) {
-      selectedObjects[0].text =
-        selectedObjects[0].text.substr(0, selectedText[2]) +
-        String.fromCharCode(key) +
-        selectedObjects[0].text.substr(
-          selectedText[2],
-          selectedObjects[0].text.length
-        );
+      if (!(key == 41 && selectedObjects[0].text.substr(selectedText[0], 1) == ")" ||
+            key == 93 && selectedObjects[0].text.substr(selectedText[0], 1) == "]" ||
+            key == 125 && selectedObjects[0].text.substr(selectedText[0], 1) == "}"))
+        selectedObjects[0].text =
+          selectedObjects[0].text.substring(0, selectedText[2]) +
+          (key == 40 ? "()" : key == 91 ? "[]" : key == 123 ? "{}" : String.fromCharCode(key)) +
+          selectedObjects[0].text.substring(
+            selectedText[2],
+            selectedObjects[0].text.length
+          );
       selectedText[2] = selectedText[0] = ++selectedText[1];
+    } else if (key == 40 || key == 123 || key == 91) {
+      selectedObjects[0].text =
+      selectedObjects[0].text.substring(0, selectedText[0]) +
+        String.fromCharCode(key) +
+        selectedObjects[0].text.substring(selectedText[0], selectedText[1]) +
+        (key == 40 ? String.fromCharCode(key + 1) : String.fromCharCode(key + 2)) +
+        selectedObjects[0].text.substring(selectedText[1]);
+      selectedText[0]++;
+      selectedText[1]++;
+      selectedText[2]++;
     } else {
       selectedObjects[0].text =
-        selectedObjects[0].text.substr(0, selectedText[0]) +
+        selectedObjects[0].text.substring(0, selectedText[0]) +
         String.fromCharCode(key) +
-        selectedObjects[0].text.substr(selectedText[1]);
+        selectedObjects[0].text.substring(selectedText[1]);
       selectedText[2] = selectedText[1] = ++selectedText[0];
     }
     resetCaret();
