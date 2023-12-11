@@ -58,6 +58,124 @@ var isChrome =
 // Edge (based on chromium) detection
 var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
 
+class Tape {
+  constructor(x, y, tape = null, uncycled = false) {
+    if (tape != null) {
+      this.cells = [];
+      this.x = tape.x;
+      this.y = tape.y;
+      for (var i = 0; i < tape.cells.length; i++)
+        this.cells.push(
+          new Cell(
+            tape.cells[i].text,
+            this.x + i * Cell.width,
+            this.y,
+            uncycled ? null : this,
+            i
+          )
+        );
+      if (!uncycled) cells.push(...this.cells);
+    } else {
+      this.cells = [
+        new Cell("\\vdash", x, y, this, 0),
+        new Cell("\\Delta", x + Cell.width, y, this, 1),
+        new Cell("\\Delta", x + 2 * Cell.width, y, this, 2),
+        new Cell("\\Delta", x + 3 * Cell.width, y, this, 3),
+        new Cell("\\Delta", x + 4 * Cell.width, y, this, 4),
+        new Cell("...", x + 5 * Cell.width, y, this, 5),
+      ];
+      cells.push(...this.cells);
+      this.x = x;
+      this.y = y;
+    }
+  }
+
+  add = function (text, index = this.cells.length) {
+    var cell = new Cell(text, 0, 0, this, index);
+
+    this.cells.splice(index, 0, cell);
+
+    cells.push(cell);
+
+    this.align();
+  };
+
+  remove = function (index = this.cells.length - 1) {
+    var out = this.cells[index];
+    this.cells.splice(index, 1);
+
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i] == out) {
+        cells.splice(i, 1);
+        break;
+      }
+    }
+
+    this.align();
+
+    return out.text;
+  };
+
+  draw = function (c) {
+    this.cells.forEach(function (e) {
+      e.draw(c);
+    });
+  };
+
+  align = function () {
+    for (var i = 0; i < this.cells.length; i++) {
+      this.cells[i].index = i;
+      this.cells[i].x = this.x + i * Cell.width;
+      this.cells[i].y = this.y;
+    }
+  };
+}
+
+class Cell {
+  static width = 40;
+  static height = 30;
+
+  constructor(text, x, y, tape, index) {
+    this.index = index;
+    this.tape = tape;
+    this.text = text;
+    this.x = x;
+    this.y = y;
+  }
+
+  draw = function (c) {
+    c.strokeRect(this.x, this.y, Cell.width, Cell.height);
+    drawMultilineText(
+      c,
+      this.text,
+      this.x + Cell.width / 2,
+      this.y + Cell.height / 2,
+      null,
+      inArr(this, selectedObjects)
+    );
+  };
+
+  containsPoint = function (x, y) {
+    return (
+      this.x <= x &&
+      this.x + Cell.width >= x &&
+      this.y <= y &&
+      this.y + Cell.height >= y
+    );
+  };
+
+  setMouseStart = function (x, y) {
+    this.mouseOffsetX = this.tape.x - x;
+    this.mouseOffsetY = this.tape.y - y;
+  }
+
+  setAnchorPoint = function (x, y) {
+    this.tape.x = x + this.mouseOffsetX;
+    this.tape.y = y + this.mouseOffsetY;
+    this.tape.align();
+  };
+}
+
 function Link(a, b) {
   this.nodeA = a;
   this.nodeB = b;
@@ -1194,14 +1312,14 @@ function convertLatexShortcuts(text) {
     );
   }
 
-  for (let i = 0; i < text.length; i++) {
+  for (var i = 0; i < text.length; i++) {
     if (subscripts[text.charAt(i)])
       text = text.replace("_" + text.charAt(i), subscripts[text.charAt(i)]);
     if (superscripts[text.charAt(i)])
       text = text.replace("^" + text.charAt(i), superscripts[text.charAt(i)]);
   }
 
-  for (let i = 0; i < text.length; i++) {
+  for (var i = 0; i < text.length; i++) {
     if (doubleStrucks[text.charAt(i)])
       text = text.replace(
         "\\\\" + text.charAt(i),
@@ -1418,6 +1536,7 @@ var nodeRadius = 30;
 var displayFont = '20px "Cambria Math", "XITS Math", Calibri';
 var nodes = [];
 var links = [];
+var cells = [];
 
 var fromX = null,
   fromY = null;
@@ -1448,6 +1567,7 @@ var originalClick;
 function clearCanvas() {
   nodes = [];
   links = [];
+  cells = [];
   localStorage["fsm"] = JSON.stringify(getBackupData());
   var context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -1500,6 +1620,18 @@ function drawUsing(c) {
       : "black";
     links[i].draw(c);
   }
+  for (var i = 0; i < cells.length; i++) {
+    c.lineWidth = 1;
+
+    c.fillStyle = c.strokeStyle = inArr(cells[i], selectedObjects)
+      ? cells[i] == selectObject(mouseX, mouseY)
+        ? "rgba(0,0,255,0.7)"
+        : "blue"
+      : cells[i] == selectObject(mouseX, mouseY)
+      ? "rgba(0,0,0,0.7)"
+      : "black";
+    cells[i].draw(c);
+  }
   if (currentLink != null) {
     c.lineWidth = 1;
     c.fillStyle = c.strokeStyle = "black";
@@ -1529,6 +1661,11 @@ function selectObject(x, y) {
   for (var i = 0; i < nodes.length; i++) {
     if (nodes[i].containsPoint(x, y)) {
       return nodes[i];
+    }
+  }
+  for (var i = 0; i < cells.length; i++) {
+    if (cells[i].containsPoint(x, y)) {
+      return cells[i];
     }
   }
   for (var i = 0; i < links.length; i++) {
@@ -1715,7 +1852,6 @@ window.onload = function () {
     }
 
     fromX = fromY = toX = toY = null;
-    console.log("reset");
 
     draw();
   };
@@ -1765,7 +1901,7 @@ window.onload = function () {
         if (e.ctrlKey) selectedObjects.push(selectedObject);
         else selectedObjects = [selectedObject];
       } else if (e.ctrlKey) {
-        for (let i = 0; i < selectedObjects.length; i++) {
+        for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i] == selectedObject) {
             delete selectedObjects[i];
             break;
@@ -1833,6 +1969,17 @@ window.onload = function () {
     } else if (selectedObject instanceof Node) {
       selectedObject.isAcceptState = !selectedObject.isAcceptState;
       draw();
+    } else if (selectedObject instanceof Cell) {
+      console.log(selectedObject.index, selectedObject.index + 1);
+      selectedObject.tape.add("\\Delta", selectedObject.index + 1);
+      selectedObject.tape.align();
+      selectedObjects = [selectedObject.tape.cells[selectedObject.index + 1]];
+      selectedText = [
+        selectedObjects[0].text.length,
+        selectedObjects[0].text.length,
+        selectedObjects[0].text.length,
+      ];
+      draw();
     }
 
     redoStack = [];
@@ -1879,7 +2026,11 @@ window.onload = function () {
 
     if (movingObject && mouseDown) {
       selectedObjects.forEach((object) => {
-        if (selectedObjects.length == 1 || object instanceof Node)
+        if (
+          selectedObjects.length == 1 ||
+          object instanceof Node ||
+          object instanceof Cell
+        )
           object.setAnchorPoint(mouse.x, mouse.y);
         if (object instanceof Node) snapNode(object);
         draw();
@@ -1998,7 +2149,12 @@ document.onkeydown = function (e) {
 
       if (e.altKey) {
         selectedObjects.forEach((object) => {
-          selectAutomaton(object);
+          if (object instanceof Cell) {
+            selectedObjects.push(...object.tape.cells);
+            selectedObjects = Array.from(new Set(selectedObjects));
+          } else {
+            selectAutomaton(object);
+          }
         });
       } else if (e.shiftKey) {
         if (selectedObjects.length == 1)
@@ -2008,7 +2164,7 @@ document.onkeydown = function (e) {
             selectedObjects[0].text.length,
           ];
       } else {
-        selectedObjects = [...nodes, ...links];
+        selectedObjects = [...nodes, ...links, ...cells];
       }
 
       draw();
@@ -2049,13 +2205,15 @@ document.onkeydown = function (e) {
         selectedText[0] = Math.max(selectedText[0], 0);
         resetCaret();
         draw();
-        
+
         if (selectedObjects.length == 1) {
           if (selectedObjects[0] instanceof StartLink)
             document.getElementById("info").innerHTML = `
                 <p>Automata info:</p>
                 <p>Full: ${isFull(selectedObjects[0].node)}</p>
-                <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
+                <p>Deterministic: ${isDeterministic(
+                  selectedObjects[0].node
+                )}</p>
               `;
           else
             document.getElementById("info").innerHTML = `
@@ -2073,6 +2231,27 @@ document.onkeydown = function (e) {
 
       // backspace is a shortcut for the back button, but do NOT want to change pages
       return false;
+    }
+  }
+
+  if (key == 9) {
+    if (selectedObjects.length == 1 && selectedObjects[0] instanceof Cell) {
+      if (e.shiftKey)
+        selectedObjects = [
+          selectedObjects[0].tape.cells[selectedObjects[0].index - 1] ||
+            selectedObjects[0],
+        ];
+      else
+        selectedObjects = [
+          selectedObjects[0].tape.cells[selectedObjects[0].index + 1] ||
+            selectedObjects[0],
+        ];
+      selectedText = [
+        selectedObjects[0].text.length,
+        selectedObjects[0].text.length,
+        selectedObjects[0].text.length,
+      ];
+      e.preventDefault();
     }
   }
 
@@ -2156,7 +2335,6 @@ document.onkeypress = function (e) {
   var key = crossBrowserKey(e);
   if (!canvasHasFocus()) {
     // don't read keystrokes when other things have focus
-    console.log(true);
     return true;
   } else if (
     // ((key >= 0x20 && key <= 0x7e) || key == 13) &&
@@ -2167,12 +2345,25 @@ document.onkeypress = function (e) {
     "text" in selectedObjects[0]
   ) {
     if (selectedText[0] == selectedText[1]) {
-      if (!(key == 41 && selectedObjects[0].text.substr(selectedText[0], 1) == ")" ||
-            key == 93 && selectedObjects[0].text.substr(selectedText[0], 1) == "]" ||
-            key == 125 && selectedObjects[0].text.substr(selectedText[0], 1) == "}"))
+      if (
+        !(
+          (key == 41 &&
+            selectedObjects[0].text.substr(selectedText[0], 1) == ")") ||
+          (key == 93 &&
+            selectedObjects[0].text.substr(selectedText[0], 1) == "]") ||
+          (key == 125 &&
+            selectedObjects[0].text.substr(selectedText[0], 1) == "}")
+        )
+      )
         selectedObjects[0].text =
           selectedObjects[0].text.substring(0, selectedText[2]) +
-          (key == 40 ? "()" : key == 91 ? "[]" : key == 123 ? "{}" : String.fromCharCode(key)) +
+          (key == 40
+            ? "()"
+            : key == 91
+            ? "[]"
+            : key == 123
+            ? "{}"
+            : String.fromCharCode(key)) +
           selectedObjects[0].text.substring(
             selectedText[2],
             selectedObjects[0].text.length
@@ -2180,10 +2371,12 @@ document.onkeypress = function (e) {
       selectedText[2] = selectedText[0] = ++selectedText[1];
     } else if (key == 40 || key == 123 || key == 91) {
       selectedObjects[0].text =
-      selectedObjects[0].text.substring(0, selectedText[0]) +
+        selectedObjects[0].text.substring(0, selectedText[0]) +
         String.fromCharCode(key) +
         selectedObjects[0].text.substring(selectedText[0], selectedText[1]) +
-        (key == 40 ? String.fromCharCode(key + 1) : String.fromCharCode(key + 2)) +
+        (key == 40
+          ? String.fromCharCode(key + 1)
+          : String.fromCharCode(key + 2)) +
         selectedObjects[0].text.substring(selectedText[1]);
       selectedText[0]++;
       selectedText[1]++;
@@ -2328,14 +2521,18 @@ function saveSelectedAsPng() {
   var nodesToSave = [];
   var linksTmp = [...links];
   var linksToSave = [];
+  var cellsTmp = [...cells];
+  var cellsToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
+    else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
     else linksToSave.push(obj);
   });
 
-  selectedObjects = [];
   nodes = [...nodesToSave];
   links = [...linksToSave];
+  cells = Array.from(new Set(cellsToSave));
+  selectedObjects = [];
 
   draw(false);
 
@@ -2361,7 +2558,8 @@ function saveSelectedAsPng() {
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave];
+  cells = [...cellsTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, cellsToSave];
 
   draw();
 }
@@ -2492,14 +2690,18 @@ function saveSelectedAsSvg(flag = false) {
   var nodesToSave = [];
   var linksTmp = [...links];
   var linksToSave = [];
+  var cellsTmp = [...cells];
+  var cellsToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
+    else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
     else linksToSave.push(obj);
   });
 
-  selectedObjects = [];
   nodes = [...nodesToSave];
   links = [...linksToSave];
+  cells = Array.from(new Set(cellsToSave));
+  selectedObjects = [];
 
   drawUsing(exporter);
 
@@ -2508,7 +2710,8 @@ function saveSelectedAsSvg(flag = false) {
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave];
+  cells = [...cellsTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, cellsToSave];
 
   draw();
 
@@ -2533,14 +2736,18 @@ function saveSelectedAsLaTeX() {
   var nodesToSave = [];
   var linksTmp = [...links];
   var linksToSave = [];
+  var cellsTmp = [...cells];
+  var cellsToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
+    else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
     else linksToSave.push(obj);
   });
 
-  selectedObjects = [];
   nodes = [...nodesToSave];
   links = [...linksToSave];
+  cells = Array.from(new Set(cellsToSave));
+  selectedObjects = [];
 
   drawUsing(exporter);
 
@@ -2549,7 +2756,8 @@ function saveSelectedAsLaTeX() {
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave];
+  cells = [...cellsTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, cellsToSave];
 
   draw();
 }
@@ -2580,19 +2788,24 @@ function saveSelectedAsJSON() {
   var nodesToSave = [];
   var linksTmp = [...links];
   var linksToSave = [];
+  var cellsTmp = [...cells];
+  var cellsToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
+    else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
     else linksToSave.push(obj);
   });
 
   nodes = [...nodesToSave];
   links = [...linksToSave];
+  cells = Array.from(new Set(cellsToSave));
 
   var jsonData = JSON.stringify(getBackupData());
   downloadFile("automaton_backup.json", jsonData, "text/json");
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
+  cells = [...cellsTmp];
 
   draw();
 }
@@ -2608,11 +2821,14 @@ function jsonUploaded() {
       var data = JSON.parse(content);
       var nodesTmp = [...nodes];
       var linksTmp = [...links];
+      var cellsTmp = [...cells];
       nodes = [];
       links = [];
+      cells = [];
       restoreFromBackupData(data, false);
       nodes.push(...nodesTmp);
       links.push(...linksTmp);
+      cells.push(...cellsTmp);
       draw();
     } catch (e) {
       alert("Failed loading file " + file.name);
@@ -2685,6 +2901,9 @@ function restoreFromBackupData(backup, flag = true) {
     node.textOnly = backupNode.textOnly;
     nodes.push(node);
   }
+  for (var i = 0; i < backup.tapes.length; i++) {
+    new Tape(0, 0, backup.tapes[i], !flag);
+  }
   for (var i = 0; i < backup.links.length; i++) {
     var backupLink = backup.links[i];
     var link = null;
@@ -2726,6 +2945,7 @@ function restoreBackup(data = localStorage["fsm"]) {
   try {
     var backup = JSON.parse(data);
     restoreFromBackupData(backup);
+    console.log("restoted backup");
   } catch (e) {
     localStorage["fsm"] = "";
   }
@@ -2737,6 +2957,7 @@ function getBackupData() {
     width: canvas.width,
     nodes: [],
     links: [],
+    tapes: [],
     nodeRadius: nodeRadius,
   };
   for (var i = 0; i < nodes.length; i++) {
@@ -2750,6 +2971,13 @@ function getBackupData() {
     };
     backup.nodes.push(backupNode);
   }
+  var tapes = new Set();
+  for (var i = 0; i < cells.length; i++) {
+    tapes.add(cells[i].tape);
+  }
+  tapes.forEach(function (tape) {
+    backup.tapes.push(new Tape(0, 0, tape, true));
+  });
   for (var i = 0; i < links.length; i++) {
     var link = links[i];
     var backupLink = null;
@@ -2979,6 +3207,16 @@ function deleteSelected() {
       });
     }
 
+    for (var i = 0; i < cells.length; i++) {
+      selectedObjects.forEach((object) => {
+        if (cells[i] == object) {
+          var tape = cells[i].tape;
+          tape.remove(cells[i--].index);
+          tape.align();
+        }
+      });
+    }
+
     for (var i = 0; i < links.length; i++) {
       selectedObjects.forEach((object) => {
         try {
@@ -2993,6 +3231,7 @@ function deleteSelected() {
         } catch (err) {}
       });
     }
+
     selectedObjects = [];
 
     redoStack = [];
