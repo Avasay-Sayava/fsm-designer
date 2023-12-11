@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="icon.png" />
-    <link href="https://fonts.cdnfonts.com/css/xits" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/xits" rel="stylesheet" />
     <script src="index.js"></script>
     <script>
       if (typeof btoa == "undefined") {
@@ -145,14 +145,35 @@
         Your browser does not support<br />the HTML5 &lt;canvas&gt; element
       </span>
     </canvas>
-    <div>
-      <input
-        style="text-align: right"
-        type="text"
-        id="width"
-        value="800"
-      />x<input type="text" id="height" value="600" />
-    </div>
+    <ul class="toolbar" style="margin: auto">
+      <li>
+        <button onclick="javascript:makeNodeTextOnly();redoStack = []">
+          Toggle drawing the selected node's circles
+        </button>
+      </li>
+      |
+      <div>
+        <input
+          style="text-align: right"
+          type="text"
+          id="width"
+          value="800"
+        /><text style="color:dimgray">x</text><input type="text" id="height" value="600" />
+      </div>
+      |
+      <li>
+        <b>Circle radius:</b>
+        <input
+          type="range"
+          id="rangeSlider"
+          min="20"
+          max="80"
+          value="30"
+          oninput="javascript:radiusChanged()"
+          onchange="redoStack = []"
+        />
+      </li>
+    </ul>
     <div>
       <textarea id="output"></textarea>
       <ul>
@@ -170,6 +191,14 @@
         </li>
       </ul>
       <ul>
+        <li><b>Add a TM tape:</b> Alt+double-click on the canvas</li>
+        <li><b>Move left/right in the TM tape:</b> Shift+TAB/TAB</li>
+        <li>
+          <b>Add a cell to the TM tape:</b> double-click a TM cell, to add a
+          cell after it
+        </li>
+      </ul>
+      <ul>
         <li><b>Undo:</b> Ctrl+Z</li>
         <li><b>Redo:</b> Ctrl+Y</li>
         (or use the slider above the canvas)
@@ -182,8 +211,8 @@
         <li><b>Select multiple objects:</b> Ctrl+Click on the object</li>
         <li><b>Or using selection box:</b> Drag your mouse over the canvas</li>
         <li>
-          <b>Select whole automata:</b> Ctrl+Alt+A, with object\s already
-          selected from the automatas you want to select
+          <b>Select whole automata/TM tape:</b> Ctrl+Alt+A, with object\s
+          already selected from the automata/TM tape you want to select
         </li>
       </ul>
       <ul>
@@ -191,28 +220,6 @@
         <li><b>Copy text:</b> Ctrl+Shift+C</li>
         <li><b>Paste text:</b> Ctrl+Shift+V</li>
         <li><b>Select all text:</b> Ctrl+Shift+A</li>
-      </ul>
-      <ul>
-        <li>
-          <b>Circle radius:</b>
-          <input
-            type="range"
-            id="rangeSlider"
-            min="20"
-            max="80"
-            value="30"
-            oninput="javascript:radiusChanged()"
-            onchange="redoStack = []"
-          />
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <b>If you just want to add more text:</b>
-          <button onclick="javascript:makeNodeTextOnly();redoStack = []">
-            Toggle drawing the selected node's circles
-          </button>
-        </li>
       </ul>
       <ul>
         <li>
@@ -314,7 +321,7 @@
             </tr>
             <tr>
               <td>\lang</td>
-              <td style="font-family: 'Cambria Math';" id="symbol">ℒ</td>
+              <td style="font-family: 'Cambria Math'" id="symbol">ℒ</td>
             </tr>
             <tr>
               <td>\emptyset</td>
@@ -366,7 +373,7 @@
       <a href="http://madebyevan.com/">Copyright (c) 2010 Evan Wallace</a> (See
       <a href="http://madebyevan.com/fsm">madebyevan.com/fsm</a>)
       <br />
-      JSON System from
+      JSON System base from
       <a href="http://www.cs.unc.edu/~otternes/comp455/fsm_designer"
         >yalue's (Nathan Otterness) version</a
       >

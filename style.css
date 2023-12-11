@@ -498,7 +498,7 @@ td#symbol {
 input#height,
 input#width,
 input[type="text"] {
-  width: 50px;
+  width: 30px;
   background: none;
   border: none;
   -webkit-appearance: none;
