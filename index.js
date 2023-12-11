@@ -1959,13 +1959,20 @@ window.onload = function () {
     }
 
     if (selectedObject == null) {
-      selectedObject = new Node(mouse.x, mouse.y);
-      if (e.ctrlKey) selectedObjects.push(selectedObject);
-      else selectedObjects = [selectedObject];
-      nodes.push(selectedObject);
-      selectedText = [0, 0, 0];
-      resetCaret();
-      draw();
+      if (e.altKey) {
+        selectedObject = new Tape(mouse.x, mouse.y);
+        if (e.ctrlKey) selectedObjects.push(...selectedObject.cells);
+        else selectedObjects = [...selectedObject.cells];
+        draw();
+      } else {
+        selectedObject = new Node(mouse.x, mouse.y);
+        if (e.ctrlKey) selectedObjects.push(selectedObject);
+        else selectedObjects = [selectedObject];
+        nodes.push(selectedObject);
+        selectedText = [0, 0, 0];
+        resetCaret();
+        draw();
+      }
     } else if (selectedObject instanceof Node) {
       selectedObject.isAcceptState = !selectedObject.isAcceptState;
       draw();
