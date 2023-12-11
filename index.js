@@ -77,7 +77,7 @@ class Tape {
       if (!uncycled) cells.push(...this.cells);
     } else {
       this.cells = [
-        new Cell("\\vdash", x, y, this, 0),
+        new Cell("\\Delta", x, y, this, 0),
         new Cell("\\Delta", x + Cell.width, y, this, 1),
         new Cell("\\Delta", x + 2 * Cell.width, y, this, 2),
         new Cell("\\Delta", x + 3 * Cell.width, y, this, 3),
@@ -1961,8 +1961,8 @@ window.onload = function () {
     if (selectedObject == null) {
       if (e.altKey) {
         selectedObject = new Tape(mouse.x, mouse.y);
-        if (e.ctrlKey) selectedObjects.push(...selectedObject.cells);
-        else selectedObjects = [...selectedObject.cells];
+        if (e.ctrlKey) selectedObjects.push(selectedObject.cells[0]);
+        else selectedObjects = [selectedObject.cells[0]];
         draw();
       } else {
         selectedObject = new Node(mouse.x, mouse.y);
