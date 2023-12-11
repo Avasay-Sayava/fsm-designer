@@ -43,15 +43,22 @@
       <div class="item" onclick="deleteSelected()">Delete</div>
       <div
         class="item"
-        onclick="selectedObjects=[...nodes,...links];resetCaret();draw()"
+        onclick="selectedObjects=[...nodes,...links, ...cells];resetCaret();draw()"
       >
         Select All
       </div>
       <div
         class="item"
-        onclick="selectedObjects.forEach(object=>{selectAutomaton(object)});if(selectedObjects.length>1){clearInterval(caretTimer);caretVisible=false}draw()"
+        onclick="selectedObjects.forEach((object) => {
+          if (object instanceof Cell) {
+            selectedObjects.push(...object.tape.cells);
+            selectedObjects = Array.from(new Set(selectedObjects));
+          } else {
+            selectAutomaton(object);
+          }
+        });if(selectedObjects.length>1){clearInterval(caretTimer);caretVisible=false}draw()"
       >
-        Select Automata
+        Select Group
       </div>
     </div>
     <!-- <a href="/tutorial/"> -->
@@ -122,7 +129,7 @@
       <button
         onclick="selectedObjects.forEach(object=>{selectAutomaton(object)});if(selectedObjects.length>1){clearInterval(caretTimer);caretVisible=false}draw()"
       >
-        Select whole automata
+        Select whole group
       </button>
       |
       <button
@@ -158,7 +165,8 @@
           type="text"
           id="width"
           value="800"
-        /><text style="color:dimgray">x</text><input type="text" id="height" value="600" />
+        /><text style="color: dimgray">x</text
+        ><input type="text" id="height" value="600" />
       </div>
       |
       <li>

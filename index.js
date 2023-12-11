@@ -167,7 +167,7 @@ class Cell {
   setMouseStart = function (x, y) {
     this.mouseOffsetX = this.tape.x - x;
     this.mouseOffsetY = this.tape.y - y;
-  }
+  };
 
   setAnchorPoint = function (x, y) {
     this.tape.x = x + this.mouseOffsetX;
@@ -1977,7 +1977,6 @@ window.onload = function () {
       selectedObject.isAcceptState = !selectedObject.isAcceptState;
       draw();
     } else if (selectedObject instanceof Cell) {
-      console.log(selectedObject.index, selectedObject.index + 1);
       selectedObject.tape.add("\\Delta", selectedObject.index + 1);
       selectedObject.tape.align();
       selectedObjects = [selectedObject.tape.cells[selectedObject.index + 1]];
@@ -3470,9 +3469,22 @@ function run(start, word) {
       start.runtimeColor = "green";
       console.log(`accepted ((${convertLatexShortcuts(start.text)}))`);
     } else {
-      start.runtimeColor = "red";
+      if (start.runtimeColor != "green")
+        start.runtimeColor = "red";
       console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
     }
+
+    for (var i = 0; i < links.length; i++) {
+      const link = links[i];
+      if (
+        link.nodeA == start &&
+        inArr("ε", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/))
+      ) {
+        selectedObjects.push(link);
+        run(link.nodeB, word);
+      }
+    }
+
     return;
   }
 
@@ -3486,8 +3498,19 @@ function run(start, word) {
     const link = links[i];
     if (
       link.nodeA == start &&
-      (inArr(word.charAt(0), link.text.split(/[\s\r]*,[\s\r]*/)) ||
-        inArr("\\Sigma", link.text.split(/[\s\r]*,[\s\r]*/)))
+      inArr("ε", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/))
+    ) {
+      selectedObjects.push(link);
+      run(link.nodeB, word);
+    }
+
+    if (
+      link.nodeA == start &&
+      (inArr(
+        word.charAt(0),
+        convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)
+      ) ||
+        inArr("Σ", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)))
     ) {
       selectedObjects.push(link);
       run(link.nodeB, word.substring(1));
@@ -3495,8 +3518,11 @@ function run(start, word) {
     } else if (
       link.node == start &&
       link instanceof SelfLink &&
-      (inArr(word.charAt(0), link.text.split(/[\s\r]*,[\s\r]*/)) ||
-        inArr("\\Sigma", link.text.split(/[\s\r]*,[\s\r]*/)))
+      (inArr(
+        word.charAt(0),
+        convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)
+      ) ||
+        inArr("Σ", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)))
     ) {
       selectedObjects.push(link);
       run(link.node, word.substring(1));
@@ -3505,7 +3531,8 @@ function run(start, word) {
   }
 
   if (stay) {
-    start.runtimeColor = "red";
+    if (start.runtimeColor != "green")
+      start.runtimeColor = "red";
     console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
   }
 }
@@ -3522,33 +3549,53 @@ function getAlphabet(object, selected = []) {
         !inArr(link, selected)
       ) {
         getAlphabet(link, selected).forEach((letter) => {
-          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
-            alphabet.push(letter);
+          if (
+            convertLatexShortcuts(letter) != "Σ" &&
+            convertLatexShortcuts(letter) != "ε" &&
+            letter != ""
+          )
+            alphabet.push(convertLatexShortcuts(letter));
         });
       }
     });
   } else if (!(object instanceof StartLink)) {
     object.text.split(/\s*,\s*/).forEach((letter) => {
-      if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
-        alphabet.push(letter);
+      if (
+        convertLatexShortcuts(letter) != "Σ" &&
+        convertLatexShortcuts(letter) != "ε" &&
+        letter != ""
+      )
+        alphabet.push(convertLatexShortcuts(letter));
     });
 
     if (object instanceof Link) {
       if (!inArr(object.nodeA, selected))
         getAlphabet(object.nodeA, selected).forEach((letter) => {
-          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
-            alphabet.push(letter);
+          if (
+            convertLatexShortcuts(letter) != "Σ" &&
+            convertLatexShortcuts(letter) != "ε" &&
+            convertLatexShortcuts(letter) != ""
+          )
+            alphabet.push(convertLatexShortcuts(letter));
         });
       if (!inArr(object.nodeB, selected))
         getAlphabet(object.nodeB, selected).forEach((letter) => {
-          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
-            alphabet.push(letter);
+          if (
+            convertLatexShortcuts(letter) != "Σ" &&
+            convertLatexShortcuts(letter) != "ε" &&
+            convertLatexShortcuts(letter) != ""
+          )
+            alphabet.push(convertLatexShortcuts(letter));
         });
     } else if (object instanceof SelfLink) {
       if (!inArr(object.node, selected))
         getAlphabet(object.node, selected).forEach((letter) => {
-          if (letter != "\\Sigma" && letter != "\\epsilon" && letter != "")
-            alphabet.push(letter);
+          if (
+            convertLatexShortcuts(letter) != "Σ" &&
+            convertLatexShortcuts(letter) != "ε" &&
+            convertLatexShortcuts(letter) != ""
+          )
+            alphabet.push(convertLatexShortcuts(letter));
         });
     }
   }
@@ -3569,7 +3616,7 @@ function isFull(object, selected = []) {
 
   if (
     Array.from(new Set(getLetters(object))).length != alphabet.length &&
-    !inArr("\\Sigma", getLetters(object))
+    !inArr("Σ", getLetters(object))
   ) {
     return false;
   }
@@ -3615,7 +3662,8 @@ function getLetters(object) {
   links.forEach((link) => {
     if (object == link.nodeA || object == link.node)
       link.text.split(/\s*,\s*/).forEach((letter) => {
-        if (letter != "\\epsilon" && letter != "") letters.push(letter);
+        if (convertLatexShortcuts(letter) != "ε" && letter != "")
+          letters.push(convertLatexShortcuts(letter));
       });
   });
 
