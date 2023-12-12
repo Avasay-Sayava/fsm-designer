@@ -88,6 +88,8 @@ class Tape {
       this.x = x;
       this.y = y;
     }
+
+    this.align();
   }
 
   add = function (text, index = this.cells.length) {
@@ -123,44 +125,120 @@ class Tape {
   };
 
   align = function () {
+    var widthSum = 0;
+    var maxHeight = 0;
+
     for (var i = 0; i < this.cells.length; i++) {
+      this.cells[i].align(Cell.width - 2 * TextBox.padding);
       this.cells[i].index = i;
-      this.cells[i].x = this.x + i * Cell.width;
+      this.cells[i].x = this.x + widthSum;
       this.cells[i].y = this.y;
+      widthSum += this.cells[i].width
+      maxHeight = Math.max(maxHeight, this.cells[i].height);
+    }
+
+    for (var i = 0; i < this.cells.length; i++) {
+      this.cells[i].height = maxHeight;
     }
   };
 }
 
-class Cell {
-  static width = 40;
-  static height = 30;
+class TextBox {
+  static padding = 5;
 
-  constructor(text, x, y, tape, index) {
-    this.index = index;
-    this.tape = tape;
+  constructor(text, x, y) {
     this.text = text;
     this.x = x;
     this.y = y;
+    this.padding = TextBox.padding;
+    this.align();
   }
 
   draw = function (c) {
-    c.strokeRect(this.x, this.y, Cell.width, Cell.height);
+    c.strokeRect(this.x, this.y, this.width, this.height);
     drawMultilineText(
       c,
       this.text,
-      this.x + Cell.width / 2,
-      this.y + Cell.height / 2,
+      this.x + this.padding,
+      this.y + 2.5 * this.padding,
       null,
-      inArr(this, selectedObjects)
+      inArr(this, selectedObjects),
+      false,
+      false
     );
   };
 
   containsPoint = function (x, y) {
     return (
       this.x <= x &&
-      this.x + Cell.width >= x &&
+      this.x + this.width >= x &&
       this.y <= y &&
-      this.y + Cell.height >= y
+      this.y + this.height >= y
+    );
+  };
+
+  setMouseStart = function (x, y) {
+    this.mouseOffsetX = this.x - x;
+    this.mouseOffsetY = this.y - y;
+  };
+
+  setAnchorPoint = function (x, y) {
+    this.x = x + this.mouseOffsetX;
+    this.y = y + this.mouseOffsetY;
+  };
+
+  align = function (minWidth = 0) {
+    this.width = minWidth;
+    this.height = 25 * this.text.split("\r").length;
+
+    var start = 0;
+    var c = canvas.getContext("2d");
+
+    c.font = displayFont;
+    for (var i = 0; i < this.text.split("\r").length; i++) {
+      var text;
+      if (inArr(this, selectedObjects) && selectedObjects.length == 1)
+        text =
+          convertLatexShortcuts(
+            this.text.split("\r")[i].substring(0, selectedText[0] - start)
+          ) +
+          convertLatexShortcuts(
+            this.text.split("\r")[i].substring(selectedText[0] - start, selectedText[1] - start)
+          ) +
+          convertLatexShortcuts(this.text.split("\r")[i].substring(selectedText[1] - start));
+      else text = convertLatexShortcuts(this.text.split("\r")[i]);
+      
+      this.width = Math.max(this.width, c.measureText(text).width);
+
+      start += this.text.split("\r")[i].length + 1;
+    }
+
+    this.width += 2 * this.padding;
+  }
+}
+
+class Cell extends TextBox {
+  static width = 40;
+  static height = 30;
+
+  constructor(text, x, y, tape, index) {
+    super(text, x, y);
+    this.index = index;
+    this.tape = tape;
+    this.align(Cell.width);
+  }
+
+  draw = function (c) {
+    c.strokeRect(this.x, this.y, this.width, this.height);
+    drawMultilineText(
+      c,
+      this.text,
+      this.x + this.width / 2,
+      this.y + this.height / 2,
+      null,
+      inArr(this, selectedObjects),
+      true,
+      true
     );
   };
 
@@ -174,6 +252,14 @@ class Cell {
     this.tape.y = y + this.mouseOffsetY;
     this.tape.align();
   };
+
+  right = function () {
+    return this.tape.cells[this.index + 1];
+  }
+
+  left = function () {
+    return this.tape.cells[this.index - 1];
+  }
 }
 
 function Link(a, b) {
@@ -1361,7 +1447,7 @@ function canvasHasFocus() {
   return (document.activeElement || document.body) == document.body;
 }
 
-function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
+function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0, xCentered = true, yCentered = true) {
   var text;
   if (isSelected && selectedObjects.length == 1)
     text =
@@ -1390,7 +1476,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
   end = start + originalText.length;
 
   // center the text
-  x -= width / 2;
+  if (xCentered) x -= width / 2;
 
   // position the text intelligently if given an angle
   if (angleOrNull != null) {
@@ -1488,7 +1574,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected, start = 0) {
   }
 }
 
-function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected) {
+function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected, xCentered = true, yCentered = true) {
   var start = 0;
   if (angleOrNull != null) {
     var sin = Math.sin(angleOrNull);
@@ -1501,15 +1587,20 @@ function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected) {
       Math.PI;
   }
 
+  if (yCentered)
+    y -= (originalText.split("\r").length - 1) * 25 / 2;
+
   originalText.split("\r").forEach((line, i) => {
     drawText(
       c,
       line,
       x,
-      y + 25 * i - (originalText.split("\r").length - 1) * 10,
+      y + 25 * i,
       angleOrNull,
       isSelected,
-      start++
+      start++,
+      xCentered,
+      yCentered
     );
     start += line.length;
   });
@@ -1537,6 +1628,7 @@ var displayFont = '20px "Cambria Math", "XITS Math", Calibri';
 var nodes = [];
 var links = [];
 var cells = [];
+var textBoxes = [];
 
 var fromX = null,
   fromY = null;
@@ -1568,6 +1660,7 @@ function clearCanvas() {
   nodes = [];
   links = [];
   cells = [];
+  textBoxes = [];
   localStorage["fsm"] = JSON.stringify(getBackupData());
   var context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -1620,6 +1713,18 @@ function drawUsing(c) {
       : "black";
     links[i].draw(c);
   }
+  for (var i = 0; i < textBoxes.length; i++) {
+    c.lineWidth = 1;
+
+    c.fillStyle = c.strokeStyle = inArr(textBoxes[i], selectedObjects)
+      ? textBoxes[i] == selectObject(mouseX, mouseY)
+        ? "rgba(0,0,255,0.7)"
+        : "blue"
+      : textBoxes[i] == selectObject(mouseX, mouseY)
+      ? "rgba(0,0,0,0.7)"
+      : "black";
+    textBoxes[i].draw(c);
+  }
   for (var i = 0; i < cells.length; i++) {
     c.lineWidth = 1;
 
@@ -1666,6 +1771,11 @@ function selectObject(x, y) {
   for (var i = 0; i < cells.length; i++) {
     if (cells[i].containsPoint(x, y)) {
       return cells[i];
+    }
+  }
+  for (var i = 0; i < textBoxes.length; i++) {
+    if (textBoxes[i].containsPoint(x, y)) {
+      return textBoxes[i];
     }
   }
   for (var i = 0; i < links.length; i++) {
@@ -1960,9 +2070,11 @@ window.onload = function () {
 
     if (selectedObject == null) {
       if (e.altKey) {
-        selectedObject = new Tape(mouse.x, mouse.y);
-        if (e.ctrlKey) selectedObjects.push(selectedObject.cells[0]);
-        else selectedObjects = [selectedObject.cells[0]];
+        selectedObject = new TextBox("enter text", mouse.x, mouse.y);
+        if (e.ctrlKey) selectedObjects.push(selectedObject);
+        else selectedObjects = [selectedObject];
+        textBoxes.push(selectedObject);
+        selectedText = [selectedObject.text.length, selectedObject.text.length, selectedObject.text.length];
         draw();
       } else {
         selectedObject = new Node(mouse.x, mouse.y);
@@ -1985,6 +2097,16 @@ window.onload = function () {
         selectedObjects[0].text.length,
         selectedObjects[0].text.length,
       ];
+      draw();
+    } else if (selectedObject instanceof TextBox && e.altKey) {
+      for (let i = 0; i < textBoxes.length; i++) {
+        if (selectedObject == textBoxes[i])
+          textBoxes.splice(i--, 1);
+      }
+      selectedObject = new Tape(selectedObject.x, selectedObject.y);
+      if (e.ctrlKey) selectedObjects.push(selectedObject.cells[0]);
+      else selectedObjects = [selectedObject.cells[0]];
+      selectedText = [selectedObject.cells[0].text.length, selectedObject.cells[0].text.length, selectedObject.cells[0].text.length];
       draw();
     }
 
@@ -2035,7 +2157,7 @@ window.onload = function () {
         if (
           selectedObjects.length == 1 ||
           object instanceof Node ||
-          object instanceof Cell
+          object instanceof TextBox
         )
           object.setAnchorPoint(mouse.x, mouse.y);
         if (object instanceof Node) snapNode(object);
@@ -2170,7 +2292,8 @@ document.onkeydown = function (e) {
             selectedObjects[0].text.length,
           ];
       } else {
-        selectedObjects = [...nodes, ...links, ...cells];
+        selectedObjects = [...nodes, ...links, ...cells, ...textBoxes];
+        selectedText = [selectedObjects[0].text.length, selectedObjects[0].text.length, selectedObjects[0].text.length];
       }
 
       draw();
@@ -2209,6 +2332,12 @@ document.onkeydown = function (e) {
         selectedText[2] = Math.max(selectedText[2], 0);
         selectedText[1] = Math.max(selectedText[1], 0);
         selectedText[0] = Math.max(selectedText[0], 0);
+        
+        if (selectedObjects[0].align)
+          selectedObjects[0].align();
+        if (selectedObjects[0].tape)
+          selectedObjects[0].tape.align();
+
         resetCaret();
         draw();
 
@@ -2244,12 +2373,12 @@ document.onkeydown = function (e) {
     if (selectedObjects.length == 1 && selectedObjects[0] instanceof Cell) {
       if (e.shiftKey)
         selectedObjects = [
-          selectedObjects[0].tape.cells[selectedObjects[0].index - 1] ||
+          selectedObjects[0].left() ||
             selectedObjects[0],
         ];
       else
         selectedObjects = [
-          selectedObjects[0].tape.cells[selectedObjects[0].index + 1] ||
+          selectedObjects[0].right() ||
             selectedObjects[0],
         ];
       selectedText = [
@@ -2276,6 +2405,13 @@ document.onkeydown = function (e) {
     selectedText[0] = Math.min(selectedText[0], text.length);
     selectedText[0] = Math.max(selectedText[0], 0);
     resetCaret();
+
+    if (selectedObjects[0].align)
+      selectedObjects[0].align();
+    if (selectedObjects[0].tape)
+      selectedObjects[0].tape.align();
+
+    draw();
   }
 
   if (key == 16) {
@@ -2302,6 +2438,12 @@ document.onkeydown = function (e) {
           );
         selectedText[2] = selectedText[1] = selectedText[0];
       }
+
+      if (selectedObjects[0].align)
+        selectedObjects[0].align();
+      if (selectedObjects[0].tape)
+        selectedObjects[0].tape.align();
+
       resetCaret();
       draw();
     }
@@ -2394,6 +2536,12 @@ document.onkeypress = function (e) {
         selectedObjects[0].text.substring(selectedText[1]);
       selectedText[2] = selectedText[1] = ++selectedText[0];
     }
+
+    if (selectedObjects[0].align)
+      selectedObjects[0].align();
+    if (selectedObjects[0].tape)
+      selectedObjects[0].tape.align();
+
     resetCaret();
     draw();
 
@@ -2529,15 +2677,19 @@ function saveSelectedAsPng() {
   var linksToSave = [];
   var cellsTmp = [...cells];
   var cellsToSave = [];
+  var textBoxesTmp = [...textBoxes];
+  var textBoxesToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
+    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
     else linksToSave.push(obj);
   });
 
   nodes = [...nodesToSave];
   links = [...linksToSave];
   cells = Array.from(new Set(cellsToSave));
+  textBoxes = [...textBoxesToSave];
   selectedObjects = [];
 
   draw(false);
@@ -2565,7 +2717,8 @@ function saveSelectedAsPng() {
   nodes = [...nodesTmp];
   links = [...linksTmp];
   cells = [...cellsTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave, cellsToSave];
+  textBoxes = [...textBoxesTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, ...cellsToSave, ...textBoxesToSave];
 
   draw();
 }
@@ -2575,14 +2728,22 @@ function getSelectedBoundingRect() {
   var nodesToSave = [];
   var linksTmp = [...links];
   var linksToSave = [];
+  var cellsTmp = [...cells];
+  var cellsToSave = [];
+  var textBoxesTmp = [...textBoxes];
+  var textBoxesToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
+    else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
+    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
     else linksToSave.push(obj);
   });
 
-  selectedObjects = [];
   nodes = [...nodesToSave];
   links = [...linksToSave];
+  cells = Array.from(new Set(cellsToSave));
+  textBoxes = [...textBoxesToSave];
+  selectedObjects = [];
 
   draw(false);
 
@@ -2590,7 +2751,9 @@ function getSelectedBoundingRect() {
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave];
+  cells = [...cellsTmp];
+  textBoxes = [...textBoxesTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, ...cellsToSave, ...textBoxesToSave];
 
   draw();
 
@@ -2654,7 +2817,7 @@ function getBoundingRect() {
 
 function downloadFile(filename, data, type) {
   var element = document.createElement("a");
-  element.setAttribute("href", "data:" + type + ";base64," + btoa(data));
+  element.setAttribute("href", "data:" + type + ";base64," + window.btoa(unescape(encodeURIComponent(data))));
   element.setAttribute("download", filename);
   element.style.display = "none";
   document.body.appendChild(element);
@@ -2698,15 +2861,19 @@ function saveSelectedAsSvg(flag = false) {
   var linksToSave = [];
   var cellsTmp = [...cells];
   var cellsToSave = [];
+  var textBoxesTmp = [...textBoxes];
+  var textBoxesToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
+    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
     else linksToSave.push(obj);
   });
 
   nodes = [...nodesToSave];
   links = [...linksToSave];
   cells = Array.from(new Set(cellsToSave));
+  textBoxes = [...textBoxesToSave];
   selectedObjects = [];
 
   drawUsing(exporter);
@@ -2717,7 +2884,8 @@ function saveSelectedAsSvg(flag = false) {
   nodes = [...nodesTmp];
   links = [...linksTmp];
   cells = [...cellsTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave, cellsToSave];
+  textBoxes = [...textBoxesTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, ...cellsToSave, ...textBoxesToSave];
 
   draw();
 
@@ -2744,15 +2912,19 @@ function saveSelectedAsLaTeX() {
   var linksToSave = [];
   var cellsTmp = [...cells];
   var cellsToSave = [];
+  var textBoxesTmp = [...textBoxes];
+  var textBoxesToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
+    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
     else linksToSave.push(obj);
   });
 
   nodes = [...nodesToSave];
   links = [...linksToSave];
   cells = Array.from(new Set(cellsToSave));
+  textBoxes = [...textBoxesToSave];
   selectedObjects = [];
 
   drawUsing(exporter);
@@ -2763,7 +2935,8 @@ function saveSelectedAsLaTeX() {
   nodes = [...nodesTmp];
   links = [...linksTmp];
   cells = [...cellsTmp];
-  selectedObjects = [...nodesToSave, ...linksToSave, cellsToSave];
+  textBoxes = [...textBoxesTmp];
+  selectedObjects = [...nodesToSave, ...linksToSave, ...cellsToSave, ...textBoxesToSave];
 
   draw();
 }
@@ -2796,15 +2969,19 @@ function saveSelectedAsJSON() {
   var linksToSave = [];
   var cellsTmp = [...cells];
   var cellsToSave = [];
+  var textBoxesTmp = [...textBoxes];
+  var textBoxesToSave = [];
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
+    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
     else linksToSave.push(obj);
   });
 
   nodes = [...nodesToSave];
   links = [...linksToSave];
   cells = Array.from(new Set(cellsToSave));
+  textBoxes = [...textBoxesToSave];
 
   var jsonData = JSON.stringify(getBackupData());
   downloadFile("automaton_backup.json", jsonData, "text/json");
@@ -2812,6 +2989,7 @@ function saveSelectedAsJSON() {
   nodes = [...nodesTmp];
   links = [...linksTmp];
   cells = [...cellsTmp];
+  textBoxes = [...textBoxesTmp];
 
   draw();
 }
@@ -2828,6 +3006,7 @@ function jsonUploaded() {
       var nodesTmp = [...nodes];
       var linksTmp = [...links];
       var cellsTmp = [...cells];
+      var textBoxesTmp = [...textBoxes];
       nodes = [];
       links = [];
       cells = [];
@@ -2835,6 +3014,7 @@ function jsonUploaded() {
       nodes.push(...nodesTmp);
       links.push(...linksTmp);
       cells.push(...cellsTmp);
+      textBoxes.push(...textBoxesTmp);
       draw();
     } catch (e) {
       alert("Failed loading file " + file.name);
@@ -2910,6 +3090,11 @@ function restoreFromBackupData(backup, flag = true) {
   for (var i = 0; i < backup.tapes.length; i++) {
     new Tape(0, 0, backup.tapes[i], !flag);
   }
+  for (var i = 0; i < backup.textBoxes.length; i++) {
+    var backupTextBox = backup.textBoxes[i];
+    var textBox = new TextBox(backupTextBox.text, backupTextBox.x, backupTextBox.y);
+    textBoxes.push(textBox);
+  }
   for (var i = 0; i < backup.links.length; i++) {
     var backupLink = backup.links[i];
     var link = null;
@@ -2964,6 +3149,7 @@ function getBackupData() {
     nodes: [],
     links: [],
     tapes: [],
+    textBoxes: [],
     nodeRadius: nodeRadius,
   };
   for (var i = 0; i < nodes.length; i++) {
@@ -2984,6 +3170,15 @@ function getBackupData() {
   tapes.forEach(function (tape) {
     backup.tapes.push(new Tape(0, 0, tape, true));
   });
+  for (var i = 0; i < textBoxes.length; i++) {
+    var textBox = textBoxes[i];
+    var backupTextBox = {
+      x: textBox.x,
+      y: textBox.y,
+      text: textBox.text,
+    };
+    backup.textBoxes.push(backupTextBox);
+  }
   for (var i = 0; i < links.length; i++) {
     var link = links[i];
     var backupLink = null;
@@ -3219,6 +3414,14 @@ function deleteSelected() {
           var tape = cells[i].tape;
           tape.remove(cells[i--].index);
           tape.align();
+        }
+      });
+    }
+
+    for (var i = 0; i < textBoxes.length; i++) {
+      selectedObjects.forEach((object) => {
+        if (textBoxes[i] == object) {
+          textBoxes.splice(i--, 1);
         }
       });
     }
