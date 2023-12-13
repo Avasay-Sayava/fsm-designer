@@ -158,7 +158,11 @@ class TextBox {
   }
 
   draw = function (c) {
-    if (this.outline)
+    if (inArr(this, selectedObjects) && !this.outline)
+      c.strokeStyle = "rgba(0,0,255,0.3)";
+    else if (this == selectObject(mouseX, mouseY) && !this.outline)
+      c.strokeStyle = "rgba(0,0,0,0.3)";
+    if (this.outline || inArr(this, selectedObjects) || this == selectObject(mouseX, mouseY))
       c.strokeRect(this.x, this.y, this.width, this.height);
     drawMultilineText(
       c,
@@ -3118,7 +3122,7 @@ function restoreFromBackupData(backup, flag = true, select = false) {
     for (var i = 0; i < backup.textBoxes.length; i++) {
       var backupTextBox = backup.textBoxes[i];
       var textBox = new TextBox(backupTextBox.text, backupTextBox.x, backupTextBox.y);
-      textBox.out = backupTextBox.outline;
+      textBox.outline = backupTextBox.outline;
       textBoxes.push(textBox);
       if (select)
         selectedObjects.push(textBox);
