@@ -3271,7 +3271,6 @@ function saveBackup() {
     (!mouseDown || sliderMouseDown || zKey || yKey)
   ) {
     undoStack.push(JSON.stringify(backup));
-    console.log(redoStack.length);
     redoStack = [];
   }
 
