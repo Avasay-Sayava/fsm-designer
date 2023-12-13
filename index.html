@@ -87,7 +87,7 @@
       class="toolbar"
       style="opacity: 0.6; pointer-events: none"
     >
-      Export selected object/s as:
+      Export selected object(s) as:
       <a href="javascript:saveSelectedAsPng()" class="hover-underline-animation"
         >PNG</a
       >
@@ -136,8 +136,8 @@
     </canvas>
     <ul class="toolbar" style="margin: auto">
       <li>
-        <button onclick="javascript:makeNodeTextOnly();redoStack = []">
-          Toggle drawing the selected node's circles
+        <button onclick="javascript:toggleOutline();redoStack = []">
+          Toggle drawing selected object(s)'s outline
         </button>
       </li>
       |
@@ -181,7 +181,8 @@
         </li>
       </ul>
       <ul>
-        <li><b>Add a TM tape:</b> Alt+double-click on the canvas</li>
+        <li><b>Create a text box:</b> Alt+double-click on the canvas</li>
+        <li><b>Create a TM tape:</b> Alt+double-click on a text box</li>
         <li><b>Move left/right in the TM tape:</b> Shift+TAB/TAB</li>
         <li>
           <b>Add a cell to the TM tape:</b> double-click a TM cell, to add a

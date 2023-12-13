@@ -64,7 +64,7 @@ class Tape {
       this.cells = [];
       this.x = tape.x;
       this.y = tape.y;
-      for (var i = 0; i < tape.cells.length; i++)
+      for (var i = 0; i < tape.cells.length; i++) {
         this.cells.push(
           new Cell(
             tape.cells[i].text,
@@ -74,6 +74,8 @@ class Tape {
             i
           )
         );
+        this.cells[this.cells.length - 1].outline = tape.cells[i].outline;
+      }
       if (!uncycled) cells.push(...this.cells);
     } else {
       this.cells = [
@@ -150,12 +152,14 @@ class TextBox {
     this.text = text;
     this.x = x;
     this.y = y;
+    this.outline = true;
     this.padding = TextBox.padding;
     this.align();
   }
 
   draw = function (c) {
-    c.strokeRect(this.x, this.y, this.width, this.height);
+    if (this.outline)
+      c.strokeRect(this.x, this.y, this.width, this.height);
     drawMultilineText(
       c,
       this.text,
@@ -474,7 +478,7 @@ function Node(x, y) {
   this.mouseOffsetY = 0;
   this.isAcceptState = false;
   this.text = "";
-  this.textOnly = false;
+  this.outline = false;
   this.runtimeColor = null;
 }
 
@@ -490,7 +494,7 @@ Node.prototype.setAnchorPoint = function (x, y) {
 
 Node.prototype.draw = function (c) {
   c.strokeStyle = c.fillStyle = this.runtimeColor ?? this.fillStyle;
-  if (this.textOnly) {
+  if (this.outline) {
     drawMultilineText(
       c,
       this.text,
@@ -512,7 +516,7 @@ Node.prototype.draw = function (c) {
   c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
   c.stroke();
 
-  if (!this.textOnly)
+  if (!this.outline)
     // draw the text
     drawMultilineText(
       c,
@@ -758,6 +762,7 @@ function ExportAsLaTeX(bounds) {
   this.beginPath = function () {
     this._points = [];
   };
+
   this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
     x -= this.bounds[0];
     y -= this.bounds[1];
@@ -810,6 +815,7 @@ function ExportAsLaTeX(bounds) {
         ");\n";
     }
   };
+
   this.moveTo = this.lineTo = function (x, y) {
     x -= this.bounds[0];
     y -= this.bounds[1];
@@ -817,6 +823,7 @@ function ExportAsLaTeX(bounds) {
     y *= this._scale;
     this._points.push({ x: x, y: y });
   };
+
   this.stroke = function () {
     if (this._points.length == 0) return;
     this._texData += "\\draw [" + this.strokeStyle + "]";
@@ -832,6 +839,7 @@ function ExportAsLaTeX(bounds) {
     }
     this._texData += ";\n";
   };
+
   this.fill = function () {
     if (this._points.length == 0) return;
     this._texData += "\\fill [" + this.strokeStyle + "]";
@@ -847,11 +855,13 @@ function ExportAsLaTeX(bounds) {
     }
     this._texData += ";\n";
   };
+
   this.measureText = function (text) {
     var c = canvas.getContext("2d");
     c.font = displayFont;
     return c.measureText(text);
   };
+
   this.advancedFillText = function (text, originalText, x, y, angleOrNull) {
     x -= this.bounds[0];
     y -= this.bounds[1];
@@ -922,6 +932,7 @@ function ExportAsSVG(bounds) {
   this.beginPath = function () {
     this._points = [];
   };
+
   this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
     x -= this.bounds[0];
     y -= this.bounds[1];
@@ -975,6 +986,7 @@ function ExportAsSVG(bounds) {
       this._svgData += '"/>\n';
     }
   };
+
   this.moveTo = this.lineTo = function (x, y) {
     x -= this.bounds[0];
     y -= this.bounds[1];
@@ -982,6 +994,7 @@ function ExportAsSVG(bounds) {
     y += this._transY;
     this._points.push({ x: x, y: y });
   };
+
   this.stroke = function () {
     if (this._points.length == 0) return;
     this._svgData +=
@@ -999,6 +1012,7 @@ function ExportAsSVG(bounds) {
     }
     this._svgData += '"/>\n';
   };
+
   this.fill = function () {
     if (this._points.length == 0) return;
     this._svgData +=
@@ -1016,11 +1030,13 @@ function ExportAsSVG(bounds) {
     }
     this._svgData += '"/>\n';
   };
+
   this.measureText = function (text) {
     var c = canvas.getContext("2d");
     c.font = displayFont;
     return c.measureText(text);
   };
+
   this.fillText = function (text, x, y) {
     x -= this.bounds[0];
     y -= this.bounds[1];
@@ -1037,6 +1053,7 @@ function ExportAsSVG(bounds) {
         "</text>\n";
     }
   };
+
   this.translate = function (x, y) {
     this._transX = x;
     this._transY = y;
@@ -1606,7 +1623,7 @@ function drawMultilineText(c, originalText, x, y, angleOrNull, isSelected, xCent
   });
 }
 
-let caretTimer;
+var caretTimer;
 var caretVisible = true;
 
 function resetCaret() {
@@ -1668,10 +1685,10 @@ function clearCanvas() {
   document.getElementById("rangeSlider").value = 30;
 }
 
-function makeNodeTextOnly() {
+function toggleOutline() {
   selectedObjects.forEach((object) => {
-    if ("textOnly" in object) {
-      object.textOnly = !object.textOnly;
+    if ("outline" in object) {
+      object.outline = !object.outline;
       draw();
     }
   });
@@ -2099,7 +2116,7 @@ window.onload = function () {
       ];
       draw();
     } else if (selectedObject instanceof TextBox && e.altKey) {
-      for (let i = 0; i < textBoxes.length; i++) {
+      for (var i = 0; i < textBoxes.length; i++) {
         if (selectedObject == textBoxes[i])
           textBoxes.splice(i--, 1);
       }
@@ -2109,8 +2126,6 @@ window.onload = function () {
       selectedText = [selectedObject.cells[0].text.length, selectedObject.cells[0].text.length, selectedObject.cells[0].text.length];
       draw();
     }
-
-    redoStack = [];
   };
 
   canvas.onmousemove = function (e) {
@@ -2170,7 +2185,6 @@ window.onload = function () {
 
   canvas.onmouseup = function (e) {
     var selectedObject = selectedObjects[selectedObjects.length - 1];
-    if (movingObject) redoStack = [];
     movingObject = false;
 
     if (currentLink != null) {
@@ -2183,8 +2197,6 @@ window.onload = function () {
         links.push(currentLink);
 
         resetCaret();
-
-        redoStack = [];
       } else {
         nodes.push(new Node(currentLink.to.x, currentLink.to.y));
         if (selectedObject) {
@@ -2682,7 +2694,7 @@ function saveSelectedAsPng() {
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
-    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
+    else if (obj instanceof TextBox) textBoxesToSave.push(obj);
     else linksToSave.push(obj);
   });
 
@@ -2735,7 +2747,7 @@ function getSelectedBoundingRect() {
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
-    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
+    else if (obj instanceof TextBox) textBoxesToSave.push(obj);
     else linksToSave.push(obj);
   });
 
@@ -2866,7 +2878,7 @@ function saveSelectedAsSvg(flag = false) {
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
-    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
+    else if (obj instanceof TextBox) textBoxesToSave.push(obj);
     else linksToSave.push(obj);
   });
 
@@ -2917,7 +2929,7 @@ function saveSelectedAsLaTeX() {
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
-    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
+    else if (obj instanceof TextBox) textBoxesToSave.push(obj);
     else linksToSave.push(obj);
   });
 
@@ -2962,7 +2974,7 @@ function saveAsJSON() {
   downloadFile("automaton_backup.json", jsonData, "text/json");
 }
 
-function saveSelectedAsJSON() {
+function saveSelectedAsJSON(flag = true) {
   var nodesTmp = [...nodes];
   var nodesToSave = [];
   var linksTmp = [...links];
@@ -2974,7 +2986,7 @@ function saveSelectedAsJSON() {
   selectedObjects.forEach((obj) => {
     if (obj instanceof Node) nodesToSave.push(obj);
     else if (obj instanceof Cell) cellsToSave.push(...obj.tape.cells);
-    else if (obj instanceof TextBox) textBoxesToSave.push(...obj);
+    else if (obj instanceof TextBox) textBoxesToSave.push(obj);
     else linksToSave.push(obj);
   });
 
@@ -2983,8 +2995,9 @@ function saveSelectedAsJSON() {
   cells = Array.from(new Set(cellsToSave));
   textBoxes = [...textBoxesToSave];
 
-  var jsonData = JSON.stringify(getBackupData());
-  downloadFile("automaton_backup.json", jsonData, "text/json");
+  var backupData = getBackupData();
+  if (flag)
+    downloadFile("automaton_backup.json", JSON.stringify(getBackupData()), "text/json");
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
@@ -2992,6 +3005,9 @@ function saveSelectedAsJSON() {
   textBoxes = [...textBoxesTmp];
 
   draw();
+
+  if (!flag)
+    return backupData;
 }
 
 function jsonUploaded() {
@@ -3078,46 +3094,61 @@ function fixed(number, digits) {
   return number.toFixed(digits).replace(/0+$/, "").replace(/\.$/, "");
 }
 
-function restoreFromBackupData(backup, flag = true) {
-  for (var i = 0; i < backup.nodes.length; i++) {
-    var backupNode = backup.nodes[i];
-    var node = new Node(backupNode.x, backupNode.y);
-    node.isAcceptState = backupNode.isAcceptState;
-    node.text = backupNode.text;
-    node.textOnly = backupNode.textOnly;
-    nodes.push(node);
-  }
-  for (var i = 0; i < backup.tapes.length; i++) {
-    new Tape(0, 0, backup.tapes[i], !flag);
-  }
-  for (var i = 0; i < backup.textBoxes.length; i++) {
-    var backupTextBox = backup.textBoxes[i];
-    var textBox = new TextBox(backupTextBox.text, backupTextBox.x, backupTextBox.y);
-    textBoxes.push(textBox);
-  }
-  for (var i = 0; i < backup.links.length; i++) {
-    var backupLink = backup.links[i];
-    var link = null;
-    if (backupLink.type == "SelfLink") {
-      link = new SelfLink(nodes[backupLink.node]);
-      link.anchorAngle = backupLink.anchorAngle;
-      link.text = backupLink.text;
-    } else if (backupLink.type == "StartLink") {
-      link = new StartLink(nodes[backupLink.node]);
-      link.deltaX = backupLink.deltaX;
-      link.deltaY = backupLink.deltaY;
-      link.text = backupLink.text;
-    } else if (backupLink.type == "Link") {
-      link = new Link(nodes[backupLink.nodeA], nodes[backupLink.nodeB]);
-      link.parallelPart = backupLink.parallelPart;
-      link.perpendicularPart = backupLink.perpendicularPart;
-      link.text = backupLink.text;
-      link.lineAngleAdjust = backupLink.lineAngleAdjust;
+function restoreFromBackupData(backup, flag = true, select = false) {
+  if (select)
+    selectedObjects = [];
+  if (backup.nodes)
+    for (var i = 0; i < backup.nodes.length; i++) {
+      var backupNode = backup.nodes[i];
+      var node = new Node(backupNode.x, backupNode.y);
+      node.isAcceptState = backupNode.isAcceptState;
+      node.text = backupNode.text;
+      node.outline = backupNode.outline;
+      nodes.push(node);
+      if (select)
+        selectedObjects.push(node);
     }
-    if (link != null) {
-      links.push(link);
+  if (backup.tapes)
+    for (var i = 0; i < backup.tapes.length; i++) {
+      var tape = new Tape(0, 0, backup.tapes[i], !flag);
+      if (select)
+        selectedObjects.push(...tape.cells);
     }
-  }
+  if (backup.textBoxes)
+    for (var i = 0; i < backup.textBoxes.length; i++) {
+      var backupTextBox = backup.textBoxes[i];
+      var textBox = new TextBox(backupTextBox.text, backupTextBox.x, backupTextBox.y);
+      textBox.out = backupTextBox.outline;
+      textBoxes.push(textBox);
+      if (select)
+        selectedObjects.push(textBox);
+    }
+  if (backup.links)
+    for (var i = 0; i < backup.links.length; i++) {
+      var backupLink = backup.links[i];
+      var link = null;
+      if (backupLink.type == "SelfLink") {
+        link = new SelfLink(nodes[backupLink.node]);
+        link.anchorAngle = backupLink.anchorAngle;
+        link.text = backupLink.text;
+      } else if (backupLink.type == "StartLink") {
+        link = new StartLink(nodes[backupLink.node]);
+        link.deltaX = backupLink.deltaX;
+        link.deltaY = backupLink.deltaY;
+        link.text = backupLink.text;
+      } else if (backupLink.type == "Link") {
+        link = new Link(nodes[backupLink.nodeA], nodes[backupLink.nodeB]);
+        link.parallelPart = backupLink.parallelPart;
+        link.perpendicularPart = backupLink.perpendicularPart;
+        link.text = backupLink.text;
+        link.lineAngleAdjust = backupLink.lineAngleAdjust;
+      }
+      if (link != null) {
+        links.push(link);
+        if (select)
+          selectedObjects.push(link);
+      }
+    }
   nodeRadius = backup.nodeRadius;
   document.getElementById("rangeSlider").value = `${nodeRadius}`;
 
@@ -3159,7 +3190,7 @@ function getBackupData() {
       y: node.y,
       text: node.text,
       isAcceptState: node.isAcceptState,
-      textOnly: node.textOnly,
+      outline: node.outline,
     };
     backup.nodes.push(backupNode);
   }
@@ -3176,6 +3207,7 @@ function getBackupData() {
       x: textBox.x,
       y: textBox.y,
       text: textBox.text,
+      outline: textBox.outline,
     };
     backup.textBoxes.push(backupTextBox);
   }
@@ -3231,10 +3263,12 @@ function saveBackup() {
   var backup = getBackupData();
 
   if (
-    localStorage["fsm"] !== undoStack[undoStack.length - 1] &&
+    JSON.stringify(backup) !== undoStack[undoStack.length - 1] &&
     (!mouseDown || sliderMouseDown || zKey || yKey)
   ) {
-    undoStack.push(localStorage["fsm"]);
+    undoStack.push(JSON.stringify(backup));
+    console.log(redoStack.length);
+    redoStack = [];
   }
 
   localStorage["fsm"] = JSON.stringify(backup);
@@ -3248,13 +3282,9 @@ function undo() {
   if (undoStack[undoStack.length - 1] != localStorage["fsm"])
     undoStack.push(localStorage["fsm"]);
 
-  redoStack.push(undoStack[undoStack.length - 1]);
-  undoStack.pop();
-
+  redoStack.push(undoStack.pop());
   clearCanvas();
   restoreBackup(undoStack[undoStack.length - 1]);
-
-  undoStack.pop();
 
   selectedObjects = [];
 }
@@ -3264,13 +3294,9 @@ function redo() {
     return;
   }
 
-  undoStack.push(redoStack[redoStack.length - 1]);
-  redoStack.pop();
-
+  undoStack.push(redoStack.pop());
   clearCanvas();
   restoreBackup(undoStack[undoStack.length - 1]);
-
-  undoStack.pop();
 
   selectedObjects = [];
 }
@@ -3288,73 +3314,27 @@ function updateRangeValue() {
   document.getElementById("history").value = undoStack.length - 1;
 }
 
-function copy() {
-  selectedObjects.forEach((e) => {
-    if (e instanceof Node) copied = [];
-    return;
+function copy(flag = true) {
+  if (flag)
+    copied = saveSelectedAsJSON(false);
+  copied.nodes.forEach(e => {
+    e.x += 20;
+    e.y += 20;
   });
-
-  selectedObjects.forEach((e) => {
-    if (e instanceof Node) {
-      copied.push(new Node(e.x, e.y));
-      copied[copied.length - 1].mouseOffsetX = e.mouseOffsetX;
-      copied[copied.length - 1].mouseOffsetY = e.mouseOffsetY;
-      copied[copied.length - 1].isAcceptState = e.isAcceptState;
-      copied[copied.length - 1].textOnly = e.textOnly;
-      copied[copied.length - 1].text = e.text;
-      copied[copied.length - 1].parent = e;
-    }
+  copied.tapes.forEach(e => {
+    e.x += 20;
+    e.y += 20;
   });
-
-  links.forEach((e) => {
-    if (
-      e instanceof Link &&
-      inArr(e.nodeA, selectedObjects) &&
-      inArr(e.nodeB, selectedObjects)
-    ) {
-      copied.push(
-        new Link(
-          getElementWithParent(e.nodeA, copied),
-          getElementWithParent(e.nodeB, copied)
-        )
-      );
-      copied[copied.length - 1].lineAngleAdjust = e.lineAngleAdjust;
-      copied[copied.length - 1].parallelPart = e.parallelPart;
-      copied[copied.length - 1].perpendicularPart = e.perpendicularPart;
-      copied[copied.length - 1].text = e.text;
-    } else if (e instanceof SelfLink && inArr(e.node, selectedObjects)) {
-      copied.push(new SelfLink(getElementWithParent(e.node, copied)));
-      copied[copied.length - 1].anchorAngle = e.anchorAngle;
-      copied[copied.length - 1].mouseOffsetAngle = e.mouseOffsetAngle;
-      copied[copied.length - 1].text = e.text;
-    } else if (e instanceof StartLink && inArr(e.node, selectedObjects)) {
-      copied.push(new StartLink(getElementWithParent(e.node, copied)));
-      copied[copied.length - 1].deltaX = e.deltaX;
-      copied[copied.length - 1].deltaY = e.deltaY;
-      copied[copied.length - 1].text = e.text;
-    }
+  copied.textBoxes.forEach(e => {
+    e.x += 20;
+    e.y += 20;
   });
 }
 
 function paste() {
-  if (copied.length > 0) selectedObjects = [];
-  copied.forEach((object) => {
-    if (object instanceof Node) {
-      object.x += 20;
-      object.y += 20;
-      nodes.push(object);
-    } else {
-      links.push(object);
-    }
+  restoreFromBackupData(copied, true, true);
 
-    selectedObjects.push(object);
-  });
-
-  copy();
-
-  redoStack = [];
-
-  draw();
+  copy(false);
 }
 
 function inArr(obj, arr) {
@@ -3442,8 +3422,6 @@ function deleteSelected() {
     }
 
     selectedObjects = [];
-
-    redoStack = [];
 
     draw();
   }
@@ -3602,7 +3580,7 @@ function handleMidSelectionWithShift(key) {
 
 function moveCaretToNextSpace(text, moveRight) {
   var [start, end, caret] = selectedText;
-  let newIndex = caret;
+  varnewIndex = caret;
 
   if (moveRight) {
     var i = 0;
@@ -3630,7 +3608,7 @@ function moveCaretToNextSpace(text, moveRight) {
 
 function selectToNextSpace(text, moveRight) {
   var [start, end, caret] = selectedText;
-  let newIndex = caret;
+  varnewIndex = caret;
 
   if (moveRight) {
     var i = 0;
