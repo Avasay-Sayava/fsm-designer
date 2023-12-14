@@ -3154,6 +3154,7 @@ function restoreBackup(data = localStorage["fsm"]) {
 
 function getBackupData() {
   var backup = {
+    nodeRadius: Node.radius,
     height: canvas.height,
     width: canvas.width,
     nodes: [],
@@ -3164,7 +3165,6 @@ function getBackupData() {
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i];
     var backupNode = {
-      nodeRadius: Node.radius,
       x: node.x,
       y: node.y,
       text: node.text,
