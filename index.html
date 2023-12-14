@@ -12,7 +12,7 @@
       if (typeof btoa == "undefined") {
         btoa = function (str) {
           return window.btoa(unescape(encodeURIComponent(str)));
-        }
+        };
       }
     </script>
   </head>
@@ -32,7 +32,7 @@
       </div>
       <div
         class="item"
-        onclick="selectGroup(...selectedObjects);draw()"
+        onclick="selectGroup(...selectedObjects);selectedText = [selectedObjects[0].text.length,selectedObjects[0].text.length,selectedObjects[0].text.length];draw()"
       >
         Select Group
       </div>
@@ -102,9 +102,7 @@
         >JSON</a
       >
       |
-      <button
-        onclick="selectGroup(...selectedObjects);draw()"
-      >
+      <button onclick="selectGroup(...selectedObjects);selectedText = [selectedObjects[0].text.length,selectedObjects[0].text.length,selectedObjects[0].text.length];draw()">
         Select whole group
       </button>
       |
