@@ -3075,6 +3075,7 @@ function fixed(number, digits) {
 }
 
 function restoreFromBackupData(backup, flag = true, select = false) {
+  Node.radius = backup.nodeRadius;
   if (select) selectedObjects = [];
   if (backup.nodes)
     for (var i = 0; i < backup.nodes.length; i++) {
@@ -3163,6 +3164,7 @@ function getBackupData() {
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i];
     var backupNode = {
+      nodeRadius: Node.radius,
       x: node.x,
       y: node.y,
       text: node.text,
