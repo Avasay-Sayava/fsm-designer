@@ -2280,7 +2280,7 @@ window.onload = function () {
   });
 };
 
-document.onkeydown = function (e) {
+document.onkeydown = async function (e) {
   var key = crossBrowserKey(e);
 
   if (e.ctrlKey) {
@@ -2294,13 +2294,17 @@ document.onkeydown = function (e) {
       e.preventDefault();
       cKey = true;
       if (e.shiftKey) {
-        if (selectedObjects.length == 1)
+        if (selectedObjects.length == 1) {
           copiedText = selectedObjects[0].text.substring(
             selectedText[0],
             selectedText[1]
           );
+          navigator.clipboard.writeText(copiedText);
+        }
       } else copy();
     } else if (key === 86) {
+      if (navigator.clipboard.readText)
+        copiedText = await navigator.clipboard.readText();
       e.preventDefault();
       vKey = true;
       if (e.shiftKey) {
@@ -2365,6 +2369,8 @@ document.onkeydown = function (e) {
             selectedText[0],
             selectedText[1]
           );
+
+          navigator.clipboard.writeText(copiedText);
 
           selectedObjects[0].text =
             selectedObjects[0].text.substring(0, selectedText[0]) +
