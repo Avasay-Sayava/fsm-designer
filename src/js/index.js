@@ -1995,25 +1995,7 @@ window.onload = function () {
         right = Math.max(fromX, toX);
       selectedObjects = selectObjects(left, top, right, bottom);
 
-      if (selectedObjects.length == 1) {
-        if (selectedObjects[0] instanceof StartLink)
-          document.getElementById("info").innerHTML = `
-            <p>Automata info:</p>
-            <p>Full: ${isFull(selectedObjects[0].node)}</p>
-            <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
-          `;
-        else
-          document.getElementById("info").innerHTML = `
-            <p>Automata info:</p>
-            <p>Full: ${isFull(selectedObjects[0])}</p>
-            <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
-          `;
-      } else
-        document.getElementById("info").innerHTML = `
-          <p>Automata info:</p>
-          <p>Full: ...</p>
-          <p>Deterministic: ...</p>
-        `;
+      updateIndicator();
     }
 
     fromX = fromY = toX = toY = null;
@@ -2024,26 +2006,6 @@ window.onload = function () {
   canvas.onmousedown = function (e) {
     var mouse = crossBrowserRelativeMousePos(e);
     var selectedObject = selectObject(mouse.x, mouse.y);
-
-    if (selectedObject) {
-      if (selectedObject instanceof StartLink)
-        document.getElementById("info").innerHTML = `
-            <p>Automata info:</p>
-            <p>Full: ${isFull(selectedObject.node)}</p>
-            <p>Deterministic: ${isDeterministic(selectedObject.node)}</p>
-          `;
-      else
-        document.getElementById("info").innerHTML = `
-            <p>Automata info:</p>
-            <p>Full: ${isFull(selectedObject)}</p>
-            <p>Deterministic: ${isDeterministic(selectedObject)}</p>
-          `;
-    } else
-      document.getElementById("info").innerHTML = `
-          <p>Automata info:</p>
-          <p>Full: ...</p>
-          <p>Deterministic: ...</p>
-        `;
 
     if (e.which === 3) {
       e.preventDefault();
@@ -2105,6 +2067,8 @@ window.onload = function () {
 
     draw();
 
+    updateIndicator();
+
     if (canvasHasFocus()) {
       // disable drag-and-drop only if the canvas is already focused
       return false;
@@ -2150,7 +2114,7 @@ window.onload = function () {
     } else if (selectedObject instanceof Cell) {
       selectedObject.tape.add("\\Delta", selectedObject.index + 1);
       selectedObject.tape.align();
-      selectedObjects = [selectedObject.tape.cells[selectedObject.index + 1]];
+      selectedObjects = [selectedObject.right()];
       selectedText = [
         selectedObjects[0].text.length,
         selectedObjects[0].text.length,
@@ -2339,11 +2303,12 @@ document.onkeydown = async function (e) {
 
       if (e.altKey) {
         selectGroup(...selectedObjects);
-        selectedText = [
-          selectedObjects[0].text.length,
-          selectedObjects[0].text.length,
-          selectedObjects[0].text.length,
-        ];
+        if (selectedObjects.length == 1)
+          selectedText = [
+            selectedObjects[0].text.length,
+            selectedObjects[0].text.length,
+            selectedObjects[0].text.length,
+          ];
       } else if (e.shiftKey) {
         if (selectedObjects.length == 1)
           selectedText = [
@@ -2353,11 +2318,12 @@ document.onkeydown = async function (e) {
           ];
       } else {
         selectedObjects = [...nodes, ...links, ...cells, ...textBoxes];
-        selectedText = [
-          selectedObjects[0].text.length,
-          selectedObjects[0].text.length,
-          selectedObjects[0].text.length,
-        ];
+        if (selectedObjects.length == 1)
+          selectedText = [
+            selectedObjects[0].text.length,
+            selectedObjects[0].text.length,
+            selectedObjects[0].text.length,
+          ];
       }
 
       draw();
@@ -2406,27 +2372,7 @@ document.onkeydown = async function (e) {
         resetCaret();
         draw();
 
-        if (selectedObjects.length == 1) {
-          if (selectedObjects[0] instanceof StartLink)
-            document.getElementById("info").innerHTML = `
-                <p>Automata info:</p>
-                <p>Full: ${isFull(selectedObjects[0].node)}</p>
-                <p>Deterministic: ${isDeterministic(
-                  selectedObjects[0].node
-                )}</p>
-              `;
-          else
-            document.getElementById("info").innerHTML = `
-                <p>Automata info:</p>
-                <p>Full: ${isFull(selectedObjects[0])}</p>
-                <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
-              `;
-        } else
-          document.getElementById("info").innerHTML = `
-              <p>Automata info:</p>
-              <p>Full: ...</p>
-              <p>Deterministic: ...</p>
-            `;
+        updateIndicator();
       }
 
       // backspace is a shortcut for the back button, but do NOT want to change pages
@@ -2439,11 +2385,12 @@ document.onkeydown = async function (e) {
       if (e.shiftKey)
         selectedObjects = [selectedObjects[0].left() || selectedObjects[0]];
       else selectedObjects = [selectedObjects[0].right() || selectedObjects[0]];
-      selectedText = [
-        selectedObjects[0].text.length,
-        selectedObjects[0].text.length,
-        selectedObjects[0].text.length,
-      ];
+      if (selectedObjects.length == 1)
+        selectedText = [
+          selectedObjects[0].text.length,
+          selectedObjects[0].text.length,
+          selectedObjects[0].text.length,
+        ];
       e.preventDefault();
     }
   }
@@ -2453,7 +2400,7 @@ document.onkeydown = async function (e) {
     document.getElementById("context-menu").classList.remove("visible");
   }
 
-  if (selectedObjects.length == 1 && selectedObjects[0].text.length != 0) {
+  if (selectedObjects[0] && selectedObjects.length == 1 && selectedObjects[0].text.length != 0) {
     handleKeyEvent(selectedObjects[0], e);
     var text = selectedObjects[0].text;
     selectedText[2] = Math.min(selectedText[2], text.length);
@@ -2502,25 +2449,7 @@ document.onkeydown = async function (e) {
       draw();
     }
 
-    if (selectedObjects.length == 1) {
-      if (selectedObjects[0] instanceof StartLink)
-        document.getElementById("info").innerHTML = `
-            <p>Automata info:</p>
-            <p>Full: ${isFull(selectedObjects[0].node)}</p>
-            <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
-          `;
-      else
-        document.getElementById("info").innerHTML = `
-            <p>Automata info:</p>
-            <p>Full: ${isFull(selectedObjects[0])}</p>
-            <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
-          `;
-    } else
-      document.getElementById("info").innerHTML = `
-          <p>Automata info:</p>
-          <p>Full: ...</p>
-          <p>Deterministic: ...</p>
-        `;
+    updateIndicator();
 
     // backspace is a shortcut for the back button, but do NOT want to change pages
     return false;
@@ -2603,25 +2532,7 @@ document.onkeypress = function (e) {
     e.preventDefault();
   }
 
-  if (selectedObjects.length == 1) {
-    if (selectedObjects[0] instanceof StartLink)
-      document.getElementById("info").innerHTML = `
-          <p>Automata info:</p>
-          <p>Full: ${isFull(selectedObjects[0].node)}</p>
-          <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
-        `;
-    else
-      document.getElementById("info").innerHTML = `
-          <p>Automata info:</p>
-          <p>Full: ${isFull(selectedObjects[0])}</p>
-          <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
-        `;
-  } else
-    document.getElementById("info").innerHTML = `
-        <p>Automata info:</p>
-        <p>Full: ...</p>
-        <p>Deterministic: ...</p>
-      `;
+  updateIndicator();
 };
 
 document.onkeyup = function (e) {
@@ -3947,4 +3858,26 @@ function selectGroup(...objects) {
   });
 
   selectedObjects = Array.from(new Set(selectedObjects));
+}
+
+function updateIndicator() {
+  if (selectedObjects.length == 1 && !(selectedObjects[0] instanceof TextBox)) {
+    if (selectedObjects[0] instanceof StartLink)
+      document.getElementById("info").innerHTML = `
+        <p>Automata info:</p>
+        <p>Full: ${isFull(selectedObjects[0].node)}</p>
+        <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
+      `;
+    else
+      document.getElementById("info").innerHTML = `
+        <p>Automata info:</p>
+        <p>Full: ${isFull(selectedObjects[0])}</p>
+        <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
+      `;
+  } else
+    document.getElementById("info").innerHTML = `
+      <p>Automata info:</p>
+      <p>Full: ...</p>
+      <p>Deterministic: ...</p>
+    `;
 }
