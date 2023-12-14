@@ -1,4 +1,3 @@
-originalMultiLineCode = `
 /*
   Finite State Machine Designer (https://madebyevan.com/fsm/)
   License: MIT License (see below)
@@ -58,550 +57,6 @@ var isChrome =
 
 // Edge (based on chromium) detection
 var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
-
-// draw using this instead of a canvas and call toLaTeX() afterward
-function ExportAsLaTeX(bounds) {
-  this.bounds = bounds;
-  this._points = [];
-  this._texData = "";
-  this._scale = 0.1; // to convert pixels to document space (TikZ breaks if the numbers get too big, above 500?)
-
-  this.toLaTeX = function () {
-    return (
-      "\\documentclass[12pt]{article}\n" +
-      "\\usepackage{tikz}\n" +
-      "\n" +
-      "\\begin{document}\n" +
-      "\n" +
-      "\\begin{center}\n" +
-      "\\begin{tikzpicture}[scale=0.2]\n" +
-      "\\tikzstyle{every node}+=[inner sep=0pt]\n" +
-      this._texData +
-      "\\end{tikzpicture}\n" +
-      "\\end{center}\n" +
-      "\n" +
-      "\\end{document}\n"
-    );
-  };
-
-  this.beginPath = function () {
-    this._points = [];
-  };
-
-  this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
-    x -= this.bounds[0];
-    y -= this.bounds[1];
-    x *= this._scale;
-    y *= this._scale;
-    radius *= this._scale;
-    if (endAngle - startAngle == Math.PI * 2) {
-      this._texData +=
-        "\\draw [" +
-        this.strokeStyle +
-        "] (" +
-        fixed(x, 3) +
-        "," +
-        fixed(-y, 3) +
-        ") circle (" +
-        fixed(radius, 3) +
-        ");\n";
-    } else {
-      if (isReversed) {
-        var temp = startAngle;
-        startAngle = endAngle;
-        endAngle = temp;
-      }
-      if (endAngle < startAngle) {
-        endAngle += Math.PI * 2;
-      }
-      // TikZ needs the angles to be in between -2pi and 2pi or it breaks
-      if (Math.min(startAngle, endAngle) < -2 * Math.PI) {
-        startAngle += 2 * Math.PI;
-        endAngle += 2 * Math.PI;
-      } else if (Math.max(startAngle, endAngle) > 2 * Math.PI) {
-        startAngle -= 2 * Math.PI;
-        endAngle -= 2 * Math.PI;
-      }
-      startAngle = -startAngle;
-      endAngle = -endAngle;
-      this._texData +=
-        "\\draw [" +
-        this.strokeStyle +
-        "] (" +
-        fixed(x + radius * Math.cos(startAngle), 3) +
-        "," +
-        fixed(-y + radius * Math.sin(startAngle), 3) +
-        ") arc (" +
-        fixed((startAngle * 180) / Math.PI, 5) +
-        ":" +
-        fixed((endAngle * 180) / Math.PI, 5) +
-        ":" +
-        fixed(radius, 3) +
-        ");\n";
-    }
-  };
-
-  this.moveTo = this.lineTo = function (x, y) {
-    x -= this.bounds[0];
-    y -= this.bounds[1];
-    x *= this._scale;
-    y *= this._scale;
-    this._points.push({ x: x, y: y });
-  };
-
-  this.stroke = function () {
-    if (this._points.length == 0) return;
-    this._texData += "\\draw [" + this.strokeStyle + "]";
-    for (var i = 0; i < this._points.length; i++) {
-      var p = this._points[i];
-      this._texData +=
-        (i > 0 ? " --" : "") +
-        " (" +
-        fixed(p.x, 2) +
-        "," +
-        fixed(-p.y, 2) +
-        ")";
-    }
-    this._texData += ";\n";
-  };
-
-  this.fill = function () {
-    if (this._points.length == 0) return;
-    this._texData += "\\fill [" + this.strokeStyle + "]";
-    for (var i = 0; i < this._points.length; i++) {
-      var p = this._points[i];
-      this._texData +=
-        (i > 0 ? " --" : "") +
-        " (" +
-        fixed(p.x, 2) +
-        "," +
-        fixed(-p.y, 2) +
-        ")";
-    }
-    this._texData += ";\n";
-  };
-
-  this.measureText = function (text) {
-    var c = canvas.getContext("2d");
-    c.font = displayFont;
-    return c.measureText(text);
-  };
-
-  this.advancedFillText = function (text, originalText, x, y, angleOrNull) {
-    x -= this.bounds[0];
-    y -= this.bounds[1];
-    if (text.replace(" ", "").length > 0) {
-      var nodeParams = "";
-      // x and y start off as the center of the text, but will be moved to one side of the box when angleOrNull != null
-      if (angleOrNull != null) {
-        var width = this.measureText(text).width;
-        var dx = Math.cos(angleOrNull);
-        var dy = Math.sin(angleOrNull);
-        if (Math.abs(dx) > Math.abs(dy)) {
-          if (dx > 0) (nodeParams = "[right] "), (x -= width / 2);
-          else (nodeParams = "[left] "), (x += width / 2);
-        } else {
-          if (dy > 0) (nodeParams = "[below] "), (y -= 10);
-          else (nodeParams = "[above] "), (y += 10);
-        }
-      }
-      x *= this._scale;
-      y *= this._scale;
-      var escapedBraces = originalText.replace(/{/g, "\\{");
-      escapedBraces = escapedBraces.replace(/}/g, "\\}");
-      this._texData +=
-        "\\draw (" +
-        fixed(x, 2) +
-        "," +
-        fixed(-y, 2) +
-        ") node " +
-        nodeParams +
-        "{$" +
-        escapedBraces.replace(/ /g, "\\mbox{ }") +
-        "$};\n";
-    }
-  };
-
-  this.translate = this.save = this.restore = this.clearRect = function () {};
-}
-
-// draw using this instead of a canvas and call toSVG() afterward
-function ExportAsSVG(bounds) {
-  this.width = bounds[2] - bounds[0];
-  this.height = bounds[3] - bounds[1];
-  this.bounds = bounds;
-  this.fillStyle = "black";
-  this.strokeStyle = "black";
-  this.lineWidth = 1;
-  this.font = displayFont;
-  this._points = [];
-  this._svgData = "";
-  this._transX = 0;
-  this._transY = 0;
-
-  this.toSVG = function () {
-    var data = '<?xml version="1.0" standalone="no"?>\n';
-    data +=
-      '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n\n';
-    data +=
-      '<svg width="' +
-      this.width +
-      '" height="' +
-      this.height +
-      '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n';
-    data += this._svgData;
-    data += "</svg>\n";
-    return data;
-  };
-
-  this.beginPath = function () {
-    this._points = [];
-  };
-
-  this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
-    x -= this.bounds[0];
-    y -= this.bounds[1];
-    x += this._transX;
-    y += this._transY;
-    var style =
-      'stroke="' +
-      this.strokeStyle +
-      '" stroke-width="' +
-      this.lineWidth +
-      '" fill="none"';
-
-    if (endAngle - startAngle == Math.PI * 2) {
-      this._svgData +=
-        "\t<ellipse " +
-        style +
-        ' cx="' +
-        fixed(x, 3) +
-        '" cy="' +
-        fixed(y, 3) +
-        '" rx="' +
-        fixed(radius, 3) +
-        '" ry="' +
-        fixed(radius, 3) +
-        '"/>\n';
-    } else {
-      if (isReversed) {
-        var temp = startAngle;
-        startAngle = endAngle;
-        endAngle = temp;
-      }
-
-      if (endAngle < startAngle) {
-        endAngle += Math.PI * 2;
-      }
-
-      var startX = x + radius * Math.cos(startAngle);
-      var startY = y + radius * Math.sin(startAngle);
-      var endX = x + radius * Math.cos(endAngle);
-      var endY = y + radius * Math.sin(endAngle);
-      var useGreaterThan180 = Math.abs(endAngle - startAngle) > Math.PI;
-      var goInPositiveDirection = 1;
-
-      this._svgData += "\t<path " + style + ' d="';
-      this._svgData += "M " + fixed(startX, 3) + "," + fixed(startY, 3) + " "; // startPoint(startX, startY)
-      this._svgData += "A " + fixed(radius, 3) + "," + fixed(radius, 3) + " "; // radii(radius, radius)
-      this._svgData += "0 "; // value of 0 means perfect circle, others mean ellipse
-      this._svgData += +useGreaterThan180 + " ";
-      this._svgData += +goInPositiveDirection + " ";
-      this._svgData += fixed(endX, 3) + "," + fixed(endY, 3); // endPoint(endX, endY)
-      this._svgData += '"/>\n';
-    }
-  };
-
-  this.moveTo = this.lineTo = function (x, y) {
-    x -= this.bounds[0];
-    y -= this.bounds[1];
-    x += this._transX;
-    y += this._transY;
-    this._points.push({ x: x, y: y });
-  };
-
-  this.stroke = function () {
-    if (this._points.length == 0) return;
-    this._svgData +=
-      '\t<polygon stroke="' +
-      this.strokeStyle +
-      '" stroke-width="' +
-      this.lineWidth +
-      '" points="';
-    for (var i = 0; i < this._points.length; i++) {
-      this._svgData +=
-        (i > 0 ? " " : "") +
-        fixed(this._points[i].x, 3) +
-        "," +
-        fixed(this._points[i].y, 3);
-    }
-    this._svgData += '"/>\n';
-  };
-
-  this.fill = function () {
-    if (this._points.length == 0) return;
-    this._svgData +=
-      '\t<polygon fill="' +
-      this.fillStyle +
-      '" stroke-width="' +
-      this.lineWidth +
-      '" points="';
-    for (var i = 0; i < this._points.length; i++) {
-      this._svgData +=
-        (i > 0 ? " " : "") +
-        fixed(this._points[i].x, 3) +
-        "," +
-        fixed(this._points[i].y, 3);
-    }
-    this._svgData += '"/>\n';
-  };
-
-  this.measureText = function (text) {
-    var c = canvas.getContext("2d");
-    c.font = displayFont;
-    return c.measureText(text);
-  };
-
-  this.fillText = function (text, x, y) {
-    x -= this.bounds[0];
-    y -= this.bounds[1];
-    x += this._transX;
-    y += this._transY;
-    if (text.replace(" ", "").length > 0) {
-      this._svgData +=
-        '\t<text x="' +
-        fixed(x, 3) +
-        '" y="' +
-        fixed(y, 3) +
-        '" font-family="Times New Roman, serif, Consolas, Courier New, monospace" font-size="20">' +
-        textToXML(text) +
-        "</text>\n";
-    }
-  };
-
-  this.translate = function (x, y) {
-    this._transX = x;
-    this._transY = y;
-  };
-
-  this.save = this.restore = this.clearRect = function () {};
-}
-
-const greekLetterNames = [
-  "Alpha",
-  "Beta",
-  "Gamma",
-  "Delta",
-  "Epsilon",
-  "Zeta",
-  "Eta",
-  "Theta",
-  "Iota",
-  "Kappa",
-  "Lambda",
-  "Mu",
-  "Nu",
-  "Xi",
-  "Omicron",
-  "Pi",
-  "Rho",
-  "Sigma",
-  "Tau",
-  "Upsilon",
-  "Phi",
-  "Chi",
-  "Psi",
-  "Omega",
-  "emptyset",
-  "right",
-  "left",
-  "in",
-  "notin",
-  "subseteq",
-  "nsubseteq",
-  "subset",
-  "nsubset",
-  "ni",
-  "notni",
-  "superseteq",
-  "nsuperseteq",
-  "superset",
-  "nsuperset",
-  "Left",
-  "Right",
-  "perp",
-  "vdash",
-  "forall",
-  "cup",
-  "cap",
-  "cdot",
-  "times",
-  "lang",
-  "exists",
-];
-
-const subscripts = {
-  0: "₀",
-  1: "₁",
-  2: "₂",
-  3: "₃",
-  4: "₄",
-  5: "₅",
-  6: "₆",
-  7: "₇",
-  8: "₈",
-  9: "₉",
-  "+": "₊",
-  "∗": "⁎",
-  "-": "₋",
-  "=": "₌",
-  "(": "₍",
-  ")": "₎",
-  a: "ₐ",
-  e: "ₑ",
-  o: "ₒ",
-  x: "ₓ",
-  h: "ₕ",
-  k: "ₖ",
-  l: "ₗ",
-  m: "ₘ",
-  n: "ₙ",
-  p: "ₚ",
-  s: "ₛ",
-  t: "ₜ",
-};
-
-const superscripts = {
-  0: "⁰",
-  1: "¹",
-  2: "²",
-  3: "³",
-  4: "⁴",
-  5: "⁵",
-  6: "⁶",
-  7: "⁷",
-  8: "⁸",
-  9: "⁹",
-  "+": "⁺",
-  "∗": "*",
-  "-": "⁻",
-  "=": "⁼",
-  "(": "⁽",
-  ")": "⁾",
-  a: "ᵃ",
-  b: "ᵇ",
-  c: "ᶜ",
-  d: "ᵈ",
-  e: "ᵉ",
-  f: "ᶠ",
-  g: "ᵍ",
-  h: "ʰ",
-  i: "ⁱ",
-  j: "ʲ",
-  k: "ᵏ",
-  l: "ˡ",
-  m: "ᵐ",
-  n: "ⁿ",
-  o: "ᵒ",
-  p: "ᵖ",
-  q: "𐞥",
-  r: "ʳ",
-  s: "ˢ",
-  t: "ᵗ",
-  u: "ᵘ",
-  v: "ᵛ",
-  w: "ʷ",
-  x: "ˣ",
-  y: "ʸ",
-  z: "ᶻ",
-  A: "ᴬ",
-  B: "ᴮ",
-  C: "ꟲ",
-  D: "ᴰ",
-  E: "ᴱ",
-  F: "ꟳ",
-  G: "ᴳ",
-  H: "ᴴ",
-  I: "ᴵ",
-  J: "ᴶ",
-  K: "ᴷ",
-  L: "ᴸ",
-  M: "ᴹ",
-  N: "ᴺ",
-  O: "ᴼ",
-  P: "ᴾ",
-  Q: "ꟴ",
-  R: "ᴿ",
-  T: "ᵀ",
-  U: "ᵁ",
-  V: "ⱽ",
-  W: "ᵂ",
-};
-
-const doubleStrucks = {
-  A: "𝔸",
-  B: "𝔹",
-  C: "ℂ",
-  D: "𝔻",
-  E: "𝔼",
-  F: "𝔽",
-  G: "𝔾",
-  H: "ℍ",
-  I: "𝕀",
-  J: "𝕁",
-  K: "𝕂",
-  L: "𝕃",
-  M: "𝕄",
-  N: "ℕ",
-  O: "𝕆",
-  P: "ℙ",
-  Q: "ℚ",
-  R: "ℝ",
-  S: "𝕊",
-  T: "𝕋",
-  U: "𝕌",
-  V: "𝕍",
-  W: "𝕎",
-  X: "𝕏",
-  Y: "𝕐",
-  Z: "ℤ",
-  a: "𝕒",
-  b: "𝕓",
-  c: "𝕔",
-  d: "𝕕",
-  e: "𝕖",
-  f: "𝕗",
-  g: "𝕘",
-  h: "𝕙",
-  i: "𝕚",
-  j: "𝕛",
-  k: "𝕜",
-  l: "𝕝",
-  m: "𝕞",
-  n: "𝕟",
-  o: "𝕠",
-  p: "𝕡",
-  q: "𝕢",
-  r: "𝕣",
-  s: "𝕤",
-  t: "𝕥",
-  u: "𝕦",
-  v: "𝕧",
-  w: "𝕨",
-  x: "𝕩",
-  y: "𝕪",
-  z: "𝕫",
-  0: "𝟘",
-  1: "𝟙",
-  2: "𝟚",
-  3: "𝟛",
-  4: "𝟜",
-  5: "𝟝",
-  6: "𝟞",
-  7: "𝟟",
-  8: "𝟠",
-  9: "𝟡",
-};
 
 function convertLatexShortcuts(text) {
   text = text
@@ -1219,7 +674,7 @@ window.onload = function () {
   };
 
   scope.onscroll = (e) => {
-    contextMenu.style.transform = \`translate(0, -\${window.scrollY}px)\`;
+    contextMenu.style.transform = `translate(0, -${window.scrollY}px)`;
   };
 
   contextMenu.addEventListener("contextmenu", (e) => {
@@ -1302,23 +757,23 @@ window.onload = function () {
 
       if (selectedObjects.length == 1) {
         if (selectedObjects[0] instanceof StartLink)
-          document.getElementById("info").innerHTML = \`
+          document.getElementById("info").innerHTML = `
             <p>Automata info:</p>
-            <p>Full: \${isFull(selectedObjects[0].node)}</p>
-            <p>Deterministic: \${isDeterministic(selectedObjects[0].node)}</p>
-          \`;
+            <p>Full: ${isFull(selectedObjects[0].node)}</p>
+            <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
+          `;
         else
-          document.getElementById("info").innerHTML = \`
+          document.getElementById("info").innerHTML = `
             <p>Automata info:</p>
-            <p>Full: \${isFull(selectedObjects[0])}</p>
-            <p>Deterministic: \${isDeterministic(selectedObjects[0])}</p>
-          \`;
+            <p>Full: ${isFull(selectedObjects[0])}</p>
+            <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
+          `;
       } else
-        document.getElementById("info").innerHTML = \`
+        document.getElementById("info").innerHTML = `
           <p>Automata info:</p>
           <p>Full: ...</p>
           <p>Deterministic: ...</p>
-        \`;
+        `;
     }
 
     fromX = fromY = toX = toY = null;
@@ -1332,31 +787,31 @@ window.onload = function () {
 
     if (selectedObject) {
       if (selectedObject instanceof StartLink)
-        document.getElementById("info").innerHTML = \`
+        document.getElementById("info").innerHTML = `
             <p>Automata info:</p>
-            <p>Full: \${isFull(selectedObject.node)}</p>
-            <p>Deterministic: \${isDeterministic(selectedObject.node)}</p>
-          \`;
+            <p>Full: ${isFull(selectedObject.node)}</p>
+            <p>Deterministic: ${isDeterministic(selectedObject.node)}</p>
+          `;
       else
-        document.getElementById("info").innerHTML = \`
+        document.getElementById("info").innerHTML = `
             <p>Automata info:</p>
-            <p>Full: \${isFull(selectedObject)}</p>
-            <p>Deterministic: \${isDeterministic(selectedObject)}</p>
-          \`;
+            <p>Full: ${isFull(selectedObject)}</p>
+            <p>Deterministic: ${isDeterministic(selectedObject)}</p>
+          `;
     } else
-      document.getElementById("info").innerHTML = \`
+      document.getElementById("info").innerHTML = `
           <p>Automata info:</p>
           <p>Full: ...</p>
           <p>Deterministic: ...</p>
-        \`;
+        `;
 
     if (e.which === 3) {
       e.preventDefault();
 
       contextMenu.classList.remove("visible");
 
-      contextMenu.style.top = \`\${e.clientY + window.scrollY}px\`;
-      contextMenu.style.left = \`\${e.clientX}px\`;
+      contextMenu.style.top = `${e.clientY + window.scrollY}px`;
+      contextMenu.style.left = `${e.clientX}px`;
       contextMenu.offsetWidth;
       contextMenu.classList.add("visible");
       contextMenu.classList.add("selected");
@@ -1707,25 +1162,25 @@ document.onkeydown = function (e) {
 
         if (selectedObjects.length == 1) {
           if (selectedObjects[0] instanceof StartLink)
-            document.getElementById("info").innerHTML = \`
+            document.getElementById("info").innerHTML = `
                 <p>Automata info:</p>
-                <p>Full: \${isFull(selectedObjects[0].node)}</p>
-                <p>Deterministic: \${isDeterministic(
+                <p>Full: ${isFull(selectedObjects[0].node)}</p>
+                <p>Deterministic: ${isDeterministic(
                   selectedObjects[0].node
                 )}</p>
-              \`;
+              `;
           else
-            document.getElementById("info").innerHTML = \`
+            document.getElementById("info").innerHTML = `
                 <p>Automata info:</p>
-                <p>Full: \${isFull(selectedObjects[0])}</p>
-                <p>Deterministic: \${isDeterministic(selectedObjects[0])}</p>
-              \`;
+                <p>Full: ${isFull(selectedObjects[0])}</p>
+                <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
+              `;
         } else
-          document.getElementById("info").innerHTML = \`
+          document.getElementById("info").innerHTML = `
               <p>Automata info:</p>
               <p>Full: ...</p>
               <p>Deterministic: ...</p>
-            \`;
+            `;
       }
 
       // backspace is a shortcut for the back button, but do NOT want to change pages
@@ -1803,23 +1258,23 @@ document.onkeydown = function (e) {
 
     if (selectedObjects.length == 1) {
       if (selectedObjects[0] instanceof StartLink)
-        document.getElementById("info").innerHTML = \`
+        document.getElementById("info").innerHTML = `
             <p>Automata info:</p>
-            <p>Full: \${isFull(selectedObjects[0].node)}</p>
-            <p>Deterministic: \${isDeterministic(selectedObjects[0].node)}</p>
-          \`;
+            <p>Full: ${isFull(selectedObjects[0].node)}</p>
+            <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
+          `;
       else
-        document.getElementById("info").innerHTML = \`
+        document.getElementById("info").innerHTML = `
             <p>Automata info:</p>
-            <p>Full: \${isFull(selectedObjects[0])}</p>
-            <p>Deterministic: \${isDeterministic(selectedObjects[0])}</p>
-          \`;
+            <p>Full: ${isFull(selectedObjects[0])}</p>
+            <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
+          `;
     } else
-      document.getElementById("info").innerHTML = \`
+      document.getElementById("info").innerHTML = `
           <p>Automata info:</p>
           <p>Full: ...</p>
           <p>Deterministic: ...</p>
-        \`;
+        `;
 
     // backspace is a shortcut for the back button, but do NOT want to change pages
     return false;
@@ -1904,23 +1359,23 @@ document.onkeypress = function (e) {
 
   if (selectedObjects.length == 1) {
     if (selectedObjects[0] instanceof StartLink)
-      document.getElementById("info").innerHTML = \`
+      document.getElementById("info").innerHTML = `
           <p>Automata info:</p>
-          <p>Full: \${isFull(selectedObjects[0].node)}</p>
-          <p>Deterministic: \${isDeterministic(selectedObjects[0].node)}</p>
-        \`;
+          <p>Full: ${isFull(selectedObjects[0].node)}</p>
+          <p>Deterministic: ${isDeterministic(selectedObjects[0].node)}</p>
+        `;
     else
-      document.getElementById("info").innerHTML = \`
+      document.getElementById("info").innerHTML = `
           <p>Automata info:</p>
-          <p>Full: \${isFull(selectedObjects[0])}</p>
-          <p>Deterministic: \${isDeterministic(selectedObjects[0])}</p>
-        \`;
+          <p>Full: ${isFull(selectedObjects[0])}</p>
+          <p>Deterministic: ${isDeterministic(selectedObjects[0])}</p>
+        `;
   } else
-    document.getElementById("info").innerHTML = \`
+    document.getElementById("info").innerHTML = `
         <p>Automata info:</p>
         <p>Full: ...</p>
         <p>Deterministic: ...</p>
-      \`;
+      `;
 };
 
 document.onkeyup = function (e) {
@@ -2517,7 +1972,7 @@ function restoreFromBackupData(backup, flag = true, select = false) {
       }
     }
   nodeRadius = backup.nodeRadius;
-  document.getElementById("rangeSlider").value = \`\${nodeRadius}\`;
+  document.getElementById("rangeSlider").value = `${nodeRadius}`;
 
   document.getElementById("height").value = canvas.height =
     backup.height || "600";
@@ -3013,10 +2468,10 @@ function run(start, word) {
   if (word.length == 0) {
     if (start.isAcceptState) {
       start.runtimeColor = "green";
-      console.log(\`accepted ((\${convertLatexShortcuts(start.text)}))\`);
+      console.log(`accepted ((${convertLatexShortcuts(start.text)}))`);
     } else {
       if (start.runtimeColor != "green") start.runtimeColor = "red";
-      console.log(\`declined ( \${convertLatexShortcuts(start.text)} )\`);
+      console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
     }
 
     for (var i = 0; i < links.length; i++) {
@@ -3077,7 +2532,7 @@ function run(start, word) {
 
   if (stay) {
     if (start.runtimeColor != "green") start.runtimeColor = "red";
-    console.log(\`declined ( \${convertLatexShortcuts(start.text)} )\`);
+    console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
   }
 }
 
@@ -3237,12 +2692,3 @@ function updateSelectionBox(mouse) {
     toY = mouse.y;
   }
 }
-`;
-
-const formattedSingleLine = originalMultiLineCode
-  .replace(/\s+/g, ' ')
-  .replace(/\/\/.*$/gm, '') // Removes single-line comments
-  .replace(/\n/g, '') // Removes line breaks
-  .replace(/\s?([{}()[\],;:=!<>?&|+-/*%^])\s?/g, '$1');
-
-console.log(formattedSingleLine);
