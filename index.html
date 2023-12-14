@@ -32,14 +32,7 @@
       </div>
       <div
         class="item"
-        onclick="selectedObjects.forEach((object) => {
-          if (object instanceof Cell) {
-            selectedObjects.push(...object.tape.cells);
-            selectedObjects = Array.from(new Set(selectedObjects));
-          } else {
-            selectAutomaton(object);
-          }
-        });if(selectedObjects.length>1){clearInterval(caretTimer);caretVisible=false}draw()"
+        onclick="selectGroup(selectedObjects);draw()"
       >
         Select Group
       </div>
