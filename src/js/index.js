@@ -58,6 +58,1247 @@ var isChrome =
 // Edge (based on chromium) detection
 var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
 
+// ------------------------------------------------------------------------------------- //
+
+const greekLetterNames = [
+  "Alpha",
+  "Beta",
+  "Gamma",
+  "Delta",
+  "Epsilon",
+  "Zeta",
+  "Eta",
+  "Theta",
+  "Iota",
+  "Kappa",
+  "Lambda",
+  "Mu",
+  "Nu",
+  "Xi",
+  "Omicron",
+  "Pi",
+  "Rho",
+  "Sigma",
+  "Tau",
+  "Upsilon",
+  "Phi",
+  "Chi",
+  "Psi",
+  "Omega",
+  "emptyset",
+  "right",
+  "left",
+  "in",
+  "notin",
+  "subseteq",
+  "nsubseteq",
+  "subset",
+  "nsubset",
+  "ni",
+  "notni",
+  "superseteq",
+  "nsuperseteq",
+  "superset",
+  "nsuperset",
+  "Left",
+  "Right",
+  "perp",
+  "vdash",
+  "forall",
+  "cup",
+  "cap",
+  "cdot",
+  "times",
+  "lang",
+  "exists",
+];
+
+const subscripts = {
+  0: "₀",
+  1: "₁",
+  2: "₂",
+  3: "₃",
+  4: "₄",
+  5: "₅",
+  6: "₆",
+  7: "₇",
+  8: "₈",
+  9: "₉",
+  "+": "₊",
+  "∗": "⁎",
+  "-": "₋",
+  "=": "₌",
+  "(": "₍",
+  ")": "₎",
+  a: "ₐ",
+  e: "ₑ",
+  o: "ₒ",
+  x: "ₓ",
+  h: "ₕ",
+  k: "ₖ",
+  l: "ₗ",
+  m: "ₘ",
+  n: "ₙ",
+  p: "ₚ",
+  s: "ₛ",
+  t: "ₜ",
+};
+
+const superscripts = {
+  0: "⁰",
+  1: "¹",
+  2: "²",
+  3: "³",
+  4: "⁴",
+  5: "⁵",
+  6: "⁶",
+  7: "⁷",
+  8: "⁸",
+  9: "⁹",
+  "+": "⁺",
+  "∗": "*",
+  "-": "⁻",
+  "=": "⁼",
+  "(": "⁽",
+  ")": "⁾",
+  a: "ᵃ",
+  b: "ᵇ",
+  c: "ᶜ",
+  d: "ᵈ",
+  e: "ᵉ",
+  f: "ᶠ",
+  g: "ᵍ",
+  h: "ʰ",
+  i: "ⁱ",
+  j: "ʲ",
+  k: "ᵏ",
+  l: "ˡ",
+  m: "ᵐ",
+  n: "ⁿ",
+  o: "ᵒ",
+  p: "ᵖ",
+  q: "𐞥",
+  r: "ʳ",
+  s: "ˢ",
+  t: "ᵗ",
+  u: "ᵘ",
+  v: "ᵛ",
+  w: "ʷ",
+  x: "ˣ",
+  y: "ʸ",
+  z: "ᶻ",
+  A: "ᴬ",
+  B: "ᴮ",
+  C: "ꟲ",
+  D: "ᴰ",
+  E: "ᴱ",
+  F: "ꟳ",
+  G: "ᴳ",
+  H: "ᴴ",
+  I: "ᴵ",
+  J: "ᴶ",
+  K: "ᴷ",
+  L: "ᴸ",
+  M: "ᴹ",
+  N: "ᴺ",
+  O: "ᴼ",
+  P: "ᴾ",
+  Q: "ꟴ",
+  R: "ᴿ",
+  T: "ᵀ",
+  U: "ᵁ",
+  V: "ⱽ",
+  W: "ᵂ",
+};
+
+const doubleStrucks = {
+  A: "𝔸",
+  B: "𝔹",
+  C: "ℂ",
+  D: "𝔻",
+  E: "𝔼",
+  F: "𝔽",
+  G: "𝔾",
+  H: "ℍ",
+  I: "𝕀",
+  J: "𝕁",
+  K: "𝕂",
+  L: "𝕃",
+  M: "𝕄",
+  N: "ℕ",
+  O: "𝕆",
+  P: "ℙ",
+  Q: "ℚ",
+  R: "ℝ",
+  S: "𝕊",
+  T: "𝕋",
+  U: "𝕌",
+  V: "𝕍",
+  W: "𝕎",
+  X: "𝕏",
+  Y: "𝕐",
+  Z: "ℤ",
+  a: "𝕒",
+  b: "𝕓",
+  c: "𝕔",
+  d: "𝕕",
+  e: "𝕖",
+  f: "𝕗",
+  g: "𝕘",
+  h: "𝕙",
+  i: "𝕚",
+  j: "𝕛",
+  k: "𝕜",
+  l: "𝕝",
+  m: "𝕞",
+  n: "𝕟",
+  o: "𝕠",
+  p: "𝕡",
+  q: "𝕢",
+  r: "𝕣",
+  s: "𝕤",
+  t: "𝕥",
+  u: "𝕦",
+  v: "𝕧",
+  w: "𝕨",
+  x: "𝕩",
+  y: "𝕪",
+  z: "𝕫",
+  0: "𝟘",
+  1: "𝟙",
+  2: "𝟚",
+  3: "𝟛",
+  4: "𝟜",
+  5: "𝟝",
+  6: "𝟞",
+  7: "𝟟",
+  8: "𝟠",
+  9: "𝟡",
+};
+
+// ------------------------------------------------------------------------------------- //
+
+class Node {
+  static radius = 30;
+  constructor(x, y) {
+    this.parent = null;
+    this.x = x;
+    this.y = y;
+    this.mouseOffsetX = 0;
+    this.mouseOffsetY = 0;
+    this.isAcceptState = false;
+    this.text = "";
+    this.outline = false;
+    this.runtimeColor = null;
+  }
+  setMouseStart(x, y) {
+    this.mouseOffsetX = this.x - x;
+    this.mouseOffsetY = this.y - y;
+  }
+  setAnchorPoint(x, y) {
+    this.x = x + this.mouseOffsetX;
+    this.y = y + this.mouseOffsetY;
+  }
+  draw(c) {
+    c.strokeStyle = c.fillStyle = this.runtimeColor ?? this.fillStyle;
+    if (this.outline) {
+      drawMultilineText(
+        c,
+        this.text,
+        this.x,
+        this.y,
+        null,
+        inArr(this, selectedObjects)
+      );
+      if (this != selectObject(mouseX, mouseY) && !inArr(this, selectedObjects))
+        return;
+      c.strokeStyle =
+        this.runtimeColor ?? inArr(this, selectedObjects)
+          ? "rgba(0, 0, 255, 0.3)"
+          : "rgba(0, 0, 0, 0.3)";
+    }
+
+    // draw the circle
+    c.beginPath();
+    c.arc(this.x, this.y, Node.radius, 0, 2 * Math.PI, false);
+    c.stroke();
+
+    if (!this.outline)
+      // draw the text
+      drawMultilineText(
+        c,
+        this.text,
+        this.x,
+        this.y,
+        null,
+        inArr(this, selectedObjects)
+      );
+
+    // draw a double circle for an accept state
+    if (this.isAcceptState) {
+      c.beginPath();
+      c.arc(this.x, this.y, Node.radius - 6, 0, 2 * Math.PI, false);
+      c.stroke();
+    }
+  }
+  closestPointOnCircle(x, y) {
+    var dx = x - this.x;
+    var dy = y - this.y;
+    var scale = Math.sqrt(dx * dx + dy * dy);
+    return {
+      x: this.x + (dx * Node.radius) / scale,
+      y: this.y + (dy * Node.radius) / scale,
+    };
+  }
+  containsPoint(x, y) {
+    return (
+      (x - this.x) * (x - this.x) + (y - this.y) * (y - this.y) <
+      Node.radius * Node.radius
+    );
+  }
+}
+
+class Link {
+  constructor(a, b) {
+    this.nodeA = a;
+    this.nodeB = b;
+    this.text = "";
+    this.lineAngleAdjust = 0; // value to add to textAngle when link is straight line
+
+    // make anchor point relative to the locations of nodeA and nodeB
+    this.parallelPart = 0.5; // percentage from nodeA to nodeB
+    this.perpendicularPart = 0; // pixels from line between nodeA and nodeB
+  }
+  getAnchorPoint() {
+    var dx = this.nodeB.x - this.nodeA.x;
+    var dy = this.nodeB.y - this.nodeA.y;
+    var scale = Math.sqrt(dx * dx + dy * dy);
+    return {
+      x:
+        this.nodeA.x +
+        dx * this.parallelPart -
+        (dy * this.perpendicularPart) / scale,
+      y:
+        this.nodeA.y +
+        dy * this.parallelPart +
+        (dx * this.perpendicularPart) / scale,
+    };
+  }
+  setAnchorPoint(x, y) {
+    var dx = this.nodeB.x - this.nodeA.x;
+    var dy = this.nodeB.y - this.nodeA.y;
+    var scale = Math.sqrt(dx * dx + dy * dy);
+    this.parallelPart =
+      (dx * (x - this.nodeA.x) + dy * (y - this.nodeA.y)) / (scale * scale);
+    this.perpendicularPart =
+      (dx * (y - this.nodeA.y) - dy * (x - this.nodeA.x)) / scale;
+    // snap to a straight line
+    if (
+      this.parallelPart > 0 &&
+      this.parallelPart < 1 &&
+      Math.abs(this.perpendicularPart) < snapToPadding
+    ) {
+      this.lineAngleAdjust = (this.perpendicularPart < 0) * Math.PI;
+      this.perpendicularPart = 0;
+    }
+  }
+  getEndPointsAndCircle() {
+    if (this.perpendicularPart == 0) {
+      var midX = (this.nodeA.x + this.nodeB.x) / 2;
+      var midY = (this.nodeA.y + this.nodeB.y) / 2;
+      var start = this.nodeA.closestPointOnCircle(midX, midY);
+      var end = this.nodeB.closestPointOnCircle(midX, midY);
+      return {
+        hasCircle: false,
+        startX: start.x,
+        startY: start.y,
+        endX: end.x,
+        endY: end.y,
+      };
+    }
+    var anchor = this.getAnchorPoint();
+    var circle = circleFromThreePoints(
+      this.nodeA.x,
+      this.nodeA.y,
+      this.nodeB.x,
+      this.nodeB.y,
+      anchor.x,
+      anchor.y
+    );
+    var isReversed = this.perpendicularPart > 0;
+    var reverseScale = isReversed ? 1 : -1;
+    var startAngle =
+      Math.atan2(this.nodeA.y - circle.y, this.nodeA.x - circle.x) -
+      (reverseScale * Node.radius) / circle.radius;
+    var endAngle =
+      Math.atan2(this.nodeB.y - circle.y, this.nodeB.x - circle.x) +
+      (reverseScale * Node.radius) / circle.radius;
+    var startX = circle.x + circle.radius * Math.cos(startAngle);
+    var startY = circle.y + circle.radius * Math.sin(startAngle);
+    var endX = circle.x + circle.radius * Math.cos(endAngle);
+    var endY = circle.y + circle.radius * Math.sin(endAngle);
+    return {
+      hasCircle: true,
+      startX: startX,
+      startY: startY,
+      endX: endX,
+      endY: endY,
+      startAngle: startAngle,
+      endAngle: endAngle,
+      circleX: circle.x,
+      circleY: circle.y,
+      circleRadius: circle.radius,
+      reverseScale: reverseScale,
+      isReversed: isReversed,
+    };
+  }
+  draw(c) {
+    var stuff = this.getEndPointsAndCircle();
+    // draw arc
+    c.beginPath();
+    if (stuff.hasCircle) {
+      c.arc(
+        stuff.circleX,
+        stuff.circleY,
+        stuff.circleRadius,
+        stuff.startAngle,
+        stuff.endAngle,
+        stuff.isReversed
+      );
+    } else {
+      c.moveTo(stuff.startX, stuff.startY);
+      c.lineTo(stuff.endX, stuff.endY);
+    }
+    c.stroke();
+    // draw the head of the arrow
+    if (stuff.hasCircle) {
+      drawArrow(
+        c,
+        stuff.endX,
+        stuff.endY,
+        stuff.endAngle - stuff.reverseScale * (Math.PI / 2)
+      );
+    } else {
+      drawArrow(
+        c,
+        stuff.endX,
+        stuff.endY,
+        Math.atan2(stuff.endY - stuff.startY, stuff.endX - stuff.startX)
+      );
+    }
+    // draw the text
+    if (stuff.hasCircle) {
+      var startAngle = stuff.startAngle;
+      var endAngle = stuff.endAngle;
+      if (endAngle < startAngle) {
+        endAngle += Math.PI * 2;
+      }
+      var textAngle = (startAngle + endAngle) / 2 + stuff.isReversed * Math.PI;
+      var textX = stuff.circleX + stuff.circleRadius * Math.cos(textAngle);
+      var textY = stuff.circleY + stuff.circleRadius * Math.sin(textAngle);
+      drawMultilineText(
+        c,
+        this.text,
+        textX,
+        textY,
+        textAngle,
+        inArr(this, selectedObjects)
+      );
+    } else {
+      var textX = (stuff.startX + stuff.endX) / 2;
+      var textY = (stuff.startY + stuff.endY) / 2;
+      var textAngle = Math.atan2(
+        stuff.endX - stuff.startX,
+        stuff.startY - stuff.endY
+      );
+      drawMultilineText(
+        c,
+        this.text,
+        textX,
+        textY,
+        textAngle + this.lineAngleAdjust,
+        inArr(this, selectedObjects)
+      );
+    }
+  }
+  containsPoint(x, y) {
+    var stuff = this.getEndPointsAndCircle();
+    if (stuff.hasCircle) {
+      var dx = x - stuff.circleX;
+      var dy = y - stuff.circleY;
+      var distance = Math.sqrt(dx * dx + dy * dy) - stuff.circleRadius;
+      if (Math.abs(distance) < hitTargetPadding) {
+        var angle = Math.atan2(dy, dx);
+        var startAngle = stuff.startAngle;
+        var endAngle = stuff.endAngle;
+        if (stuff.isReversed) {
+          var temp = startAngle;
+          startAngle = endAngle;
+          endAngle = temp;
+        }
+        if (endAngle < startAngle) {
+          endAngle += Math.PI * 2;
+        }
+        if (angle < startAngle) {
+          angle += Math.PI * 2;
+        } else if (angle > endAngle) {
+          angle -= Math.PI * 2;
+        }
+        return angle > startAngle && angle < endAngle;
+      }
+    } else {
+      var dx = stuff.endX - stuff.startX;
+      var dy = stuff.endY - stuff.startY;
+      var length = Math.sqrt(dx * dx + dy * dy);
+      var percent =
+        (dx * (x - stuff.startX) + dy * (y - stuff.startY)) / (length * length);
+      var distance =
+        (dx * (y - stuff.startY) - dy * (x - stuff.startX)) / length;
+      return (
+        percent > 0 && percent < 1 && Math.abs(distance) < hitTargetPadding
+      );
+    }
+    return false;
+  }
+}
+
+class SelfLink {
+  constructor(node, mouse) {
+    this.node = node;
+    this.anchorAngle = 0;
+    this.mouseOffsetAngle = 0;
+    this.text = "";
+
+    if (mouse) {
+      this.setAnchorPoint(mouse.x, mouse.y);
+    }
+  }
+  setMouseStart(x, y) {
+    this.mouseOffsetAngle =
+      this.anchorAngle - Math.atan2(y - this.node.y, x - this.node.x);
+  }
+  setAnchorPoint(x, y) {
+    this.anchorAngle =
+      Math.atan2(y - this.node.y, x - this.node.x) + this.mouseOffsetAngle;
+    // snap to 90 degrees
+    var snap = Math.round(this.anchorAngle / (Math.PI / 2)) * (Math.PI / 2);
+    if (Math.abs(this.anchorAngle - snap) < 0.1) this.anchorAngle = snap;
+    // keep in the range -pi to pi so our containsPoint() function always works
+    if (this.anchorAngle < -Math.PI) this.anchorAngle += 2 * Math.PI;
+    if (this.anchorAngle > Math.PI) this.anchorAngle -= 2 * Math.PI;
+  }
+  getEndPointsAndCircle() {
+    var circleX = this.node.x + 1.5 * Node.radius * Math.cos(this.anchorAngle);
+    var circleY = this.node.y + 1.5 * Node.radius * Math.sin(this.anchorAngle);
+    var circleRadius = 0.75 * Node.radius;
+    var startAngle = this.anchorAngle - Math.PI * 0.8;
+    var endAngle = this.anchorAngle + Math.PI * 0.8;
+    var startX = circleX + circleRadius * Math.cos(startAngle);
+    var startY = circleY + circleRadius * Math.sin(startAngle);
+    var endX = circleX + circleRadius * Math.cos(endAngle);
+    var endY = circleY + circleRadius * Math.sin(endAngle);
+    return {
+      hasCircle: true,
+      startX: startX,
+      startY: startY,
+      endX: endX,
+      endY: endY,
+      startAngle: startAngle,
+      endAngle: endAngle,
+      circleX: circleX,
+      circleY: circleY,
+      circleRadius: circleRadius,
+    };
+  }
+  draw(c) {
+    var stuff = this.getEndPointsAndCircle();
+    // draw arc
+    c.beginPath();
+    c.arc(
+      stuff.circleX,
+      stuff.circleY,
+      stuff.circleRadius,
+      stuff.startAngle,
+      stuff.endAngle,
+      false
+    );
+    c.stroke();
+    // draw the text on the loop farthest from the node
+    var textX = stuff.circleX + stuff.circleRadius * Math.cos(this.anchorAngle);
+    var textY = stuff.circleY + stuff.circleRadius * Math.sin(this.anchorAngle);
+    drawMultilineText(
+      c,
+      this.text,
+      textX,
+      textY,
+      this.anchorAngle,
+      inArr(this, selectedObjects)
+    );
+    // draw the head of the arrow
+    drawArrow(c, stuff.endX, stuff.endY, stuff.endAngle + Math.PI * 0.4);
+  }
+  containsPoint(x, y) {
+    var stuff = this.getEndPointsAndCircle();
+    var dx = x - stuff.circleX;
+    var dy = y - stuff.circleY;
+    var distance = Math.sqrt(dx * dx + dy * dy) - stuff.circleRadius;
+    return Math.abs(distance) < hitTargetPadding;
+  }
+}
+
+class StartLink {
+  constructor(node, start) {
+    this.node = node;
+    this.deltaX = 0;
+    this.deltaY = 0;
+    this.text = "";
+
+    if (start) {
+      this.setAnchorPoint(start.x, start.y);
+    }
+  }
+  setAnchorPoint(x, y) {
+    this.deltaX = x - this.node.x;
+    this.deltaY = y - this.node.y;
+
+    if (Math.abs(this.deltaX) < snapToPadding) {
+      this.deltaX = 0;
+    }
+
+    if (Math.abs(this.deltaY) < snapToPadding) {
+      this.deltaY = 0;
+    }
+  }
+  getEndPoints() {
+    var startX = this.node.x + this.deltaX;
+    var startY = this.node.y + this.deltaY;
+    var end = this.node.closestPointOnCircle(startX, startY);
+    return {
+      startX: startX,
+      startY: startY,
+      endX: end.x,
+      endY: end.y,
+    };
+  }
+  draw(c) {
+    var stuff = this.getEndPoints();
+
+    // draw the line
+    c.beginPath();
+    c.moveTo(stuff.startX, stuff.startY);
+    c.lineTo(stuff.endX, stuff.endY);
+    c.stroke();
+
+    // draw the text at the end without the arrow
+    var textAngle = Math.atan2(
+      stuff.startY - stuff.endY,
+      stuff.startX - stuff.endX
+    );
+    drawMultilineText(
+      c,
+      this.text,
+      stuff.startX,
+      stuff.startY,
+      textAngle,
+      inArr(this, selectedObjects)
+    );
+
+    // draw the head of the arrow
+    drawArrow(
+      c,
+      stuff.endX,
+      stuff.endY,
+      Math.atan2(-this.deltaY, -this.deltaX)
+    );
+  }
+  containsPoint(x, y) {
+    var stuff = this.getEndPoints();
+    var dx = stuff.endX - stuff.startX;
+    var dy = stuff.endY - stuff.startY;
+    var length = Math.sqrt(dx * dx + dy * dy);
+    var percent =
+      (dx * (x - stuff.startX) + dy * (y - stuff.startY)) / (length * length);
+    var distance = (dx * (y - stuff.startY) - dy * (x - stuff.startX)) / length;
+    return percent > 0 && percent < 1 && Math.abs(distance) < hitTargetPadding;
+  }
+}
+
+class TemporaryLink {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+  draw(c) {
+    // draw the line
+    c.beginPath();
+    c.moveTo(this.to.x, this.to.y);
+    c.lineTo(this.from.x, this.from.y);
+    c.stroke();
+
+    // draw the head of the arrow
+    drawArrow(
+      c,
+      this.to.x,
+      this.to.y,
+      Math.atan2(this.to.y - this.from.y, this.to.x - this.from.x)
+    );
+  }
+}
+
+class TextBox {
+  static padding = 5;
+
+  constructor(text, x, y) {
+    this.text = text;
+    this.x = x;
+    this.y = y;
+    this.outline = true;
+    this.padding = TextBox.padding;
+    this.align();
+  }
+
+  draw(c) {
+    if (inArr(this, selectedObjects) && !this.outline)
+      c.strokeStyle = "rgba(0,0,255,0.3)";
+    else if (this == selectObject(mouseX, mouseY) && !this.outline)
+      c.strokeStyle = "rgba(0,0,0,0.3)";
+    if (
+      this.outline ||
+      inArr(this, selectedObjects) ||
+      this == selectObject(mouseX, mouseY)
+    )
+      c.strokeRect(this.x, this.y, this.width, this.height);
+    drawMultilineText(
+      c,
+      this.text,
+      this.x + this.padding,
+      this.y + 2.5 * this.padding,
+      null,
+      inArr(this, selectedObjects),
+      false,
+      false
+    );
+  }
+
+  containsPoint(x, y) {
+    return (
+      this.x <= x &&
+      this.x + this.width >= x &&
+      this.y <= y &&
+      this.y + this.height >= y
+    );
+  }
+
+  setMouseStart(x, y) {
+    this.mouseOffsetX = this.x - x;
+    this.mouseOffsetY = this.y - y;
+  }
+
+  setAnchorPoint(x, y) {
+    this.x = x + this.mouseOffsetX;
+    this.y = y + this.mouseOffsetY;
+  }
+
+  align(minWidth = 0) {
+    this.width = minWidth;
+    this.height = 25 * this.text.split("\r").length;
+
+    var start = 0;
+    var c = canvas.getContext("2d");
+
+    c.font = displayFont;
+    for (var i = 0; i < this.text.split("\r").length; i++) {
+      var text;
+      if (inArr(this, selectedObjects) && selectedObjects.length == 1)
+        text =
+          convertLatexShortcuts(
+            this.text.split("\r")[i].substring(0, selectedText[0] - start)
+          ) +
+          convertLatexShortcuts(
+            this.text
+              .split("\r")
+              [i].substring(selectedText[0] - start, selectedText[1] - start)
+          ) +
+          convertLatexShortcuts(
+            this.text.split("\r")[i].substring(selectedText[1] - start)
+          );
+      else text = convertLatexShortcuts(this.text.split("\r")[i]);
+
+      this.width = Math.max(this.width, c.measureText(text).width);
+
+      start += this.text.split("\r")[i].length + 1;
+    }
+
+    this.width += 2 * this.padding;
+  }
+}
+
+class Cell extends TextBox {
+  static width = 40;
+  static height = 30;
+
+  constructor(text, x, y, tape, index) {
+    super(text, x, y);
+    this.index = index;
+    this.tape = tape;
+    this.align(Cell.width);
+  }
+
+  draw(c) {
+    c.strokeRect(this.x, this.y, this.width, this.height);
+    drawMultilineText(
+      c,
+      this.text,
+      this.x + this.width / 2,
+      this.y + this.height / 2,
+      null,
+      inArr(this, selectedObjects),
+      true,
+      true
+    );
+  }
+
+  setMouseStart(x, y) {
+    this.mouseOffsetX = this.tape.x - x;
+    this.mouseOffsetY = this.tape.y - y;
+  }
+
+  setAnchorPoint(x, y) {
+    this.tape.x = x + this.mouseOffsetX;
+    this.tape.y = y + this.mouseOffsetY;
+    this.tape.align();
+  }
+
+  right() {
+    return this.tape.cells[this.index + 1];
+  }
+
+  left() {
+    return this.tape.cells[this.index - 1];
+  }
+}
+
+class Tape {
+  constructor(x, y, tape = null, uncycled = false) {
+    if (tape != null) {
+      this.cells = [];
+      this.x = tape.x;
+      this.y = tape.y;
+      for (var i = 0; i < tape.cells.length; i++) {
+        this.cells.push(
+          new Cell(
+            tape.cells[i].text,
+            this.x + i * Cell.width,
+            this.y,
+            uncycled ? null : this,
+            i
+          )
+        );
+        this.cells[this.cells.length - 1].outline = tape.cells[i].outline;
+      }
+      if (!uncycled) cells.push(...this.cells);
+    } else {
+      this.cells = [
+        new Cell("\\Delta", x, y, this, 0),
+        new Cell("\\Delta", x + Cell.width, y, this, 1),
+        new Cell("\\Delta", x + 2 * Cell.width, y, this, 2),
+        new Cell("\\Delta", x + 3 * Cell.width, y, this, 3),
+        new Cell("\\Delta", x + 4 * Cell.width, y, this, 4),
+        new Cell("...", x + 5 * Cell.width, y, this, 5),
+      ];
+      cells.push(...this.cells);
+      this.x = x;
+      this.y = y;
+    }
+
+    this.align();
+  }
+
+  add(text, index = this.cells.length) {
+    var cell = new Cell(text, 0, 0, this, index);
+
+    this.cells.splice(index, 0, cell);
+
+    cells.push(cell);
+
+    this.align();
+  }
+
+  remove(index = this.cells.length - 1) {
+    var out = this.cells[index];
+    this.cells.splice(index, 1);
+
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i] == out) {
+        cells.splice(i, 1);
+        break;
+      }
+    }
+
+    this.align();
+
+    return out.text;
+  }
+
+  draw(c) {
+    this.cells.forEach(function (e) {
+      e.draw(c);
+    });
+  }
+
+  align() {
+    var widthSum = 0;
+    var maxHeight = 0;
+
+    for (var i = 0; i < this.cells.length; i++) {
+      this.cells[i].align(Cell.width - 2 * TextBox.padding);
+      this.cells[i].index = i;
+      this.cells[i].x = this.x + widthSum;
+      this.cells[i].y = this.y;
+      widthSum += this.cells[i].width;
+      maxHeight = Math.max(maxHeight, this.cells[i].height);
+    }
+
+    for (var i = 0; i < this.cells.length; i++) {
+      this.cells[i].height = maxHeight;
+    }
+  }
+}
+
+// ------------------------------------------------------------------------------------- //
+
+class ExportAsLaTeX {
+  constructor(bounds) {
+    this.bounds = bounds;
+    this._points = [];
+    this._texData = "";
+    this._scale = 0.1; // to convert pixels to document space (TikZ breaks if the numbers get too big, above 500?)
+
+    this.toLaTeX = function () {
+      return (
+        "\\documentclass[12pt]{article}\n" +
+        "\\usepackage{tikz}\n" +
+        "\n" +
+        "\\begin{document}\n" +
+        "\n" +
+        "\\begin{center}\n" +
+        "\\begin{tikzpicture}[scale=0.2]\n" +
+        "\\tikzstyle{every node}+=[inner sep=0pt]\n" +
+        this._texData +
+        "\\end{tikzpicture}\n" +
+        "\\end{center}\n" +
+        "\n" +
+        "\\end{document}\n"
+      );
+    };
+
+    this.beginPath = function () {
+      this._points = [];
+    };
+
+    this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
+      x -= this.bounds[0];
+      y -= this.bounds[1];
+      x *= this._scale;
+      y *= this._scale;
+      radius *= this._scale;
+      if (endAngle - startAngle == Math.PI * 2) {
+        this._texData +=
+          "\\draw [" +
+          this.strokeStyle +
+          "] (" +
+          fixed(x, 3) +
+          "," +
+          fixed(-y, 3) +
+          ") circle (" +
+          fixed(radius, 3) +
+          ");\n";
+      } else {
+        if (isReversed) {
+          var temp = startAngle;
+          startAngle = endAngle;
+          endAngle = temp;
+        }
+        if (endAngle < startAngle) {
+          endAngle += Math.PI * 2;
+        }
+        // TikZ needs the angles to be in between -2pi and 2pi or it breaks
+        if (Math.min(startAngle, endAngle) < -2 * Math.PI) {
+          startAngle += 2 * Math.PI;
+          endAngle += 2 * Math.PI;
+        } else if (Math.max(startAngle, endAngle) > 2 * Math.PI) {
+          startAngle -= 2 * Math.PI;
+          endAngle -= 2 * Math.PI;
+        }
+        startAngle = -startAngle;
+        endAngle = -endAngle;
+        this._texData +=
+          "\\draw [" +
+          this.strokeStyle +
+          "] (" +
+          fixed(x + radius * Math.cos(startAngle), 3) +
+          "," +
+          fixed(-y + radius * Math.sin(startAngle), 3) +
+          ") arc (" +
+          fixed((startAngle * 180) / Math.PI, 5) +
+          ":" +
+          fixed((endAngle * 180) / Math.PI, 5) +
+          ":" +
+          fixed(radius, 3) +
+          ");\n";
+      }
+    };
+
+    this.moveTo = this.lineTo = function (x, y) {
+      x -= this.bounds[0];
+      y -= this.bounds[1];
+      x *= this._scale;
+      y *= this._scale;
+      this._points.push({ x: x, y: y });
+    };
+
+    this.stroke = function () {
+      if (this._points.length == 0) return;
+      this._texData += "\\draw [" + this.strokeStyle + "]";
+      for (var i = 0; i < this._points.length; i++) {
+        var p = this._points[i];
+        this._texData +=
+          (i > 0 ? " --" : "") +
+          " (" +
+          fixed(p.x, 2) +
+          "," +
+          fixed(-p.y, 2) +
+          ")";
+      }
+      this._texData += ";\n";
+    };
+
+    this.fill = function () {
+      if (this._points.length == 0) return;
+      this._texData += "\\fill [" + this.strokeStyle + "]";
+      for (var i = 0; i < this._points.length; i++) {
+        var p = this._points[i];
+        this._texData +=
+          (i > 0 ? " --" : "") +
+          " (" +
+          fixed(p.x, 2) +
+          "," +
+          fixed(-p.y, 2) +
+          ")";
+      }
+      this._texData += ";\n";
+    };
+
+    this.measureText = function (text) {
+      var c = canvas.getContext("2d");
+      c.font = displayFont;
+      return c.measureText(text);
+    };
+
+    this.advancedFillText = function (text, originalText, x, y, angleOrNull) {
+      x -= this.bounds[0];
+      y -= this.bounds[1];
+      if (text.replace(" ", "").length > 0) {
+        var nodeParams = "";
+        // x and y start off as the center of the text, but will be moved to one side of the box when angleOrNull != null
+        if (angleOrNull != null) {
+          var width = this.measureText(text).width;
+          var dx = Math.cos(angleOrNull);
+          var dy = Math.sin(angleOrNull);
+          if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 0) (nodeParams = "[right] "), (x -= width / 2);
+            else (nodeParams = "[left] "), (x += width / 2);
+          } else {
+            if (dy > 0) (nodeParams = "[below] "), (y -= 10);
+            else (nodeParams = "[above] "), (y += 10);
+          }
+        }
+        x *= this._scale;
+        y *= this._scale;
+        var escapedBraces = originalText.replace(/{/g, "\\{");
+        escapedBraces = escapedBraces.replace(/}/g, "\\}");
+        this._texData +=
+          "\\draw (" +
+          fixed(x, 2) +
+          "," +
+          fixed(-y, 2) +
+          ") node " +
+          nodeParams +
+          "{$" +
+          escapedBraces.replace(/ /g, "\\mbox{ }") +
+          "$};\n";
+      }
+    };
+
+    this.translate = this.save = this.restore = this.clearRect = function () {};
+  }
+}
+
+class ExportAsSVG {
+  constructor(bounds) {
+    this.width = bounds[2] - bounds[0];
+    this.height = bounds[3] - bounds[1];
+    this.bounds = bounds;
+    this.fillStyle = "black";
+    this.strokeStyle = "black";
+    this.lineWidth = 1;
+    this.font = displayFont;
+    this._points = [];
+    this._svgData = "";
+    this._transX = 0;
+    this._transY = 0;
+
+    this.toSVG = function () {
+      var data = '<?xml version="1.0" standalone="no"?>\n';
+      data +=
+        '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n\n';
+      data +=
+        '<svg width="' +
+        this.width +
+        '" height="' +
+        this.height +
+        '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n';
+      data += this._svgData;
+      data += "</svg>\n";
+      return data;
+    };
+
+    this.beginPath = function () {
+      this._points = [];
+    };
+
+    this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
+      x -= this.bounds[0];
+      y -= this.bounds[1];
+      x += this._transX;
+      y += this._transY;
+      var style =
+        'stroke="' +
+        this.strokeStyle +
+        '" stroke-width="' +
+        this.lineWidth +
+        '" fill="none"';
+
+      if (endAngle - startAngle == Math.PI * 2) {
+        this._svgData +=
+          "\t<ellipse " +
+          style +
+          ' cx="' +
+          fixed(x, 3) +
+          '" cy="' +
+          fixed(y, 3) +
+          '" rx="' +
+          fixed(radius, 3) +
+          '" ry="' +
+          fixed(radius, 3) +
+          '"/>\n';
+      } else {
+        if (isReversed) {
+          var temp = startAngle;
+          startAngle = endAngle;
+          endAngle = temp;
+        }
+
+        if (endAngle < startAngle) {
+          endAngle += Math.PI * 2;
+        }
+
+        var startX = x + radius * Math.cos(startAngle);
+        var startY = y + radius * Math.sin(startAngle);
+        var endX = x + radius * Math.cos(endAngle);
+        var endY = y + radius * Math.sin(endAngle);
+        var useGreaterThan180 = Math.abs(endAngle - startAngle) > Math.PI;
+        var goInPositiveDirection = 1;
+
+        this._svgData += "\t<path " + style + ' d="';
+        this._svgData += "M " + fixed(startX, 3) + "," + fixed(startY, 3) + " "; // startPoint(startX, startY)
+        this._svgData += "A " + fixed(radius, 3) + "," + fixed(radius, 3) + " "; // radii(radius, radius)
+        this._svgData += "0 "; // value of 0 means perfect circle, others mean ellipse
+        this._svgData += +useGreaterThan180 + " ";
+        this._svgData += +goInPositiveDirection + " ";
+        this._svgData += fixed(endX, 3) + "," + fixed(endY, 3); // endPoint(endX, endY)
+        this._svgData += '"/>\n';
+      }
+    };
+
+    this.moveTo = this.lineTo = function (x, y) {
+      x -= this.bounds[0];
+      y -= this.bounds[1];
+      x += this._transX;
+      y += this._transY;
+      this._points.push({ x: x, y: y });
+    };
+
+    this.stroke = function () {
+      if (this._points.length == 0) return;
+      this._svgData +=
+        '\t<polygon stroke="' +
+        this.strokeStyle +
+        '" stroke-width="' +
+        this.lineWidth +
+        '" points="';
+      for (var i = 0; i < this._points.length; i++) {
+        this._svgData +=
+          (i > 0 ? " " : "") +
+          fixed(this._points[i].x, 3) +
+          "," +
+          fixed(this._points[i].y, 3);
+      }
+      this._svgData += '"/>\n';
+    };
+
+    this.fill = function () {
+      if (this._points.length == 0) return;
+      this._svgData +=
+        '\t<polygon fill="' +
+        this.fillStyle +
+        '" stroke-width="' +
+        this.lineWidth +
+        '" points="';
+      for (var i = 0; i < this._points.length; i++) {
+        this._svgData +=
+          (i > 0 ? " " : "") +
+          fixed(this._points[i].x, 3) +
+          "," +
+          fixed(this._points[i].y, 3);
+      }
+      this._svgData += '"/>\n';
+    };
+
+    this.measureText = function (text) {
+      var c = canvas.getContext("2d");
+      c.font = displayFont;
+      return c.measureText(text);
+    };
+
+    this.fillText = function (text, x, y) {
+      x -= this.bounds[0];
+      y -= this.bounds[1];
+      x += this._transX;
+      y += this._transY;
+      if (text.replace(" ", "").length > 0) {
+        this._svgData +=
+          '\t<text x="' +
+          fixed(x, 3) +
+          '" y="' +
+          fixed(y, 3) +
+          '" font-family="Times New Roman, serif, Consolas, Courier New, monospace" font-size="20">' +
+          textToXML(text) +
+          "</text>\n";
+      }
+    };
+
+    this.translate = function (x, y) {
+      this._transX = x;
+      this._transY = y;
+    };
+
+    this.save = this.restore = this.clearRect = function () {};
+  }
+}
+
+// ------------------------------------------------------------------------------------- //
+
 function convertLatexShortcuts(text) {
   text = text
     .replaceAll("*", "∗")
@@ -438,7 +1679,6 @@ function resetCaret() {
 var canvas;
 var mouseOnCanvas = false;
 var canvasFocus = false;
-var nodeRadius = 30;
 var displayFont = '20px "Cambria Math", "XITS Math", Calibri';
 var nodes = [];
 var links = [];
@@ -479,7 +1719,7 @@ function clearCanvas() {
   localStorage["fsm"] = JSON.stringify(getBackupData());
   var context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
-  nodeRadius = 30;
+  Node.radius = 30;
   document.getElementById("rangeSlider").value = 30;
 }
 
@@ -495,7 +1735,7 @@ function toggleOutline() {
 function radiusChanged() {
   var newRadius = document.getElementById("rangeSlider").value;
   newRadius = parseInt(newRadius);
-  nodeRadius = newRadius;
+  Node.radius = newRadius;
   updateRangeValue();
   draw();
 }
@@ -724,7 +1964,7 @@ window.onload = function () {
       document.getElementById("run").style.opacity = "1";
     }
 
-    if (!nodeRadius || nodeRadius <= 0 || nodeRadius > 80) nodeRadius = 30;
+    if (!Node.radius || Node.radius <= 0 || Node.radius > 80) Node.radius = 30;
   }, 1);
 
   document.getElementById("history").onmousedown = function () {
@@ -1971,8 +3211,7 @@ function restoreFromBackupData(backup, flag = true, select = false) {
         if (select) selectedObjects.push(link);
       }
     }
-  nodeRadius = backup.nodeRadius;
-  document.getElementById("rangeSlider").value = `${nodeRadius}`;
+  document.getElementById("rangeSlider").value = `${Node.radius}`;
 
   document.getElementById("height").value = canvas.height =
     backup.height || "600";
@@ -2003,7 +3242,6 @@ function getBackupData() {
     links: [],
     tapes: [],
     textBoxes: [],
-    nodeRadius: nodeRadius,
   };
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i];
