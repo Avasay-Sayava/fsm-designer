@@ -110,7 +110,7 @@
       >
       |
       <button
-        onclick="selectedObjects.forEach(object=>{selectAutomaton(object)});if(selectedObjects.length>1){clearInterval(caretTimer);caretVisible=false}draw()"
+        onclick="selectGroup(...selectedObjects);draw()"
       >
         Select whole group
       </button>

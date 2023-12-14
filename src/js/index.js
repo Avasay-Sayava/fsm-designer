@@ -811,18 +811,18 @@ class TextBox {
       var text;
       if (inArr(this, selectedObjects) && selectedObjects.length == 1)
         text =
-          convertLatexShortcuts(
+          convertLaTeXShortcuts(
             this.text.split("\r")[i].substring(0, selectedText[0] - start)
           ) +
-          convertLatexShortcuts(
+          convertLaTeXShortcuts(
             this.text
               .split("\r")
               [i].substring(selectedText[0] - start, selectedText[1] - start)
           ) +
-          convertLatexShortcuts(
+          convertLaTeXShortcuts(
             this.text.split("\r")[i].substring(selectedText[1] - start)
           );
-      else text = convertLatexShortcuts(this.text.split("\r")[i]);
+      else text = convertLaTeXShortcuts(this.text.split("\r")[i]);
 
       this.width = Math.max(this.width, c.measureText(text).width);
 
@@ -1299,7 +1299,7 @@ class ExportAsSVG {
 
 // ------------------------------------------------------------------------------------- //
 
-function convertLatexShortcuts(text) {
+function convertLaTeXShortcuts(text) {
   text = text
     .replaceAll("*", "∗")
     .replaceAll(">=", "≥")
@@ -1499,24 +1499,24 @@ function drawText(
   var text;
   if (isSelected && selectedObjects.length == 1)
     text =
-      convertLatexShortcuts(
+      convertLaTeXShortcuts(
         originalText.substring(0, selectedText[0] - start)
       ) +
-      convertLatexShortcuts(
+      convertLaTeXShortcuts(
         originalText.substring(selectedText[0] - start, selectedText[1] - start)
       ) +
-      convertLatexShortcuts(originalText.substring(selectedText[1] - start));
-  else text = convertLatexShortcuts(originalText);
+      convertLaTeXShortcuts(originalText.substring(selectedText[1] - start));
+  else text = convertLaTeXShortcuts(originalText);
   c.font = displayFont;
   var width = c.measureText(text).width;
   var notSelectedWidth1 = c.measureText(
-    convertLatexShortcuts(originalText.substring(0, selectedText[0] - start))
+    convertLaTeXShortcuts(originalText.substring(0, selectedText[0] - start))
   ).width;
   var untilCaretWidth = c.measureText(
-    convertLatexShortcuts(originalText.substring(0, selectedText[2] - start))
+    convertLaTeXShortcuts(originalText.substring(0, selectedText[2] - start))
   ).width;
   var selectedWidth = c.measureText(
-    convertLatexShortcuts(
+    convertLaTeXShortcuts(
       originalText.substring(selectedText[0] - start, selectedText[1] - start)
     )
   ).width;
@@ -1547,7 +1547,7 @@ function drawText(
     y = Math.round(y);
     if (isSelected && selectedObjects.length == 1) {
       c.fillText(
-        convertLatexShortcuts(
+        convertLaTeXShortcuts(
           originalText.substring(0, selectedText[0] - start)
         ),
         x,
@@ -1558,7 +1558,7 @@ function drawText(
       c.fillRect(x, y - 10, selectedWidth, 20);
       c.fillStyle = "white";
       c.fillText(
-        convertLatexShortcuts(
+        convertLaTeXShortcuts(
           originalText.substring(
             selectedText[0] - start,
             selectedText[1] - start
@@ -1570,7 +1570,7 @@ function drawText(
       x += selectedWidth;
       c.fillStyle = "blue";
       c.fillText(
-        convertLatexShortcuts(originalText.substring(selectedText[1] - start)),
+        convertLaTeXShortcuts(originalText.substring(selectedText[1] - start)),
         x,
         y + 6
       );
@@ -1609,10 +1609,10 @@ function drawText(
         selectedObjects.length != 1
       ) {
         var width1 = c.measureText(
-          convertLatexShortcuts(originalText.substring(0, hrs[i]))
+          convertLaTeXShortcuts(originalText.substring(0, hrs[i]))
         ).width;
         var width2 = c.measureText(
-          convertLatexShortcuts(originalText.substring(0, hrs[i + 1] + 3))
+          convertLaTeXShortcuts(originalText.substring(0, hrs[i + 1] + 3))
         ).width;
         c.fillRect(x + width1, y - 11, width2 - width1, 1.5);
       }
@@ -1914,7 +1914,7 @@ window.onload = function () {
   };
 
   scope.onscroll = (e) => {
-    contextMenu.style.transform = `translate(0, -${window.scrollY}px)`;
+    contextMenu.style.translate = `0 -${window.scrollY}px`;
   };
 
   contextMenu.addEventListener("contextmenu", (e) => {
@@ -2299,11 +2299,12 @@ document.onkeydown = async function (e) {
             selectedText[0],
             selectedText[1]
           );
-          navigator.clipboard.writeText(copiedText);
+          if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+            navigator.clipboard.writeText(convertLaTeXShortcuts(copiedText));
         }
       } else copy();
     } else if (key === 86) {
-      if (navigator.clipboard.readText)
+      if (navigator && navigator.clipboard && navigator.clipboard.readText)
         copiedText = await navigator.clipboard.readText();
       e.preventDefault();
       vKey = true;
@@ -2337,14 +2338,12 @@ document.onkeydown = async function (e) {
       e.preventDefault();
 
       if (e.altKey) {
-        selectedObjects.forEach((object) => {
-          if (object instanceof Cell) {
-            selectedObjects.push(...object.tape.cells);
-            selectedObjects = Array.from(new Set(selectedObjects));
-          } else {
-            selectAutomaton(object);
-          }
-        });
+        selectGroup(...selectedObjects);
+        selectedText = [
+          selectedObjects[0].text.length,
+          selectedObjects[0].text.length,
+          selectedObjects[0].text.length,
+        ];
       } else if (e.shiftKey) {
         if (selectedObjects.length == 1)
           selectedText = [
@@ -2369,8 +2368,8 @@ document.onkeydown = async function (e) {
             selectedText[0],
             selectedText[1]
           );
-
-          navigator.clipboard.writeText(copiedText);
+          if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+            navigator.clipboard.writeText(convertLaTeXShortcuts(copiedText));
 
           selectedObjects[0].text =
             selectedObjects[0].text.substring(0, selectedText[0]) +
@@ -3708,22 +3707,22 @@ function selectToNextSpace(text, moveRight) {
 }
 
 function run(start, word) {
-  word = convertLatexShortcuts(word);
+  word = convertLaTeXShortcuts(word);
 
   if (word.length == 0) {
     if (start.isAcceptState) {
       start.runtimeColor = "green";
-      console.log(`accepted ((${convertLatexShortcuts(start.text)}))`);
+      console.log(`accepted ((${convertLaTeXShortcuts(start.text)}))`);
     } else {
       if (start.runtimeColor != "green") start.runtimeColor = "red";
-      console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
+      console.log(`declined ( ${convertLaTeXShortcuts(start.text)} )`);
     }
 
     for (var i = 0; i < links.length; i++) {
       const link = links[i];
       if (
         link.nodeA == start &&
-        inArr("ε", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/))
+        inArr("ε", convertLaTeXShortcuts(link.text).split(/[\s\r]*,[\s\r]*/))
       ) {
         selectedObjects.push(link);
         run(link.nodeB, word);
@@ -3743,7 +3742,7 @@ function run(start, word) {
     const link = links[i];
     if (
       link.nodeA == start &&
-      inArr("ε", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/))
+      inArr("ε", convertLaTeXShortcuts(link.text).split(/[\s\r]*,[\s\r]*/))
     ) {
       selectedObjects.push(link);
       run(link.nodeB, word);
@@ -3753,9 +3752,9 @@ function run(start, word) {
       link.nodeA == start &&
       (inArr(
         word.charAt(0),
-        convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)
+        convertLaTeXShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)
       ) ||
-        inArr("Σ", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)))
+        inArr("Σ", convertLaTeXShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)))
     ) {
       selectedObjects.push(link);
       run(link.nodeB, word.substring(1));
@@ -3765,9 +3764,9 @@ function run(start, word) {
       link instanceof SelfLink &&
       (inArr(
         word.charAt(0),
-        convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)
+        convertLaTeXShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)
       ) ||
-        inArr("Σ", convertLatexShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)))
+        inArr("Σ", convertLaTeXShortcuts(link.text).split(/[\s\r]*,[\s\r]*/)))
     ) {
       selectedObjects.push(link);
       run(link.node, word.substring(1));
@@ -3777,7 +3776,7 @@ function run(start, word) {
 
   if (stay) {
     if (start.runtimeColor != "green") start.runtimeColor = "red";
-    console.log(`declined ( ${convertLatexShortcuts(start.text)} )`);
+    console.log(`declined ( ${convertLaTeXShortcuts(start.text)} )`);
   }
 }
 
@@ -3794,52 +3793,52 @@ function getAlphabet(object, selected = []) {
       ) {
         getAlphabet(link, selected).forEach((letter) => {
           if (
-            convertLatexShortcuts(letter) != "Σ" &&
-            convertLatexShortcuts(letter) != "ε" &&
+            convertLaTeXShortcuts(letter) != "Σ" &&
+            convertLaTeXShortcuts(letter) != "ε" &&
             letter != ""
           )
-            alphabet.push(convertLatexShortcuts(letter));
+            alphabet.push(convertLaTeXShortcuts(letter));
         });
       }
     });
   } else if (!(object instanceof StartLink)) {
     object.text.split(/\s*,\s*/).forEach((letter) => {
       if (
-        convertLatexShortcuts(letter) != "Σ" &&
-        convertLatexShortcuts(letter) != "ε" &&
+        convertLaTeXShortcuts(letter) != "Σ" &&
+        convertLaTeXShortcuts(letter) != "ε" &&
         letter != ""
       )
-        alphabet.push(convertLatexShortcuts(letter));
+        alphabet.push(convertLaTeXShortcuts(letter));
     });
 
     if (object instanceof Link) {
       if (!inArr(object.nodeA, selected))
         getAlphabet(object.nodeA, selected).forEach((letter) => {
           if (
-            convertLatexShortcuts(letter) != "Σ" &&
-            convertLatexShortcuts(letter) != "ε" &&
-            convertLatexShortcuts(letter) != ""
+            convertLaTeXShortcuts(letter) != "Σ" &&
+            convertLaTeXShortcuts(letter) != "ε" &&
+            convertLaTeXShortcuts(letter) != ""
           )
-            alphabet.push(convertLatexShortcuts(letter));
+            alphabet.push(convertLaTeXShortcuts(letter));
         });
       if (!inArr(object.nodeB, selected))
         getAlphabet(object.nodeB, selected).forEach((letter) => {
           if (
-            convertLatexShortcuts(letter) != "Σ" &&
-            convertLatexShortcuts(letter) != "ε" &&
-            convertLatexShortcuts(letter) != ""
+            convertLaTeXShortcuts(letter) != "Σ" &&
+            convertLaTeXShortcuts(letter) != "ε" &&
+            convertLaTeXShortcuts(letter) != ""
           )
-            alphabet.push(convertLatexShortcuts(letter));
+            alphabet.push(convertLaTeXShortcuts(letter));
         });
     } else if (object instanceof SelfLink) {
       if (!inArr(object.node, selected))
         getAlphabet(object.node, selected).forEach((letter) => {
           if (
-            convertLatexShortcuts(letter) != "Σ" &&
-            convertLatexShortcuts(letter) != "ε" &&
-            convertLatexShortcuts(letter) != ""
+            convertLaTeXShortcuts(letter) != "Σ" &&
+            convertLaTeXShortcuts(letter) != "ε" &&
+            convertLaTeXShortcuts(letter) != ""
           )
-            alphabet.push(convertLatexShortcuts(letter));
+            alphabet.push(convertLaTeXShortcuts(letter));
         });
     }
   }
@@ -3906,8 +3905,8 @@ function getLetters(object) {
   links.forEach((link) => {
     if (object == link.nodeA || object == link.node)
       link.text.split(/\s*,\s*/).forEach((letter) => {
-        if (convertLatexShortcuts(letter) != "ε" && letter != "")
-          letters.push(convertLatexShortcuts(letter));
+        if (convertLaTeXShortcuts(letter) != "ε" && letter != "")
+          letters.push(convertLaTeXShortcuts(letter));
       });
   });
 
@@ -3936,4 +3935,16 @@ function updateSelectionBox(mouse) {
     toX = mouse.x;
     toY = mouse.y;
   }
+}
+
+function selectGroup(...objects) {
+  objects.forEach((object) => {
+    if (object instanceof Cell) {
+      selectedObjects.push(...object.tape.cells);
+    } else {
+      selectAutomaton(object);
+    }
+  });
+
+  selectedObjects = Array.from(new Set(selectedObjects));
 }
