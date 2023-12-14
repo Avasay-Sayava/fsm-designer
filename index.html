@@ -6,7 +6,22 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="icon.png" />
     <link href="https://fonts.cdnfonts.com/css/xits" rel="stylesheet" />
-    <script src="index.js"></script>
+
+    <script defer src="./constants.js"></script>
+
+    <script defer src="./objects/Node.js"></script>
+    <script defer src="./objects/Link.js"></script>
+    <script defer src="./objects/StartLink.js"></script>
+    <script defer src="./objects/SelfLink.js"></script>
+    <script defer src="./objects/TemporaryLink.js"></script>
+    <script defer src="./objects/TextBox.js"></script>
+    <script defer src="./objects/Cell.js"></script>
+    <script defer src="./objects/Tape.js"></script>
+
+    <script defer src="./commands/ExportAsLaTeX.js"></script>
+    <script defer src="./commands/ExportAsSvg.js"></script>
+
+    <script src="./index.js"></script>
     <script>
       if (typeof btoa == "undefined") {
         function btoa(str) {
