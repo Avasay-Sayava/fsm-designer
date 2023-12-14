@@ -2377,6 +2377,7 @@ document.onkeydown = async function (e) {
             selectedObjects[0].text.substring(selectedText[1]);
 
           selectedText[1] = selectedText[2] = selectedText[0];
+          draw();
         }
       } else {
         copy();
