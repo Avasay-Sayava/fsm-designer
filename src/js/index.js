@@ -109,106 +109,215 @@ const greekLetterNames = [
   "cap",
   "cdot",
   "times",
-  "lang",
   "exists",
 ];
 
-const subscripts = {
-  0: "₀",
-  1: "₁",
-  2: "₂",
-  3: "₃",
-  4: "₄",
-  5: "₅",
-  6: "₆",
-  7: "₇",
-  8: "₈",
-  9: "₉",
-  "+": "₊",
-  "∗": "⁎",
-  "-": "₋",
-  "=": "₌",
-  "(": "₍",
-  ")": "₎",
-  a: "ₐ",
-  e: "ₑ",
-  o: "ₒ",
-  x: "ₓ",
-  h: "ₕ",
-  k: "ₖ",
-  l: "ₗ",
-  m: "ₘ",
-  n: "ₙ",
-  p: "ₚ",
-  s: "ₛ",
-  t: "ₜ",
+// const subscripts = {
+//   0: "₀",
+//   1: "₁",
+//   2: "₂",
+//   3: "₃",
+//   4: "₄",
+//   5: "₅",
+//   6: "₆",
+//   7: "₇",
+//   8: "₈",
+//   9: "₉",
+//   "+": "₊",
+//   "∗": "⁎",
+//   "-": "₋",
+//   "=": "₌",
+//   "(": "₍",
+//   ")": "₎",
+//   a: "ₐ",
+//   e: "ₑ",
+//   o: "ₒ",
+//   x: "ₓ",
+//   h: "ₕ",
+//   k: "ₖ",
+//   l: "ₗ",
+//   m: "ₘ",
+//   n: "ₙ",
+//   p: "ₚ",
+//   s: "ₛ",
+//   t: "ₜ",
+// };
+
+// const superscripts = {
+//   0: "⁰",
+//   1: "¹",
+//   2: "²",
+//   3: "³",
+//   4: "⁴",
+//   5: "⁵",
+//   6: "⁶",
+//   7: "⁷",
+//   8: "⁸",
+//   9: "⁹",
+//   "+": "⁺",
+//   "∗": "*",
+//   "-": "⁻",
+//   "=": "⁼",
+//   "(": "⁽",
+//   ")": "⁾",
+//   a: "ᵃ",
+//   b: "ᵇ",
+//   c: "ᶜ",
+//   d: "ᵈ",
+//   e: "ᵉ",
+//   f: "ᶠ",
+//   g: "ᵍ",
+//   h: "ʰ",
+//   i: "ⁱ",
+//   j: "ʲ",
+//   k: "ᵏ",
+//   l: "ˡ",
+//   m: "ᵐ",
+//   n: "ⁿ",
+//   o: "ᵒ",
+//   p: "ᵖ",
+//   q: "𐞥",
+//   r: "ʳ",
+//   s: "ˢ",
+//   t: "ᵗ",
+//   u: "ᵘ",
+//   v: "ᵛ",
+//   w: "ʷ",
+//   x: "ˣ",
+//   y: "ʸ",
+//   z: "ᶻ",
+//   A: "ᴬ",
+//   B: "ᴮ",
+//   C: "ꟲ",
+//   D: "ᴰ",
+//   E: "ᴱ",
+//   F: "ꟳ",
+//   G: "ᴳ",
+//   H: "ᴴ",
+//   I: "ᴵ",
+//   J: "ᴶ",
+//   K: "ᴷ",
+//   L: "ᴸ",
+//   M: "ᴹ",
+//   N: "ᴺ",
+//   O: "ᴼ",
+//   P: "ᴾ",
+//   Q: "ꟴ",
+//   R: "ᴿ",
+//   T: "ᵀ",
+//   U: "ᵁ",
+//   V: "ⱽ",
+//   W: "ᵂ",
+// };
+
+const scripted = {
+  A: "𝒜",
+  B: "ℬ",
+  C: "𝒞",
+  D: "𝒟",
+  E: "ℰ",
+  F: "ℱ",
+  G: "𝒢",
+  H: "ℋ",
+  I: "ℐ",
+  J: "𝒥",
+  K: "𝒦",
+  L: "ℒ",
+  M: "ℳ",
+  N: "𝒩",
+  O: "𝒪",
+  P: "𝒫",
+  Q: "𝒬",
+  R: "ℛ",
+  S: "𝒮",
+  T: "𝒯",
+  U: "𝒰",
+  V: "𝒱",
+  W: "𝒲",
+  X: "𝒳",
+  Y: "𝒴",
+  Z: "𝒵",
+  a: "𝒶",
+  b: "𝒷",
+  c: "𝒸",
+  d: "𝒹",
+  e: "ℯ",
+  f: "𝒻",
+  g: "ℊ",
+  h: "𝒽",
+  i: "𝒾",
+  j: "𝒿",
+  k: "𝓀",
+  l: "ℓ",
+  m: "𝓂",
+  n: "𝓃",
+  o: "ℴ",
+  p: "𝓅",
+  q: "𝓆",
+  r: "𝓇",
+  s: "𝓈",
+  t: "𝓉",
+  u: "𝓊",
+  v: "𝓋",
+  w: "𝓌",
+  x: "𝓍",
+  y: "𝓎",
+  z: "𝓏",
 };
 
-const superscripts = {
-  0: "⁰",
-  1: "¹",
-  2: "²",
-  3: "³",
-  4: "⁴",
-  5: "⁵",
-  6: "⁶",
-  7: "⁷",
-  8: "⁸",
-  9: "⁹",
-  "+": "⁺",
-  "∗": "*",
-  "-": "⁻",
-  "=": "⁼",
-  "(": "⁽",
-  ")": "⁾",
-  a: "ᵃ",
-  b: "ᵇ",
-  c: "ᶜ",
-  d: "ᵈ",
-  e: "ᵉ",
-  f: "ᶠ",
-  g: "ᵍ",
-  h: "ʰ",
-  i: "ⁱ",
-  j: "ʲ",
-  k: "ᵏ",
-  l: "ˡ",
-  m: "ᵐ",
-  n: "ⁿ",
-  o: "ᵒ",
-  p: "ᵖ",
-  q: "𐞥",
-  r: "ʳ",
-  s: "ˢ",
-  t: "ᵗ",
-  u: "ᵘ",
-  v: "ᵛ",
-  w: "ʷ",
-  x: "ˣ",
-  y: "ʸ",
-  z: "ᶻ",
-  A: "ᴬ",
-  B: "ᴮ",
-  C: "ꟲ",
-  D: "ᴰ",
-  E: "ᴱ",
-  F: "ꟳ",
-  G: "ᴳ",
-  H: "ᴴ",
-  I: "ᴵ",
-  J: "ᴶ",
-  K: "ᴷ",
-  L: "ᴸ",
-  M: "ᴹ",
-  N: "ᴺ",
-  O: "ᴼ",
-  P: "ᴾ",
-  Q: "ꟴ",
-  R: "ᴿ",
-  T: "ᵀ",
-  U: "ᵁ",
-  V: "ⱽ",
-  W: "ᵂ",
+const scriptedR = {
+  𝒜: "A",
+  ℬ: "B",
+  𝒞: "C",
+  𝒟: "D",
+  ℰ: "E",
+  ℱ: "F",
+  𝒢: "G",
+  ℋ: "H",
+  ℐ: "I",
+  𝒥: "J",
+  𝒦: "K",
+  ℒ: "L",
+  ℳ: "M",
+  𝒩: "N",
+  𝒪: "O",
+  𝒫: "P",
+  𝒬: "Q",
+  ℛ: "R",
+  𝒮: "S",
+  𝒯: "T",
+  𝒰: "U",
+  𝒱: "V",
+  𝒲: "W",
+  𝒳: "X",
+  𝒴: "Y",
+  𝒵: "Z",
+  𝒶: "a",
+  𝒷: "b",
+  𝒸: "c",
+  𝒹: "d",
+  ℯ: "e",
+  𝒻: "f",
+  ℊ: "g",
+  𝒽: "h",
+  𝒾: "i",
+  𝒿: "j",
+  𝓀: "k",
+  ℓ: "l",
+  𝓂: "m",
+  𝓃: "n",
+  ℴ: "o",
+  𝓅: "p",
+  𝓆: "q",
+  𝓇: "r",
+  𝓈: "s",
+  𝓉: "t",
+  𝓊: "u",
+  𝓋: "v",
+  𝓌: "w",
+  𝓍: "x",
+  𝓎: "y",
+  𝓏: "z",
 };
 
 const doubleStrucks = {
@@ -274,6 +383,70 @@ const doubleStrucks = {
   7: "𝟟",
   8: "𝟠",
   9: "𝟡",
+};
+const doubleStrucksR = {
+  𝔸: "A",
+  𝔹: "B",
+  ℂ: "C",
+  𝔻: "D",
+  𝔼: "E",
+  𝔽: "F",
+  𝔾: "G",
+  ℍ: "H",
+  𝕀: "I",
+  𝕁: "J",
+  𝕂: "K",
+  𝕃: "L",
+  𝕄: "M",
+  ℕ: "N",
+  𝕆: "O",
+  ℙ: "P",
+  ℚ: "Q",
+  ℝ: "R",
+  𝕊: "S",
+  𝕋: "T",
+  𝕌: "U",
+  𝕍: "V",
+  𝕎: "W",
+  𝕏: "X",
+  𝕐: "Y",
+  ℤ: "Z",
+  𝕒: "a",
+  𝕓: "b",
+  𝕔: "c",
+  𝕕: "d",
+  𝕖: "e",
+  𝕗: "f",
+  𝕘: "g",
+  𝕙: "h",
+  𝕚: "i",
+  𝕛: "j",
+  𝕜: "k",
+  𝕝: "l",
+  𝕞: "m",
+  𝕟: "n",
+  𝕠: "o",
+  𝕡: "p",
+  𝕢: "q",
+  𝕣: "r",
+  𝕤: "s",
+  𝕥: "t",
+  𝕦: "u",
+  𝕧: "v",
+  𝕨: "w",
+  𝕩: "x",
+  𝕪: "y",
+  𝕫: "z",
+  "𝟘": "0",
+  "𝟙": "1",
+  "𝟚": "2",
+  "𝟛": "3",
+  "𝟜": "4",
+  "𝟝": "5",
+  "𝟞": "6",
+  "𝟟": "7",
+  "𝟠": "8",
+  "𝟡": "9",
 };
 
 // ------------------------------------------------------------------------------------- //
@@ -800,6 +973,7 @@ class TextBox {
   }
 
   align(minWidth = 0) {
+    console.log("aligned");
     this.width = minWidth;
     this.height = 25 * this.text.split("\r").length;
 
@@ -811,20 +985,17 @@ class TextBox {
       var text;
       if (inArr(this, selectedObjects) && selectedObjects.length == 1)
         text =
-          convertLaTeXShortcuts(
-            this.text.split("\r")[i].substring(0, selectedText[0] - start)
-          ) +
-          convertLaTeXShortcuts(
-            this.text
-              .split("\r")
-              [i].substring(selectedText[0] - start, selectedText[1] - start)
-          ) +
-          convertLaTeXShortcuts(
-            this.text.split("\r")[i].substring(selectedText[1] - start)
-          );
-      else text = convertLaTeXShortcuts(this.text.split("\r")[i]);
+          this.text.split("\r")[i].substring(0, selectedText[0] - start) +
+          this.text
+            .split("\r")
+            [i].substring(selectedText[0] - start, selectedText[1] - start) +
+          this.text.split("\r")[i].substring(selectedText[1] - start);
+      else text = this.text.split("\r")[i];
 
-      this.width = Math.max(this.width, c.measureText(text).width);
+      this.width = Math.max(
+        this.width,
+        measureTextWithScripts(c, text, inArr(this, selectedObjects), start)
+      );
 
       start += this.text.split("\r")[i].length + 1;
     }
@@ -1092,7 +1263,7 @@ class ExportAsLaTeX {
     this.measureText = function (text) {
       var c = canvas.getContext("2d");
       c.font = displayFont;
-      return c.measureText(text);
+      return measureTextWithScripts(c, text, false);
     };
 
     this.advancedFillText = function (text, originalText, x, y, angleOrNull) {
@@ -1268,7 +1439,7 @@ class ExportAsSVG {
     this.measureText = function (text) {
       var c = canvas.getContext("2d");
       c.font = displayFont;
-      return c.measureText(text);
+      return measureTextWithScripts(c, text, false);
     };
 
     this.fillText = function (text, x, y) {
@@ -1304,12 +1475,34 @@ function convertLaTeXShortcuts(text) {
     .replaceAll("*", "∗")
     .replaceAll(">=", "≥")
     .replaceAll("<=", "≤")
+    .replaceAll("^∗", "*")
+    .replaceAll("_∗", "⁎")
     .replaceAll("!=", "≠");
   if (text.split("\\hr").length % 2 == 0) {
     text =
       text.substring(0, text.lastIndexOf("\\hr")).replaceAll("\\hr", "") +
       text.substring(text.lastIndexOf("\\hr"));
   } else text = text.replaceAll("\\hr", "");
+
+  // for (var i = 0; i < text.length; i++) {
+  //   if (subscripts[text.charAt(i)])
+  //     text = text.replace("_" + text.charAt(i), subscripts[text.charAt(i)]);
+  //   if (superscripts[text.charAt(i)])
+  //     text = text.replace("^" + text.charAt(i), superscripts[text.charAt(i)]);
+  // }
+
+  for (var i = 0; i < text.length; i++) {
+    if (doubleStrucks[text.charAt(i)])
+      text = text.replace(
+        "\\\\" + text.charAt(i),
+        doubleStrucks[text.charAt(i)]
+      );
+    if (scripted[text.charAt(i)])
+      text = text.replace(
+        "\\" + text.charAt(i) + "\\",
+        scripted[text.charAt(i)]
+      );
+  }
 
   for (var i = 0; i < greekLetterNames.length; i++) {
     var name = greekLetterNames[i];
@@ -1418,10 +1611,6 @@ function convertLaTeXShortcuts(text) {
       text = text.replace(new RegExp("\\\\" + name, "g"), "×");
       continue;
     }
-    if (name == "lang") {
-      text = text.replace(new RegExp("\\\\" + name, "g"), "ℒ");
-      continue;
-    }
     if (name == "exists") {
       text = text.replace(new RegExp("\\\\" + name, "g"), "Ǝ");
       continue;
@@ -1434,21 +1623,6 @@ function convertLaTeXShortcuts(text) {
       new RegExp("\\\\" + name.toLowerCase(), "g"),
       String.fromCharCode(945 + i + (i > 16))
     );
-  }
-
-  for (var i = 0; i < text.length; i++) {
-    if (subscripts[text.charAt(i)])
-      text = text.replace("_" + text.charAt(i), subscripts[text.charAt(i)]);
-    if (superscripts[text.charAt(i)])
-      text = text.replace("^" + text.charAt(i), superscripts[text.charAt(i)]);
-  }
-
-  for (var i = 0; i < text.length; i++) {
-    if (doubleStrucks[text.charAt(i)])
-      text = text.replace(
-        "\\\\" + text.charAt(i),
-        doubleStrucks[text.charAt(i)]
-      );
   }
 
   return text;
@@ -1508,18 +1682,25 @@ function drawText(
       convertLaTeXShortcuts(originalText.substring(selectedText[1] - start));
   else text = convertLaTeXShortcuts(originalText);
   c.font = displayFont;
-  var width = c.measureText(text).width;
-  var notSelectedWidth1 = c.measureText(
-    convertLaTeXShortcuts(originalText.substring(0, selectedText[0] - start))
-  ).width;
-  var untilCaretWidth = c.measureText(
-    convertLaTeXShortcuts(originalText.substring(0, selectedText[2] - start))
-  ).width;
-  var selectedWidth = c.measureText(
-    convertLaTeXShortcuts(
-      originalText.substring(selectedText[0] - start, selectedText[1] - start)
-    )
-  ).width;
+  var width = measureTextWithScripts(c, originalText, isSelected, start);
+  var notSelectedWidth = measureTextWithScripts(
+    c,
+    originalText.substring(0, selectedText[0] - start),
+    isSelected,
+    start
+  );
+  var untilCaretWidth = measureTextWithScripts(
+    c,
+    originalText.substring(0, selectedText[2] - start),
+    isSelected,
+    start
+  );
+  var selectedWidth = measureTextWithScripts(
+    c,
+    originalText.substring(selectedText[0] - start, selectedText[1] - start),
+    isSelected,
+    start
+  );
 
   end = start + originalText.length;
 
@@ -1546,18 +1727,20 @@ function drawText(
     x = Math.round(x);
     y = Math.round(y);
     if (isSelected && selectedObjects.length == 1) {
-      c.fillText(
+      drawTextWithScripts(
+        c,
         convertLaTeXShortcuts(
           originalText.substring(0, selectedText[0] - start)
         ),
         x,
         y + 6
       );
-      x += notSelectedWidth1;
+      x += notSelectedWidth;
       c.fillStyle = "blue";
       c.fillRect(x, y - 10, selectedWidth, 20);
       c.fillStyle = "white";
-      c.fillText(
+      drawTextWithScripts(
+        c,
         convertLaTeXShortcuts(
           originalText.substring(
             selectedText[0] - start,
@@ -1569,14 +1752,14 @@ function drawText(
       );
       x += selectedWidth;
       c.fillStyle = "blue";
-      c.fillText(
+      drawTextWithScripts(
+        c,
         convertLaTeXShortcuts(originalText.substring(selectedText[1] - start)),
         x,
         y + 6
       );
 
-      x -= notSelectedWidth1 + selectedWidth;
-
+      x -= notSelectedWidth + selectedWidth;
       if (
         caretVisible &&
         canvasHasFocus() &&
@@ -1592,7 +1775,7 @@ function drawText(
         x -= untilCaretWidth;
       }
     } else {
-      c.fillText(text, x, y + 6);
+      drawTextWithScripts(c, text, x, y + 6);
     }
 
     var hrs = [];
@@ -1608,18 +1791,122 @@ function drawText(
         !isSelected ||
         selectedObjects.length != 1
       ) {
-        var width1 = c.measureText(
-          convertLaTeXShortcuts(originalText.substring(0, hrs[i]))
-        ).width;
-        var width2 = c.measureText(
-          convertLaTeXShortcuts(originalText.substring(0, hrs[i + 1] + 3))
-        ).width;
+        var width1 = measureTextWithScripts(
+          c,
+          originalText.substring(0, hrs[i]),
+          isSelected,
+          start
+        );
+        var width2 = measureTextWithScripts(
+          c,
+          originalText.substring(0, hrs[i + 1] + 3),
+          isSelected,
+          start
+        );
         c.fillRect(x + width1, y - 11, width2 - width1, 1.5);
       }
 
       i += 2;
     }
   }
+}
+
+function measureTextWithScripts(c, text, isSelected, start) {
+  if (isSelected)
+    return (
+      measureTextWithScripts(c, text.substring(0, selectedText[0] - start), false) +
+      measureTextWithScripts(
+        c,
+        text.substring(selectedText[0] - start, selectedText[1] - start),
+        false
+      ) +
+      measureTextWithScripts(c, text.substring(selectedText[1] - start), false)
+    );
+  text = convertLaTeXShortcuts(text);
+  var width = 0;
+  var miniChunk = "";
+  var currIndex = 0;
+  text.split(/_.|\^./).forEach((chunk, index) => {
+    if (index == text.split(/_.|\^./).length - 1 && chunk == "") return;
+    chunk = chunk.substring(miniChunk.length - 1);
+    c.font = displayFont;
+    width += c.measureText(chunk).width;
+    c.font = miniFont;
+    miniChunk =
+      scriptedR[
+        text.substring(
+          currIndex + chunk.length + 1,
+          currIndex + chunk.length + 3
+        )
+      ] ||
+      doubleStrucksR[
+        text.substring(
+          currIndex + chunk.length + 1,
+          currIndex + chunk.length + 3
+        )
+      ]
+        ? text.substring(
+            currIndex + chunk.length + 1,
+            currIndex + chunk.length + 3
+          )
+        : text.substring(
+            currIndex + chunk.length + 1,
+            currIndex + chunk.length + 2
+          );
+    width += c.measureText(miniChunk).width;
+    currIndex += chunk.length + miniChunk.length + 1;
+  });
+
+  c.font = displayFont;
+
+  return width;
+}
+
+function drawTextWithScripts(c, text, x, y) {
+  var miniChunk = "";
+  var currIndex = 0;
+  text.split(/_.|\^./).forEach((chunk, index) => {
+    if (index == text.split(/_.|\^./).length - 1 && chunk == "") return;
+    chunk = chunk.substring(miniChunk.length - 1);
+    c.font = displayFont;
+    c.fillText(chunk, x, y);
+    x += c.measureText(chunk).width;
+    c.font = miniFont;
+    miniChunk =
+      scriptedR[
+        text.substring(
+          currIndex + chunk.length + 1,
+          currIndex + chunk.length + 3
+        )
+      ] ||
+      doubleStrucksR[
+        text.substring(
+          currIndex + chunk.length + 1,
+          currIndex + chunk.length + 3
+        )
+      ]
+        ? text.substring(
+            currIndex + chunk.length + 1,
+            currIndex + chunk.length + 3
+          )
+        : text.substring(
+            currIndex + chunk.length + 1,
+            currIndex + chunk.length + 2
+          );
+    if (
+      text.substring(currIndex + chunk.length, currIndex + chunk.length + 1) ==
+      "_"
+    ) {
+      c.fillText(miniChunk, x, y + 4);
+    } else if (
+      text.substring(currIndex + chunk.length, currIndex + chunk.length + 1) ==
+      "^"
+    ) {
+      c.fillText(miniChunk, x, y - 6);
+    }
+    x += c.measureText(miniChunk).width;
+    currIndex += chunk.length + miniChunk.length + 1;
+  });
 }
 
 function drawMultilineText(
@@ -1680,6 +1967,7 @@ var canvas;
 var mouseOnCanvas = false;
 var canvasFocus = false;
 var displayFont = '20px "Cambria Math", "XITS Math", Calibri';
+var miniFont = '14px "Cambria Math", "XITS Math", Calibri';
 var nodes = [];
 var links = [];
 var cells = [];
@@ -1853,6 +2141,28 @@ function selectObjects(left, top, right, bottom) {
       objects.push(node);
     }
   });
+  
+  textBoxes.forEach(function (textBox) {
+    if (
+      top <= textBox.y + textBox.height / 2 &&
+      textBox.y + textBox.height / 2 <= bottom &&
+      left <= textBox.x + textBox.width / 2 &&
+      textBox.x + textBox.width / 2 <= right
+    ) {
+      objects.push(textBox);
+    }
+  });
+
+  cells.forEach(function (cell) {
+    if (
+      top <= cell.y + cell.height / 2 &&
+      cell.y + cell.height / 2 <= bottom &&
+      left <= cell.x + cell.width / 2 &&
+      cell.x + cell.width / 2 <= right
+    ) {
+      objects.push(cell);
+    }
+  });
 
   links.forEach(function (link) {
     try {
@@ -1995,6 +2305,13 @@ window.onload = function () {
         right = Math.max(fromX, toX);
       selectedObjects = selectObjects(left, top, right, bottom);
 
+      if (selectedObjects.length == 1)
+        selectedText = [
+          selectedObjects[0].text.length,
+          selectedObjects[0].text.length,
+          selectedObjects[0].text.length,
+        ];
+
       updateIndicator();
     }
 
@@ -2068,6 +2385,14 @@ window.onload = function () {
     draw();
 
     updateIndicator();
+
+    cells.forEach(cell => {
+      cell.tape.align();
+    });
+
+    textBoxes.forEach(textBox => {
+      textBox.align();
+    });
 
     if (canvasHasFocus()) {
       // disable drag-and-drop only if the canvas is already focused
@@ -2247,6 +2572,12 @@ window.onload = function () {
 document.onkeydown = async function (e) {
   var key = crossBrowserKey(e);
 
+  if (e.altKey && e.ctrlKey) {
+    selectedObjects.forEach((obj) => {
+      obj.outline = !obj.outline;
+    });
+  }
+
   if (e.ctrlKey) {
     if (key === 90) {
       zKey = true;
@@ -2400,8 +2731,15 @@ document.onkeydown = async function (e) {
     document.getElementById("context-menu").classList.remove("visible");
   }
 
-  if (selectedObjects[0] && selectedObjects.length == 1 && selectedObjects[0].text.length != 0) {
+  if (
+    selectedObjects[0] &&
+    selectedObjects.length == 1 &&
+    selectedObjects[0].text.length != 0
+  ) {
     handleKeyEvent(selectedObjects[0], e);
+    for (var i = 0; i < textBoxes.length; i++) {
+      textBoxes[i].align();
+    }
     var text = selectedObjects[0].text;
     selectedText[2] = Math.min(selectedText[2], text.length);
     selectedText[2] = Math.max(selectedText[2], 0);
