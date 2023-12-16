@@ -2414,7 +2414,7 @@ window.onload = function () {
 
     if (selectedObject == null) {
       if (e.altKey) {
-        selectedObject = new TextBox("enter text", mouse.x, mouse.y);
+        selectedObject = new TextBox("Enter some text", mouse.x, mouse.y);
         if (e.ctrlKey) selectedObjects.push(selectedObject);
         else selectedObjects = [selectedObject];
         textBoxes.push(selectedObject);
