@@ -2212,19 +2212,20 @@ function snapNode(node) {
 }
 
 window.onload = async function () {
-  const data = new URLSearchParams(document.location.search).get("data");
+  var data = new URLSearchParams(document.location.search).get("data");
   if (data != null) {
-    var fsm = JSON.parse(localStorage["fsm"]);
     dialog = document.querySelector("dialog");
     await new Promise((resolve, reject) => {
       dialog.showModal();
 
-      dialog.addEventListener('close', () => {
-          resolve();
+      dialog.addEventListener("close", () => {
+        resolve();
       });
     });
+    if (dialog)
+      localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
+    history.replaceState(null, "", location.origin + location.pathname);
   }
-  history.replaceState(null, "", location.origin + location.pathname);
   undoStack = [localStorage["fsm"]];
   redoStack = [];
   const contextMenu = document.getElementById("context-menu");
@@ -3432,6 +3433,7 @@ function fixed(number, digits) {
 }
 
 function restoreFromBackupData(backup, flag = true, select = false) {
+  var startNodesLen = nodes.length;
   Node.radius = backup.nodeRadius;
   if (select) selectedObjects = [];
   if (backup.nodes)
@@ -3466,16 +3468,16 @@ function restoreFromBackupData(backup, flag = true, select = false) {
       var backupLink = backup.links[i];
       var link = null;
       if (backupLink.type == "SelfLink") {
-        link = new SelfLink(nodes[backupLink.node]);
+        link = new SelfLink(nodes[startNodesLen + backupLink.node]);
         link.anchorAngle = backupLink.anchorAngle;
         link.text = backupLink.text;
       } else if (backupLink.type == "StartLink") {
-        link = new StartLink(nodes[backupLink.node]);
+        link = new StartLink(nodes[startNodesLen + backupLink.node]);
         link.deltaX = backupLink.deltaX;
         link.deltaY = backupLink.deltaY;
         link.text = backupLink.text;
       } else if (backupLink.type == "Link") {
-        link = new Link(nodes[backupLink.nodeA], nodes[backupLink.nodeB]);
+        link = new Link(nodes[startNodesLen + backupLink.nodeA], nodes[startNodesLen + backupLink.nodeB]);
         link.parallelPart = backupLink.parallelPart;
         link.perpendicularPart = backupLink.perpendicularPart;
         link.text = backupLink.text;
@@ -3651,6 +3653,7 @@ function updateRangeValue() {
 
 function copy(flag = true) {
   if (flag) copied = saveSelectedAsJSON(false);
+  console.log(copied);
   if (copied.nodes)
     copied.nodes.forEach((e) => {
       e.x += 20;
@@ -3669,8 +3672,7 @@ function copy(flag = true) {
 }
 
 function paste() {
-  if (!copied.nodes && !copied.tapes && !copied.textBoxes)
-    return;
+  if (!copied.nodes && !copied.tapes && !copied.textBoxes) return;
   restoreFromBackupData(copied, true, true);
 
   copy(false);
