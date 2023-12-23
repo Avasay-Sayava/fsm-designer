@@ -1967,6 +1967,8 @@ function resetCaret() {
   }, 500);
 }
 
+var dialog;
+
 var canvas;
 var mouseOnCanvas = false;
 var canvasFocus = false;
@@ -2209,12 +2211,18 @@ function snapNode(node) {
   }
 }
 
-window.onload = function () {
+window.onload = async function () {
   const data = new URLSearchParams(document.location.search).get("data");
   if (data != null) {
     var fsm = JSON.parse(localStorage["fsm"]);
-    var shouldContinue = !(fsm.nodes || fsm.tapes || fsm.textBoxes) || alert("Your previous work will be deleted. Do you want to continue?");
-    if (shouldContinue) localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
+    dialog = document.querySelector("dialog");
+    await new Promise((resolve, reject) => {
+      dialog.showModal();
+
+      dialog.addEventListener('close', () => {
+          resolve();
+      });
+    });
   }
   history.replaceState(null, "", location.origin + location.pathname);
   undoStack = [localStorage["fsm"]];
