@@ -1814,7 +1814,11 @@ function drawText(
 function measureTextWithScripts(c, text, isSelected, start) {
   if (isSelected)
     return (
-      measureTextWithScripts(c, text.substring(0, selectedText[0] - start), false) +
+      measureTextWithScripts(
+        c,
+        text.substring(0, selectedText[0] - start),
+        false
+      ) +
       measureTextWithScripts(
         c,
         text.substring(selectedText[0] - start, selectedText[1] - start),
@@ -2141,7 +2145,7 @@ function selectObjects(left, top, right, bottom) {
       objects.push(node);
     }
   });
-  
+
   textBoxes.forEach(function (textBox) {
     if (
       top <= textBox.y + textBox.height / 2 &&
@@ -2386,11 +2390,11 @@ window.onload = function () {
 
     updateIndicator();
 
-    cells.forEach(cell => {
+    cells.forEach((cell) => {
       cell.tape.align();
     });
 
-    textBoxes.forEach(textBox => {
+    textBoxes.forEach((textBox) => {
       textBox.align();
     });
 
@@ -3632,21 +3636,26 @@ function updateRangeValue() {
 
 function copy(flag = true) {
   if (flag) copied = saveSelectedAsJSON(false);
-  copied.nodes.forEach((e) => {
-    e.x += 20;
-    e.y += 20;
-  });
-  copied.tapes.forEach((e) => {
-    e.x += 20;
-    e.y += 20;
-  });
-  copied.textBoxes.forEach((e) => {
-    e.x += 20;
-    e.y += 20;
-  });
+  if (copied.nodes)
+    copied.nodes.forEach((e) => {
+      e.x += 20;
+      e.y += 20;
+    });
+  if (copied.tapes)
+    copied.tapes.forEach((e) => {
+      e.x += 20;
+      e.y += 20;
+    });
+  if (copied.textBoxes)
+    copied.textBoxes.forEach((e) => {
+      e.x += 20;
+      e.y += 20;
+    });
 }
 
 function paste() {
+  if (!copied.nodes && !copied.tapes && !copied.textBoxes)
+    return;
   restoreFromBackupData(copied, true, true);
 
   copy(false);
