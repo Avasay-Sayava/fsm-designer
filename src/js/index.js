@@ -2213,6 +2213,7 @@ window.onload = function () {
   const data = new URLSearchParams(document.location.search).get("data");
   if (data != null)
     localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
+  history.replaceState(location.origin + location.pathname);
   undoStack = [localStorage["fsm"]];
   redoStack = [];
   const contextMenu = document.getElementById("context-menu");
