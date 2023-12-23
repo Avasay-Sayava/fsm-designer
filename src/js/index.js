@@ -2213,10 +2213,14 @@ function snapNode(node) {
 
 window.onload = async function () {
   var data = new URLSearchParams(document.location.search).get("data");
+  var auto = new URLSearchParams(document.location.search).get("y");
   if (data != null) {
     dialog = document.querySelector("dialog");
     await new Promise((resolve, reject) => {
-      dialog.showModal();
+      if (auto == null)
+        dialog.showModal();
+      else
+        resolve();
 
       dialog.addEventListener("close", () => {
         resolve();
