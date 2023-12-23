@@ -2211,8 +2211,11 @@ function snapNode(node) {
 
 window.onload = function () {
   const data = new URLSearchParams(document.location.search).get("data");
-  if (data != null)
-    localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
+  if (data != null) {
+    var fsm = JSON.parse(localStorage["fsm"]);
+    var shouldContinue = !(fsm.nodes || fsm.tapes || fsm.textBoxes) || prompt("Your previous work will be deleted. Do you want to continue?");
+    if (shouldContinue) localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
+  }
   history.replaceState(null, "", location.origin + location.pathname);
   undoStack = [localStorage["fsm"]];
   redoStack = [];
