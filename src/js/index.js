@@ -3492,7 +3492,7 @@ function restoreBackup(data = localStorage["fsm"]) {
   try {
     var backup = JSON.parse(data);
     restoreFromBackupData(backup);
-    console.log("restoted backup");
+    console.log("restored backup");
   } catch (e) {
     localStorage["fsm"] = "";
   }
