@@ -2210,6 +2210,9 @@ function snapNode(node) {
 }
 
 window.onload = function () {
+  const data = new URLSearchParams(document.location.search).get("data");
+  if (data != null)
+    localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
   undoStack = [localStorage["fsm"]];
   redoStack = [];
   const contextMenu = document.getElementById("context-menu");
