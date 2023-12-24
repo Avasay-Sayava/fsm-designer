@@ -2738,7 +2738,7 @@ document.onkeydown = async function (e) {
       if (selectedObjects.length == 1 && selectedObjects[0].text) {
         var text = selectedObjects[0].text;
         selectedObjects[0].text =
-          text.substring(0, selectedText[0]).replace(/\s?(?!\s)\S*$/, "") +
+          text.substring(0, selectedText[0]).replace(/\s*\S+\s*$/, "") +
           text.substring(selectedText[1]);
         selectedText[0] =
           selectedText[1] =
