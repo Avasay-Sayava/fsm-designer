@@ -2212,9 +2212,12 @@ function snapNode(node) {
 }
 
 window.onload = async function () {
-  var data = new URLSearchParams(document.location.search).get("data");
-  var auto = new URLSearchParams(document.location.search).get("y") ?? new URLSearchParams(document.location.search).get("auto");
-  if (data != null) {
+  // API
+  var params = new URLSearchParams(document.location.search);
+  var data = params.get("data");
+  var auto = params.get("y") ?? params.get("auto");
+  var format = params.get("format") ?? (params.get("data") ?? "").replace(/.*\./, "");
+  if (data != null && format == data) {
     dialog = document.querySelector("dialog");
     await new Promise((resolve, reject) => {
       if (auto == null)
@@ -2230,6 +2233,8 @@ window.onload = async function () {
       localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
     history.replaceState(null, "", location.origin + location.pathname);
   }
+
+  // startup
   undoStack = [localStorage["fsm"]];
   redoStack = [];
   const contextMenu = document.getElementById("context-menu");
@@ -2264,6 +2269,31 @@ window.onload = async function () {
 
   canvas.width = localStorage["width"] ?? "800";
   canvas.height = localStorage["height"] ?? "600";
+
+  if (data != null && data != format && /[a-z]/.test(format)) {
+    data = data.split(".")[0];
+    const fsm = localStorage["fsm"];
+    clearCanvas();
+    restoreBackup(decodeURIComponent(escape(window.atob(data))));
+    switch (format) {
+      case "png":
+        var imageData = saveAsPNG(false);
+        var img = new Image();
+        img.src = imageData;
+        document.querySelector("body").innerHTML = img.outerHTML; 
+        document.querySelector("head").innerHTML = "";
+        localStorage["fsm"] = fsm;
+        return;
+      case "json":
+        document.querySelector("body").innerHTML = "<pre><code>" + JSON.stringify(JSON.parse(decodeURIComponent(escape(window.atob(data)))), null, 2) + "</pre></code>"; 
+        document.querySelector("head").innerHTML = "";
+        localStorage["fsm"] = fsm;
+        return;
+      default:
+        break;
+    }
+    localStorage["fsm"] = data;
+  }
 
   setInterval(() => {
     if (
@@ -2947,7 +2977,7 @@ function crossBrowserRelativeMousePos(e) {
   };
 }
 
-function saveAsPNG() {
+function saveAsPNG(download = true) {
   // First, re-render the image with nothing selected.
   var oldSelectedObjects = selectedObjects;
   selectedObjects = [];
@@ -2982,7 +3012,9 @@ function saveAsPNG() {
   // Draw the cropped image onto the temporary canvas with padding
   tmpCtx.drawImage(tmp2, padding, padding);
   // download image
-  download(tmp.toDataURL("image/png"), "automaton.png");
+  if (download)
+    return download(tmp.toDataURL("image/png"), "automaton.png");
+  else return tmp.toDataURL("image/png");
 }
 
 function saveSelectedAsPng() {
@@ -3166,8 +3198,8 @@ function downloadFile(filename, data, type) {
   document.body.removeChild(element);
 }
 
-function download(url, filename) {
-  fetch(url)
+async function download(url, filename) {
+  return fetch(url)
     .then((response) => response.blob())
     .then((blob) => {
       const link = document.createElement("a");
@@ -3182,7 +3214,7 @@ function downloadSVGFile(filename, svgData) {
   downloadFile(filename, svgData, "image/svg+xml");
 }
 
-function saveAsSVG() {
+function saveAsSVG(download = true) {
   var bounds = getBoundingRect();
   var exporter = new ExportAsSVG(bounds);
   var oldSelectedObjects = selectedObjects;
@@ -3190,7 +3222,9 @@ function saveAsSVG() {
   drawUsing(exporter);
   selectedObjects = oldSelectedObjects;
   var svgData = exporter.toSVG();
-  downloadSVGFile("automaton.svg", svgData);
+  if (download)
+    downloadSVGFile("automaton.svg", svgData);
+  else return "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData)));
 }
 
 function saveSelectedAsSvg(flag = false) {
