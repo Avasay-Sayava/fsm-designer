@@ -473,7 +473,7 @@ class Node {
     this.y = y + this.mouseOffsetY;
   }
   draw(c) {
-    c.strokeStyle = c.fillStyle = this.runtimeColor ?? this.fillStyle;
+    c.strokeStyle = c.fillStyle = this.runtimeColor ?? c.fillStyle;
     if (this.outline) {
       drawMultilineText(
         c,
@@ -973,7 +973,6 @@ class TextBox {
   }
 
   align(minWidth = 0) {
-    console.log("aligned");
     this.width = minWidth;
     this.height = 25 * this.text.split("\r").length;
 
@@ -1167,6 +1166,25 @@ class ExportAsLaTeX {
       this._points = [];
     };
 
+    this.strokeRect = function (x, y, width, height) {
+      this.beginPath();
+      this.moveTo(x, y);
+      this.lineTo(x + width, y);
+      this.stroke();
+      this.beginPath();
+      this.moveTo(x + width, y);
+      this.lineTo(x + width, y + height);
+      this.stroke();
+      this.beginPath();
+      this.moveTo(x + width, y + height);
+      this.lineTo(x, y + height);
+      this.stroke();
+      this.beginPath();
+      this.moveTo(x, y + height);
+      this.lineTo(x, y);
+      this.stroke();
+    };
+
     this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
       x -= this.bounds[0];
       y -= this.bounds[1];
@@ -1175,9 +1193,7 @@ class ExportAsLaTeX {
       radius *= this._scale;
       if (endAngle - startAngle == Math.PI * 2) {
         this._texData +=
-          "\\draw [" +
-          this.strokeStyle +
-          "] (" +
+          "\\draw [black] (" +
           fixed(x, 3) +
           "," +
           fixed(-y, 3) +
@@ -1204,9 +1220,7 @@ class ExportAsLaTeX {
         startAngle = -startAngle;
         endAngle = -endAngle;
         this._texData +=
-          "\\draw [" +
-          this.strokeStyle +
-          "] (" +
+          "\\draw [black] (" +
           fixed(x + radius * Math.cos(startAngle), 3) +
           "," +
           fixed(-y + radius * Math.sin(startAngle), 3) +
@@ -1230,7 +1244,7 @@ class ExportAsLaTeX {
 
     this.stroke = function () {
       if (this._points.length == 0) return;
-      this._texData += "\\draw [" + this.strokeStyle + "]";
+      this._texData += "\\draw [black]";
       for (var i = 0; i < this._points.length; i++) {
         var p = this._points[i];
         this._texData +=
@@ -1246,7 +1260,7 @@ class ExportAsLaTeX {
 
     this.fill = function () {
       if (this._points.length == 0) return;
-      this._texData += "\\fill [" + this.strokeStyle + "]";
+      this._texData += "\\fill [black]";
       for (var i = 0; i < this._points.length; i++) {
         var p = this._points[i];
         this._texData +=
@@ -1262,8 +1276,8 @@ class ExportAsLaTeX {
 
     this.measureText = function (text) {
       var c = canvas.getContext("2d");
-      c.font = displayFont;
-      return measureTextWithScripts(c, text, false);
+      c.font = canvas.font;
+      return c.measureText(text);
     };
 
     this.advancedFillText = function (text, originalText, x, y, angleOrNull) {
@@ -1310,8 +1324,6 @@ class ExportAsSVG {
     this.width = bounds[2] - bounds[0];
     this.height = bounds[3] - bounds[1];
     this.bounds = bounds;
-    this.fillStyle = "black";
-    this.strokeStyle = "black";
     this.lineWidth = 1;
     this.font = displayFont;
     this._points = [];
@@ -1338,17 +1350,32 @@ class ExportAsSVG {
       this._points = [];
     };
 
+    this.strokeRect = function (x, y, width, height) {
+      this.beginPath();
+      this.moveTo(x, y);
+      this.lineTo(x + width, y);
+      this.stroke();
+      this.beginPath();
+      this.moveTo(x + width, y);
+      this.lineTo(x + width, y + height);
+      this.stroke();
+      this.beginPath();
+      this.moveTo(x + width, y + height);
+      this.lineTo(x, y + height);
+      this.stroke();
+      this.beginPath();
+      this.moveTo(x, y + height);
+      this.lineTo(x, y);
+      this.stroke();
+    };
+
     this.arc = function (x, y, radius, startAngle, endAngle, isReversed) {
       x -= this.bounds[0];
       y -= this.bounds[1];
       x += this._transX;
       y += this._transY;
       var style =
-        'stroke="' +
-        this.strokeStyle +
-        '" stroke-width="' +
-        this.lineWidth +
-        '" fill="none"';
+        'stroke="black" stroke-width="' + this.lineWidth + '" fill="none"';
 
       if (endAngle - startAngle == Math.PI * 2) {
         this._svgData +=
@@ -1403,9 +1430,7 @@ class ExportAsSVG {
     this.stroke = function () {
       if (this._points.length == 0) return;
       this._svgData +=
-        '\t<polygon stroke="' +
-        this.strokeStyle +
-        '" stroke-width="' +
+        '\t<polygon stroke="black" stroke-width="' +
         this.lineWidth +
         '" points="';
       for (var i = 0; i < this._points.length; i++) {
@@ -1421,9 +1446,7 @@ class ExportAsSVG {
     this.fill = function () {
       if (this._points.length == 0) return;
       this._svgData +=
-        '\t<polygon fill="' +
-        this.fillStyle +
-        '" stroke-width="' +
+        '\t<polygon fill="black" stroke-width="' +
         this.lineWidth +
         '" points="';
       for (var i = 0; i < this._points.length; i++) {
@@ -1438,8 +1461,8 @@ class ExportAsSVG {
 
     this.measureText = function (text) {
       var c = canvas.getContext("2d");
-      c.font = displayFont;
-      return measureTextWithScripts(c, text, false);
+      c.font = this.font;
+      return c.measureText(text);
     };
 
     this.fillText = function (text, x, y) {
@@ -1448,12 +1471,13 @@ class ExportAsSVG {
       x += this._transX;
       y += this._transY;
       if (text.replace(" ", "").length > 0) {
+        var fontSize = this.font.split("px")[0];
         this._svgData +=
           '\t<text x="' +
           fixed(x, 3) +
           '" y="' +
           fixed(y, 3) +
-          '" font-family="Times New Roman, serif, Consolas, Courier New, monospace" font-size="20">' +
+          '" font-family="Cambria Math, XITS Math, Calibri" font-size="' + fontSize + '">' +
           textToXML(text) +
           "</text>\n";
       }
@@ -1671,7 +1695,8 @@ function drawText(
   yCentered = true
 ) {
   var text;
-  if (isSelected && selectedObjects.length == 1)
+  isSelected = isSelected && selectedObjects.length == 1;
+  if (isSelected)
     text =
       convertLaTeXShortcuts(
         originalText.substring(0, selectedText[0] - start)
@@ -1721,7 +1746,7 @@ function drawText(
   }
 
   // draw text and caret (round the coordinates so the caret falls on a pixel)
-  if ("advancedFillText" in c) {
+  if (c.advancedFillText) {
     c.advancedFillText(text, originalText, x + width / 2, y, angleOrNull);
   } else {
     x = Math.round(x);
@@ -2216,14 +2241,13 @@ window.onload = async function () {
   var params = new URLSearchParams(document.location.search);
   var data = params.get("data");
   var auto = params.get("y") ?? params.get("auto");
-  var format = params.get("format") ?? (params.get("data") ?? "").replace(/.*\./, "");
+  var format =
+    params.get("format") ?? (params.get("data") ?? "").replace(/.*\./, "");
   if (data != null && format == data) {
     dialog = document.querySelector("dialog");
     await new Promise((resolve, reject) => {
-      if (auto == null)
-        dialog.showModal();
-      else
-        resolve();
+      if (auto == null) dialog.showModal();
+      else resolve();
 
       dialog.addEventListener("close", () => {
         resolve();
@@ -2270,30 +2294,46 @@ window.onload = async function () {
   canvas.width = localStorage["width"] ?? "800";
   canvas.height = localStorage["height"] ?? "600";
 
+  // API
   if (data != null && data != format && /[a-z]/.test(format)) {
     data = data.split(".")[0];
     const fsm = localStorage["fsm"];
     clearCanvas();
     restoreBackup(decodeURIComponent(escape(window.atob(data))));
-    switch (format) {
-      case "png":
-        var imageData = saveAsPNG(false);
-        var img = new Image();
-        img.src = imageData;
-        document.querySelector("body").innerHTML = img.outerHTML; 
-        document.querySelector("head").innerHTML = "";
-        localStorage["fsm"] = fsm;
-        return;
-      case "json":
-        document.querySelector("body").innerHTML = "<pre><code>" + JSON.stringify(JSON.parse(decodeURIComponent(escape(window.atob(data)))), null, 2) + "</pre></code>"; 
-        document.querySelector("head").innerHTML = "";
-        localStorage["fsm"] = fsm;
-        return;
-      default:
-        break;
-    }
-    localStorage["fsm"] = data;
+    draw();
+    setTimeout(() => {
+      switch (format) {
+        case "png":
+          var imageData = saveAsPNG(false);
+          localStorage["fsm"] = fsm;
+          localStorage["data"] = '<img src="' + imageData + '"/>';
+          break;
+        case "svg":
+          var imageData = saveAsSVG(false);
+          localStorage["fsm"] = fsm;
+          localStorage["data"] = imageData;
+          break;
+        case "tex":
+          var imageData = saveAsLaTeX(false);
+          localStorage["fsm"] = fsm;
+          localStorage["data"] = "<pre>" + imageData + "</pre>";
+          break;
+        case "json":
+          localStorage["data"] =
+            "<pre><code>" +
+            JSON.stringify(
+              JSON.parse(decodeURIComponent(escape(window.atob(data)))),
+              null,
+              2
+            ) +"</code></pre>";
+        default:
+          break;
+      }
+      location.href = location.origin + location.pathname + "viewdata/";
+    }, 0);;
   }
+
+  // startup
 
   setInterval(() => {
     if (
@@ -2626,11 +2666,11 @@ window.onload = async function () {
 document.onkeydown = async function (e) {
   var key = crossBrowserKey(e);
 
-  if (e.altKey && e.ctrlKey) {
-    selectedObjects.forEach((obj) => {
-      obj.outline = !obj.outline;
-    });
-  }
+  // if (e.altKey && e.ctrlKey) {
+  //   selectedObjects.forEach((obj) => {
+  //     obj.outline = !obj.outline;
+  //   });
+  // }
 
   if (e.ctrlKey) {
     if (key === 90) {
@@ -3012,8 +3052,7 @@ function saveAsPNG(download = true) {
   // Draw the cropped image onto the temporary canvas with padding
   tmpCtx.drawImage(tmp2, padding, padding);
   // download image
-  if (download)
-    return download(tmp.toDataURL("image/png"), "automaton.png");
+  if (download) return download(tmp.toDataURL("image/png"), "automaton.png");
   else return tmp.toDataURL("image/png");
 }
 
@@ -3215,19 +3254,18 @@ function downloadSVGFile(filename, svgData) {
 }
 
 function saveAsSVG(download = true) {
-  var bounds = getBoundingRect();
+  var bounds = getSelectedBoundingRect();
   var exporter = new ExportAsSVG(bounds);
-  var oldSelectedObjects = selectedObjects;
   selectedObjects = [];
+
   drawUsing(exporter);
-  selectedObjects = oldSelectedObjects;
+
   var svgData = exporter.toSVG();
-  if (download)
-    downloadSVGFile("automaton.svg", svgData);
-  else return "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData)));
+  if (download) downloadSVGFile("automaton.svg", svgData);
+  else return svgData;
 }
 
-function saveSelectedAsSvg(flag = false) {
+function saveSelectedAsSvg(download = true) {
   var bounds = getSelectedBoundingRect();
   var exporter = new ExportAsSVG(bounds);
   var nodesTmp = [...nodes];
@@ -3254,7 +3292,7 @@ function saveSelectedAsSvg(flag = false) {
   drawUsing(exporter);
 
   var svgData = exporter.toSVG();
-  if (!flag) downloadSVGFile("automaton.svg", svgData);
+  if (download) downloadSVGFile("automaton.svg", svgData);
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
@@ -3269,10 +3307,11 @@ function saveSelectedAsSvg(flag = false) {
 
   draw();
 
-  return svgData;
+  if (!download)
+    return svgData;
 }
 
-function saveAsLaTeX() {
+function saveAsLaTeX(download = true) {
   var bounds = getBoundingRect();
   var exporter = new ExportAsLaTeX(bounds);
   var oldSelectedObjects = selectedObjects;
@@ -3280,12 +3319,14 @@ function saveAsLaTeX() {
   drawUsing(exporter);
   selectedObjects = oldSelectedObjects;
   var texData = exporter.toLaTeX();
-  downloadText("automaton.txt", texData);
+  if (download)
+    downloadText("automaton.txt", texData);
+  else return texData;
 }
 
 function saveSelectedAsLaTeX() {
   var bounds = getSelectedBoundingRect();
-  var exporter = new ExportAsSVG(bounds);
+  var exporter = new ExportAsLaTeX(bounds);
   var nodesTmp = [...nodes];
   var nodesToSave = [];
   var linksTmp = [...links];
@@ -3310,7 +3351,7 @@ function saveSelectedAsLaTeX() {
   drawUsing(exporter);
 
   var texData = exporter.toLaTeX();
-  downloadSVGFile("automaton.svg", texData);
+  downloadFile("automaton.txt", texData, "text");
 
   nodes = [...nodesTmp];
   links = [...linksTmp];
@@ -3515,7 +3556,10 @@ function restoreFromBackupData(backup, flag = true, select = false) {
         link.deltaY = backupLink.deltaY;
         link.text = backupLink.text;
       } else if (backupLink.type == "Link") {
-        link = new Link(nodes[startNodesLen + backupLink.nodeA], nodes[startNodesLen + backupLink.nodeB]);
+        link = new Link(
+          nodes[startNodesLen + backupLink.nodeA],
+          nodes[startNodesLen + backupLink.nodeB]
+        );
         link.parallelPart = backupLink.parallelPart;
         link.perpendicularPart = backupLink.perpendicularPart;
         link.text = backupLink.text;
@@ -3691,7 +3735,6 @@ function updateRangeValue() {
 
 function copy(flag = true) {
   if (flag) copied = saveSelectedAsJSON(false);
-  console.log(copied);
   if (copied.nodes)
     copied.nodes.forEach((e) => {
       e.x += 20;
