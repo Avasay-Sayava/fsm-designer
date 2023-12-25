@@ -108,6 +108,7 @@ const greekLetterNames = [
   "cup",
   "cap",
   "cdot",
+  "dev",
   "times",
   "exists",
 ];
@@ -1629,6 +1630,10 @@ function convertLaTeXShortcuts(text) {
     }
     if (name == "cdot") {
       text = text.replace(new RegExp("\\\\" + name, "g"), "·");
+      continue;
+    }
+    if (name == "dev") {
+      text = text.replace(new RegExp("\\\\" + name, "g"), "÷");
       continue;
     }
     if (name == "times") {
