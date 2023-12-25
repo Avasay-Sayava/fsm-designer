@@ -523,18 +523,6 @@ input:focus {
   flex-direction: row;
 }
 
-dialog {
-  border: none !important;
-  border-radius: calc(5px * var(--ratio));
-  padding: 1.6rem;
-  max-width: 400px;
-  border-radius: 15px;
-}
-
-dialog::backdrop {
-  background-color: #47474770;
-}
-
 #tutorial * {
   margin: 2px;
 }

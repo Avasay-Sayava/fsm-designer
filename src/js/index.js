@@ -2249,16 +2249,10 @@ window.onload = async function () {
   var format =
     params.get("format") ?? (params.get("data") ?? "").replace(/.*\./, "");
   if (data != null && format == data) {
-    dialog = document.querySelector("dialog");
-    await new Promise((resolve, reject) => {
-      if (auto == null) dialog.showModal();
-      else resolve();
-
-      dialog.addEventListener("close", () => {
-        resolve();
-      });
-    });
-    if (dialog)
+    var proceed = true;
+    if (auto == null)
+      proceed = confirm("Warning! Do you want to proceed?\nBy pressing OK, your restored data will be lost.");
+    if (proceed)
       localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
     history.replaceState(null, "", location.origin + location.pathname);
   }
