@@ -2305,17 +2305,14 @@ window.onload = async function () {
       switch (format) {
         case "png":
           var imageData = saveAsPNG(false);
-          localStorage["fsm"] = fsm;
           localStorage["data"] = '<img src="' + imageData + '"/>';
           break;
         case "svg":
           var imageData = saveAsSVG(false);
-          localStorage["fsm"] = fsm;
           localStorage["data"] = imageData;
           break;
         case "tex":
           var imageData = saveAsLaTeX(false);
-          localStorage["fsm"] = fsm;
           localStorage["data"] = "<pre>" + imageData + "</pre>";
           break;
         case "json":
@@ -2329,9 +2326,10 @@ window.onload = async function () {
         default:
           break;
       }
+      localStorage["fsm"] = fsm;
       location.href = location.origin + location.pathname + "viewdata/";
-    }, 0);;
-  }
+    }, 0);
+  } else
 
   // startup
 
