@@ -3254,7 +3254,7 @@ function downloadSVGFile(filename, svgData) {
 }
 
 function saveAsSVG(download = true) {
-  var bounds = getSelectedBoundingRect();
+  var bounds = getBoundingRect();
   var exporter = new ExportAsSVG(bounds);
   selectedObjects = [];
 
