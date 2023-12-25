@@ -517,8 +517,8 @@ input:focus {
   position: fixed;
   top: 10px;
   left: 10px;
-  width: 140px;
-  padding: 5px;
+  width: 150px;
+  padding: 5px 5px 5px 0;
   height: 30px;
   flex-direction: row;
 }
