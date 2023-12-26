@@ -60,6 +60,13 @@ var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
 
 // ------------------------------------------------------------------------------------- //
 
+const customKeys = {
+  // homework 12
+  "5db81e4ae28": `eyJub2RlUmFkaXVzIjoyMCwiaGVpZ2h0IjoyNzAsIndpZHRoIjozMjAsIm5vZGVzIjpbeyJ4Ijo2NywieSI6NjIsInRleHQiOiJxXzAiLCJpc0FjY2VwdFN0YXRlIjpmYWxzZSwib3V0bGluZSI6ZmFsc2V9LHsieCI6MTY5LCJ5Ijo2MiwidGV4dCI6InFfMSIsImlzQWNjZXB0U3RhdGUiOnRydWUsIm91dGxpbmUiOmZhbHNlfSx7IngiOjY3LCJ5IjoxNjMsInRleHQiOiJxXzIiLCJpc0FjY2VwdFN0YXRlIjp0cnVlLCJvdXRsaW5lIjpmYWxzZX0seyJ4IjoxNjksInkiOjE2MywidGV4dCI6InFfMyIsImlzQWNjZXB0U3RhdGUiOmZhbHNlLCJvdXRsaW5lIjpmYWxzZX0seyJ4IjoyNzEsInkiOjE2MywidGV4dCI6InFfNCIsImlzQWNjZXB0U3RhdGUiOnRydWUsIm91dGxpbmUiOmZhbHNlfV0sImxpbmtzIjpbeyJ0eXBlIjoiU3RhcnRMaW5rIiwibm9kZSI6MCwidGV4dCI6IiIsImRlbHRhWCI6LTQzLCJkZWx0YVkiOi00NX0seyJ0eXBlIjoiTGluayIsIm5vZGVBIjowLCJub2RlQiI6MSwidGV4dCI6IjAiLCJsaW5lQW5nbGVBZGp1c3QiOjAsInBhcmFsbGVsUGFydCI6MC41LCJwZXJwZW5kaWN1bGFyUGFydCI6MH0seyJ0eXBlIjoiTGluayIsIm5vZGVBIjowLCJub2RlQiI6MiwidGV4dCI6IjEiLCJsaW5lQW5nbGVBZGp1c3QiOjAsInBhcmFsbGVsUGFydCI6MC41LCJwZXJwZW5kaWN1bGFyUGFydCI6MH0seyJ0eXBlIjoiTGluayIsIm5vZGVBIjoyLCJub2RlQiI6MywidGV4dCI6Ii4iLCJsaW5lQW5nbGVBZGp1c3QiOjMuMTQxNTkyNjUzNTg5NzkzLCJwYXJhbGxlbFBhcnQiOjAuNTU4ODIzNTI5NDExNzY0NywicGVycGVuZGljdWxhclBhcnQiOjB9LHsidHlwZSI6IkxpbmsiLCJub2RlQSI6MSwibm9kZUIiOjMsInRleHQiOiIuIiwibGluZUFuZ2xlQWRqdXN0IjowLCJwYXJhbGxlbFBhcnQiOjAuNSwicGVycGVuZGljdWxhclBhcnQiOjB9LHsidHlwZSI6IkxpbmsiLCJub2RlQSI6Mywibm9kZUIiOjQsInRleHQiOiIxIiwibGluZUFuZ2xlQWRqdXN0IjowLCJwYXJhbGxlbFBhcnQiOjAuNjUzODQ2MTUzODQ2MTUzOSwicGVycGVuZGljdWxhclBhcnQiOjEzfSx7InR5cGUiOiJMaW5rIiwibm9kZUEiOjQsIm5vZGVCIjozLCJ0ZXh0IjoiMCIsImxpbmVBbmdsZUFkanVzdCI6MCwicGFyYWxsZWxQYXJ0IjowLjM3NSwicGVycGVuZGljdWxhclBhcnQiOjl9LHsidHlwZSI6IlNlbGZMaW5rIiwibm9kZSI6MiwidGV4dCI6IjAsMSIsImFuY2hvckFuZ2xlIjoxLjU3MDc5NjMyNjc5NDg5NjZ9LHsidHlwZSI6IlNlbGZMaW5rIiwibm9kZSI6NCwidGV4dCI6IjEiLCJhbmNob3JBbmdsZSI6MS41NzA3OTYzMjY3OTQ4OTY2fSx7InR5cGUiOiJTZWxmTGluayIsIm5vZGUiOjMsInRleHQiOiIwIiwiYW5jaG9yQW5nbGUiOjEuNTcwNzk2MzI2Nzk0ODk2Nn1dLCJ0YXBlcyI6W10sInRleHRCb3hlcyI6W119`,
+};
+
+// ------------------------------------------------------------------------------------- //
+
 const greekLetterNames = [
   "Alpha",
   "Beta",
@@ -1478,7 +1485,9 @@ class ExportAsSVG {
           fixed(x, 3) +
           '" y="' +
           fixed(y, 3) +
-          '" font-family="Cambria Math, XITS Math, Calibri" font-size="' + fontSize + '">' +
+          '" font-family="Cambria Math, XITS Math, Calibri" font-size="' +
+          fontSize +
+          '">' +
           textToXML(text) +
           "</text>\n";
       }
@@ -2245,13 +2254,20 @@ window.onload = async function () {
   // API
   var params = new URLSearchParams(document.location.search);
   var data = params.get("data");
+  if (data != null) {
+    for (var key in customKeys) {
+      data = data.replace(key, customKeys[key]);
+    }
+  }
   var auto = params.get("y") ?? params.get("auto");
   var format =
     params.get("format") ?? (params.get("data") ?? "").replace(/.*\./, "");
-  if (data != null && format == data) {
+  if (data != null && data.indexOf(".") == -1) {
     var proceed = true;
     if (auto == null)
-      proceed = confirm("Warning! Do you want to proceed?\nBy pressing OK, your restored data will be lost.");
+      proceed = confirm(
+        "Warning! Do you want to proceed?\nBy pressing OK, your restored data will be lost."
+      );
     if (proceed)
       localStorage["fsm"] = decodeURIComponent(escape(window.atob(data)));
     history.replaceState(null, "", location.origin + location.pathname);
@@ -2294,7 +2310,7 @@ window.onload = async function () {
   canvas.height = localStorage["height"] ?? "600";
 
   // API
-  if (data != null && data != format && /[a-z]/.test(format)) {
+  if (data != null && data.indexOf(".") != -1 && /[a-z]/.test(format)) {
     data = data.split(".")[0];
     const fsm = localStorage["fsm"];
     clearCanvas();
@@ -2312,7 +2328,8 @@ window.onload = async function () {
           break;
         case "tex":
           var imageData = saveAsLaTeX(false);
-          localStorage["data"] = '<pre><code class="language-tex">' + imageData + '</code></pre>';
+          localStorage["data"] =
+            '<pre><code class="language-tex">' + imageData + "</code></pre>";
           break;
         case "json":
           localStorage["data"] =
@@ -2321,52 +2338,54 @@ window.onload = async function () {
               JSON.parse(decodeURIComponent(escape(window.atob(data)))),
               null,
               2
-            ) + '</code></pre>';
+            ) +
+            "</code></pre>";
         default:
           break;
       }
       localStorage["fsm"] = fsm;
       location.href = location.origin + location.pathname + "viewdata/";
     }, 0);
-  } else
+  }
 
   // startup
+  else
+    setInterval(() => {
+      if (
+        canvas.width != document.getElementById("width").value ||
+        canvas.height != document.getElementById("height").value
+      ) {
+        if (selectedObjects.length != 1) selectedText = [-1, -1, -1];
 
-  setInterval(() => {
-    if (
-      canvas.width != document.getElementById("width").value ||
-      canvas.height != document.getElementById("height").value
-    ) {
-      if (selectedObjects.length != 1) selectedText = [-1, -1, -1];
+        canvas.width = document.getElementById("width").value;
+        canvas.height = document.getElementById("height").value;
+        localStorage["width"] = canvas.width;
+        localStorage["height"] = canvas.height;
+        draw();
+      }
 
-      canvas.width = document.getElementById("width").value;
-      canvas.height = document.getElementById("height").value;
-      localStorage["width"] = canvas.width;
-      localStorage["height"] = canvas.height;
-      draw();
-    }
+      saveBackup();
+      if (selectedObjects.length > 0) {
+        document.getElementById("selectedObj").style.pointerEvents = "";
+        document.getElementById("selectedObj").style.opacity = "1";
 
-    saveBackup();
-    if (selectedObjects.length > 0) {
-      document.getElementById("selectedObj").style.pointerEvents = "";
-      document.getElementById("selectedObj").style.opacity = "1";
-
-      if (selectedObjects.length == 1 && selectedObjects[0] instanceof Node) {
+        if (selectedObjects.length == 1 && selectedObjects[0] instanceof Node) {
+          document.getElementById("run").style.pointerEvents = "";
+          document.getElementById("run").style.opacity = "1";
+        } else {
+          document.getElementById("run").style.pointerEvents = "none";
+          document.getElementById("run").style.opacity = "0.6";
+        }
+      } else {
+        document.getElementById("selectedObj").style.pointerEvents = "none";
+        document.getElementById("selectedObj").style.opacity = "0.6";
         document.getElementById("run").style.pointerEvents = "";
         document.getElementById("run").style.opacity = "1";
-      } else {
-        document.getElementById("run").style.pointerEvents = "none";
-        document.getElementById("run").style.opacity = "0.6";
       }
-    } else {
-      document.getElementById("selectedObj").style.pointerEvents = "none";
-      document.getElementById("selectedObj").style.opacity = "0.6";
-      document.getElementById("run").style.pointerEvents = "";
-      document.getElementById("run").style.opacity = "1";
-    }
 
-    if (!Node.radius || Node.radius <= 0 || Node.radius > 80) Node.radius = 30;
-  }, 1);
+      if (!Node.radius || Node.radius <= 0 || Node.radius > 80)
+        Node.radius = 30;
+    }, 1);
 
   document.getElementById("history").onmousedown = function () {
     sliderMouseDown = true;
@@ -3304,8 +3323,7 @@ function saveSelectedAsSvg(download = true) {
 
   draw();
 
-  if (!download)
-    return svgData;
+  if (!download) return svgData;
 }
 
 function saveAsLaTeX(download = true) {
@@ -3316,8 +3334,7 @@ function saveAsLaTeX(download = true) {
   drawUsing(exporter);
   selectedObjects = oldSelectedObjects;
   var texData = exporter.toLaTeX();
-  if (download)
-    downloadText("automaton.txt", texData);
+  if (download) downloadText("automaton.txt", texData);
   else return texData;
 }
 
