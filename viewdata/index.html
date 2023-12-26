@@ -6,7 +6,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/a11y-light.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/latex.min.js"></script>
     <title>View Automaton</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: black;
+        }
+
+        img, image, svg {
+            background-color: white;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            translate: -50% -50%;
+        }
+    </style>
 </head>
 <body>
     
@@ -14,10 +35,6 @@
 <script>
     var data = localStorage["data"];
     document.body.innerHTML = data;
-
-    hljs.initHighlightingOnLoad({
-        theme: 'dark',
-    });
 
     hljs.highlightAll();
 </script>

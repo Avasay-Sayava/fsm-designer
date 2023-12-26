@@ -2312,7 +2312,7 @@ window.onload = async function () {
           break;
         case "tex":
           var imageData = saveAsLaTeX(false);
-          localStorage["data"] = '<pre><code class="language-latex">' + imageData + '</code></pre>';
+          localStorage["data"] = '<pre><code class="language-tex">' + imageData + '</code></pre>';
           break;
         case "json":
           localStorage["data"] =
