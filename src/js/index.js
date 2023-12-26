@@ -62,7 +62,113 @@ var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
 
 const customKeys = {
   // homework 12
-  "5db81e4ae28": `eyJub2RlUmFkaXVzIjoyMCwiaGVpZ2h0IjoyNzAsIndpZHRoIjozMjAsIm5vZGVzIjpbeyJ4Ijo2NywieSI6NjIsInRleHQiOiJxXzAiLCJpc0FjY2VwdFN0YXRlIjpmYWxzZSwib3V0bGluZSI6ZmFsc2V9LHsieCI6MTY5LCJ5Ijo2MiwidGV4dCI6InFfMSIsImlzQWNjZXB0U3RhdGUiOnRydWUsIm91dGxpbmUiOmZhbHNlfSx7IngiOjY3LCJ5IjoxNjMsInRleHQiOiJxXzIiLCJpc0FjY2VwdFN0YXRlIjp0cnVlLCJvdXRsaW5lIjpmYWxzZX0seyJ4IjoxNjksInkiOjE2MywidGV4dCI6InFfMyIsImlzQWNjZXB0U3RhdGUiOmZhbHNlLCJvdXRsaW5lIjpmYWxzZX0seyJ4IjoyNzEsInkiOjE2MywidGV4dCI6InFfNCIsImlzQWNjZXB0U3RhdGUiOnRydWUsIm91dGxpbmUiOmZhbHNlfV0sImxpbmtzIjpbeyJ0eXBlIjoiU3RhcnRMaW5rIiwibm9kZSI6MCwidGV4dCI6IiIsImRlbHRhWCI6LTQzLCJkZWx0YVkiOi00NX0seyJ0eXBlIjoiTGluayIsIm5vZGVBIjowLCJub2RlQiI6MSwidGV4dCI6IjAiLCJsaW5lQW5nbGVBZGp1c3QiOjAsInBhcmFsbGVsUGFydCI6MC41LCJwZXJwZW5kaWN1bGFyUGFydCI6MH0seyJ0eXBlIjoiTGluayIsIm5vZGVBIjowLCJub2RlQiI6MiwidGV4dCI6IjEiLCJsaW5lQW5nbGVBZGp1c3QiOjAsInBhcmFsbGVsUGFydCI6MC41LCJwZXJwZW5kaWN1bGFyUGFydCI6MH0seyJ0eXBlIjoiTGluayIsIm5vZGVBIjoyLCJub2RlQiI6MywidGV4dCI6Ii4iLCJsaW5lQW5nbGVBZGp1c3QiOjMuMTQxNTkyNjUzNTg5NzkzLCJwYXJhbGxlbFBhcnQiOjAuNTU4ODIzNTI5NDExNzY0NywicGVycGVuZGljdWxhclBhcnQiOjB9LHsidHlwZSI6IkxpbmsiLCJub2RlQSI6MSwibm9kZUIiOjMsInRleHQiOiIuIiwibGluZUFuZ2xlQWRqdXN0IjowLCJwYXJhbGxlbFBhcnQiOjAuNSwicGVycGVuZGljdWxhclBhcnQiOjB9LHsidHlwZSI6IkxpbmsiLCJub2RlQSI6Mywibm9kZUIiOjQsInRleHQiOiIxIiwibGluZUFuZ2xlQWRqdXN0IjowLCJwYXJhbGxlbFBhcnQiOjAuNjUzODQ2MTUzODQ2MTUzOSwicGVycGVuZGljdWxhclBhcnQiOjEzfSx7InR5cGUiOiJMaW5rIiwibm9kZUEiOjQsIm5vZGVCIjozLCJ0ZXh0IjoiMCIsImxpbmVBbmdsZUFkanVzdCI6MCwicGFyYWxsZWxQYXJ0IjowLjM3NSwicGVycGVuZGljdWxhclBhcnQiOjl9LHsidHlwZSI6IlNlbGZMaW5rIiwibm9kZSI6MiwidGV4dCI6IjAsMSIsImFuY2hvckFuZ2xlIjoxLjU3MDc5NjMyNjc5NDg5NjZ9LHsidHlwZSI6IlNlbGZMaW5rIiwibm9kZSI6NCwidGV4dCI6IjEiLCJhbmNob3JBbmdsZSI6MS41NzA3OTYzMjY3OTQ4OTY2fSx7InR5cGUiOiJTZWxmTGluayIsIm5vZGUiOjMsInRleHQiOiIwIiwiYW5jaG9yQW5nbGUiOjEuNTcwNzk2MzI2Nzk0ODk2Nn1dLCJ0YXBlcyI6W10sInRleHRCb3hlcyI6W119`,
+  "5db81e4ae28": window.btoa(
+    unescape(
+      encodeURIComponent(
+        JSON.stringify({
+          nodeRadius: 20,
+          height: 270,
+          width: 320,
+          nodes: [
+            { x: 67, y: 62, text: "q_0", isAcceptState: false, outline: false },
+            { x: 169, y: 62, text: "q_1", isAcceptState: true, outline: false },
+            { x: 67, y: 163, text: "q_2", isAcceptState: true, outline: false },
+            {
+              x: 169,
+              y: 163,
+              text: "q_3",
+              isAcceptState: false,
+              outline: false,
+            },
+            {
+              x: 271,
+              y: 163,
+              text: "q_4",
+              isAcceptState: true,
+              outline: false,
+            },
+          ],
+          links: [
+            { type: "StartLink", node: 0, text: "", deltaX: -43, deltaY: -45 },
+            {
+              type: "Link",
+              nodeA: 0,
+              nodeB: 1,
+              text: "0",
+              lineAngleAdjust: 0,
+              parallelPart: 0.5,
+              perpendicularPart: 0,
+            },
+            {
+              type: "Link",
+              nodeA: 0,
+              nodeB: 2,
+              text: "1",
+              lineAngleAdjust: 0,
+              parallelPart: 0.5,
+              perpendicularPart: 0,
+            },
+            {
+              type: "Link",
+              nodeA: 2,
+              nodeB: 3,
+              text: ".",
+              lineAngleAdjust: 3.141592653589793,
+              parallelPart: 0.5588235294117647,
+              perpendicularPart: 0,
+            },
+            {
+              type: "Link",
+              nodeA: 1,
+              nodeB: 3,
+              text: ".",
+              lineAngleAdjust: 0,
+              parallelPart: 0.5,
+              perpendicularPart: 0,
+            },
+            {
+              type: "Link",
+              nodeA: 3,
+              nodeB: 4,
+              text: "1",
+              lineAngleAdjust: 0,
+              parallelPart: 0.6538461538461539,
+              perpendicularPart: 13,
+            },
+            {
+              type: "Link",
+              nodeA: 4,
+              nodeB: 3,
+              text: "0",
+              lineAngleAdjust: 0,
+              parallelPart: 0.375,
+              perpendicularPart: 9,
+            },
+            {
+              type: "SelfLink",
+              node: 2,
+              text: "0,1",
+              anchorAngle: 1.5707963267948966,
+            },
+            {
+              type: "SelfLink",
+              node: 4,
+              text: "1",
+              anchorAngle: 1.5707963267948966,
+            },
+            {
+              type: "SelfLink",
+              node: 3,
+              text: "0",
+              anchorAngle: 1.5707963267948966,
+            },
+          ],
+          tapes: [],
+          textBoxes: [],
+        })
+      )
+    )
+  ),
 };
 
 // ------------------------------------------------------------------------------------- //
