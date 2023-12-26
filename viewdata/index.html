@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/a11y-light.css">
+    <link rel="stylesheet" href="./a11y-light.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/latex.min.js"></script>
@@ -17,15 +17,23 @@
         body {
             height: 100%;
             width: 100%;
-            background-color: black;
+            background-color: white;
         }
 
-        img, image, svg {
+        img, image {
             background-color: white;
             position: fixed;
             top: 50%;
             left: 50%;
             translate: -50% -50%;
+        }
+
+        bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            translate: -50% -50%;
+            outline: 100vmax black solid;
         }
     </style>
 </head>

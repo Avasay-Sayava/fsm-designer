@@ -2304,7 +2304,7 @@ window.onload = async function () {
       switch (format) {
         case "png":
           var imageData = saveAsPNG(false);
-          localStorage["data"] = '<img src="' + imageData + '"/>';
+          localStorage["data"] = '<bg><img src="' + imageData + '"/></bg>';
           break;
         case "svg":
           var imageData = saveAsSVG(false);
