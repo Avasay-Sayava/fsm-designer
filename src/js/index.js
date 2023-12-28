@@ -4823,7 +4823,10 @@ function isDeterministic(object, selected = []) {
   selected.push(object);
 
   if (
-    Array.from(new Set(getLetters(object))).length != getLetters(object).length
+    Array.from(new Set(getLetters(object))).length !=
+      getLetters(object).length ||
+    (getLetters(object).indexOf("Σ") != -1 &&
+      Array.from(new Set(getLetters(object))).length != 1)
   ) {
     return false;
   }
