@@ -3139,7 +3139,7 @@ function crossBrowserRelativeMousePos(e) {
   };
 }
 
-function saveAsPNG(download = true) {
+function saveAsPNG(toDownload = true) {
   // First, re-render the image with nothing selected.
   var oldSelectedObjects = selectedObjects;
   selectedObjects = [];
@@ -3174,7 +3174,7 @@ function saveAsPNG(download = true) {
   // Draw the cropped image onto the temporary canvas with padding
   tmpCtx.drawImage(tmp2, padding, padding);
   // download image
-  if (download) return download(tmp.toDataURL("image/png"), "automaton.png");
+  if (toDownload) return download(tmp.toDataURL("image/png"), "automaton.png");
   else return tmp.toDataURL("image/png");
 }
 
@@ -3375,7 +3375,7 @@ function downloadSVGFile(filename, svgData) {
   downloadFile(filename, svgData, "image/svg+xml");
 }
 
-function saveAsSVG(download = true) {
+function saveAsSVG(toDownload = true) {
   var bounds = getBoundingRect();
   var exporter = new ExportAsSVG(bounds);
   selectedObjects = [];
@@ -3383,7 +3383,7 @@ function saveAsSVG(download = true) {
   drawUsing(exporter);
 
   var svgData = exporter.toSVG();
-  if (download) downloadSVGFile("automaton.svg", svgData);
+  if (toDownload) downloadSVGFile("automaton.svg", svgData);
   else return svgData;
 }
 
@@ -3432,7 +3432,7 @@ function saveSelectedAsSvg(download = true) {
   if (!download) return svgData;
 }
 
-function saveAsLaTeX(download = true) {
+function saveAsLaTeX(toDownload = true) {
   var bounds = getBoundingRect();
   var exporter = new ExportAsLaTeX(bounds);
   var oldSelectedObjects = selectedObjects;
@@ -3440,7 +3440,7 @@ function saveAsLaTeX(download = true) {
   drawUsing(exporter);
   selectedObjects = oldSelectedObjects;
   var texData = exporter.toLaTeX();
-  if (download) downloadText("automaton.txt", texData);
+  if (toDownload) downloadText("automaton.txt", texData);
   else return texData;
 }
 
