@@ -4834,10 +4834,11 @@ function isDeterministic(object, selected = []) {
   var out = true;
 
   links.forEach((link) => {
-    if (object == link.nodeA || object == link.node)
+    if (object == link.nodeA || object == link.nodeB || object == link.node)
       out =
         out &&
         isDeterministic(link.node, selected) &&
+        isDeterministic(link.nodeA, selected) &&
         isDeterministic(link.nodeB, selected);
   });
 
