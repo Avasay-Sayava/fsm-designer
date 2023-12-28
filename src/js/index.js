@@ -4793,7 +4793,11 @@ function isFull(object, selected = []) {
     return true;
 
   if (!(object instanceof Node))
-    return isFull(object.node, selected) && isFull(object.nodeA, selected);
+    return (
+      isFull(object.node, selected) &&
+      isFull(object.nodeA, selected) &&
+      isFull(object.nodeB, selected)
+    );
 
   var alphabet = getAlphabet(object);
 
@@ -4809,8 +4813,12 @@ function isFull(object, selected = []) {
   var out = true;
 
   links.forEach((link) => {
-    if (object == link.nodeA || object == link.node)
-      out = out && isFull(link.node, selected) && isFull(link.nodeB, selected);
+    if (object == link.nodeA || object == link.nodeB || object == link.node)
+      out =
+        out &&
+        isFull(link.node, selected) &&
+        isFull(link.nodeA, selected) &&
+        isFull(link.nodeB, selected);
   });
 
   return out;
@@ -4819,6 +4827,13 @@ function isFull(object, selected = []) {
 function isDeterministic(object, selected = []) {
   if (!object || inArr(object, selected) || object instanceof StartLink)
     return true;
+
+  if (!(object instanceof Node))
+    return (
+      isDeterministic(object.node, selected) &&
+      isDeterministic(object.nodeA, selected) &&
+      isDeterministic(object.nodeB, selected)
+    );
 
   selected.push(object);
 
