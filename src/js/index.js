@@ -2825,6 +2825,7 @@ window.onload = async function () {
   var params = new URLSearchParams(document.location.search);
   var data = params.get("data");
   if (data != null) {
+    data = data.replaceAll(" ", "+");
     for (var key in customKeys) {
       data = data.replace(key, customKeys[key]);
     }
