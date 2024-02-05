@@ -2096,15 +2096,15 @@ function convertLaTeXShortcuts(text) {
   // }
 
   for (var i = 0; i < text.length; i++) {
-    if (doubleStrucks[text.charAt(i)])
-      text = text.replace(
-        "\\\\" + text.charAt(i),
-        doubleStrucks[text.charAt(i)]
-      );
     if (scripted[text.charAt(i)])
       text = text.replace(
         "\\" + text.charAt(i) + "\\",
         scripted[text.charAt(i)]
+      );
+    if (doubleStrucks[text.charAt(i)])
+      text = text.replace(
+        "\\\\" + text.charAt(i),
+        doubleStrucks[text.charAt(i)]
       );
   }
 
